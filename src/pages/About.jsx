@@ -1,3 +1,4 @@
+import profilePhoto from "../assets/profile.jpg";
 function About() {
   return (
     <div className="min-h-screen bg-gray-100 py-16 px-6">
@@ -11,7 +12,7 @@ function About() {
         <div className="text-center mb-8">
 
           <img
-            src="src/assets/Founder image.jpg"
+            src={profilePhoto}
             alt="Founder"
             className="w-40 h-40 rounded-full mx-auto object-cover shadow-lg"
           />
