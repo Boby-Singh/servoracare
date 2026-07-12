@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import AdminLayout from "../../layouts/AdminLayout"
-
+const API = import.meta.env.VITE_API_URL;
 function Customers() {
 
   const [customers, setCustomers] = useState([])
@@ -10,7 +10,7 @@ function Customers() {
   useEffect(() => {
 
     axios
-      .get("http://localhost:5000/api/admin/customers")
+      .get(`${API}/api/admin/customers`)
       .then((res) => setCustomers(res.data))
       .catch((err) => console.log(err))
 

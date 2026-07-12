@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
+const API = import.meta.env.VITE_API_URL;
 import {Link, Navigate, useNavigate } from "react-router-dom"
 
 function TechnicianDashboard() {
@@ -41,7 +42,7 @@ function TechnicianDashboard() {
     try {
 
       const res = await axios.get(
-        `http://localhost:5000/api/technician-jobs/${user.id}`
+        `${API}/api/technician-jobs/${user.id}`
       )
 
       setJobs(res.data)
@@ -67,7 +68,7 @@ function TechnicianDashboard() {
   try {
 
     await axios.put(
-      `http://localhost:5000/api/update-status/${selectedJob}`,
+      `${API}/api/update-status/${selectedJob}`,
       {
         status: "Completed",
         technician_comment: workReport

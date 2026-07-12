@@ -1,6 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 import AdminLayout from "../../layouts/AdminLayout"
+const API = import.meta.env.VITE_API_URL;
 function AddTechnician() {
 
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ function AddTechnician() {
     try {
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/add-technician",
+        `${API}/api/admin/add-technician`,
         formData
       )
 

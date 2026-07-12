@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import AdminLayout from "../../layouts/AdminLayout"
+const API = import.meta.env.VITE_API_URL;
 function Technicians() {
 
   const [technicians, setTechnicians] = useState([])
@@ -14,7 +15,7 @@ function Technicians() {
     try {
 
       const response = await axios.get(
-        "http://localhost:5000/api/admin/technicians"
+        `${API}/api/admin/technicians`
       )
 
       setTechnicians(response.data)

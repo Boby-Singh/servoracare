@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import AdminLayout from "../layouts/AdminLayout"
+const API = import.meta.env.VITE_API_URL;
 function Admin() {
 
   const navigate = useNavigate()
@@ -17,7 +18,7 @@ function Admin() {
   try {
 
     const response = await axios.put(
-      `http://localhost:5000/api/admin/assign-technician/${bookingId}`,
+      `${API}/api/admin/assign-technician/${bookingId}`,
       {
         technician_id: technicianId
       }
@@ -60,7 +61,7 @@ function Admin() {
     try {
 
       const response = await axios.get(
-        "http://localhost:5000/api/all-bookings"
+        `${API}/api/all-bookings`
       )
 
       setBookings(response.data)
@@ -78,7 +79,7 @@ function Admin() {
 
     await axios.put(
 
-      `http://localhost:5000/api/update-status/${id}`,
+      `${API}/api/update-status/${id}`,
 
       { status }
 
@@ -99,7 +100,7 @@ const [technicians, setTechnicians] = useState([])
 useEffect(() => {
 
   axios
-    .get("http://localhost:5000/api/admin/technicians")
+    .get(`${API}/api/admin/technicians`)
     .then(res => setTechnicians(res.data))
 
 }, [])

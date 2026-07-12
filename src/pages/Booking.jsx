@@ -2,6 +2,7 @@ import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useLocation } from "react-router-dom"
+const API = import.meta.env.VITE_API_URL;
 function Booking() {
 
   const visitingCharges = {
@@ -78,7 +79,7 @@ function Booking() {
 
       const response = await axios.post(
 
-        "http://localhost:5000/api/book-service",
+        `${API}/api/book-service`,
 
         {
 

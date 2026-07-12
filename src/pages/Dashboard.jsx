@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
+const API = import.meta.env.VITE_API_URL;
 import { Link, useNavigate } from "react-router-dom"
 
 function Dashboard() {
@@ -23,7 +24,7 @@ function Dashboard() {
 
       const response = await axios.get(
 
-        `http://localhost:5000/api/my-bookings/${user.id}`
+        `${API}/api/my-bookings/${user.id}`
 
       )
 
@@ -52,7 +53,7 @@ function Dashboard() {
   try {
 
     const { data } = await axios.post(
-      "http://localhost:5000/api/create-payment",
+      `${API}/api/create-payment`,
       {
         bookingId,
         amount
