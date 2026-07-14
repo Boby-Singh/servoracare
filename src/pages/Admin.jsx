@@ -83,66 +83,43 @@ const [visitTime, setVisitTime] = useState({})
 const scheduleVisit = async (bookingId) => {
 
   if (!selectedTechnician[bookingId]) {
-
     alert("Please select technician")
-
     return
-
   }
 
   if (!visitDate[bookingId]) {
-
     alert("Please select visit date")
-
     return
-
   }
 
   if (!visitTime[bookingId]) {
-
     alert("Please select visit time")
-
     return
-
   }
 
   try {
 
     await axios.put(
-
       `${API}/api/admin/assign-technician/${bookingId}`,
-
       {
-
-        technician_id:
-          selectedTechnician[bookingId],
-
-        visit_date:
-          visitDate[bookingId],
-
-        visit_time:
-          visitTime[bookingId]
-
+        technician_id: selectedTechnician[bookingId],
+        visit_date: visitDate[bookingId],
+        visit_time: visitTime[bookingId],
       }
-
     )
 
     alert("Visit Scheduled Successfully")
 
     fetchBookings()
 
-  }
-
-  catch (err) {
+  } catch (err) {
 
     console.log(err)
 
-    alert("Failed")
+    alert("Assignment Failed")
 
   }
-
 }
-
 useEffect(() => {
 
   axios
