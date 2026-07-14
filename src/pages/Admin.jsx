@@ -102,13 +102,25 @@ const [visitTime, setVisitTime] = useState({})
 
 const scheduleVisit = async (bookingId) => {
 
-  if (
-    !selectedTechnician[bookingId] ||
-    !visitDate[bookingId] ||
-    !visitTime[bookingId]
-  ) {
+  if (!selectedTechnician[bookingId]) {
 
-    alert("Please select Technician, Visit Date and Visit Time")
+    alert("Please select technician")
+
+    return
+
+  }
+
+  if (!visitDate[bookingId]) {
+
+    alert("Please select visit date")
+
+    return
+
+  }
+
+  if (!visitTime[bookingId]) {
+
+    alert("Please select visit time")
 
     return
 
@@ -122,25 +134,30 @@ const scheduleVisit = async (bookingId) => {
 
       {
 
-        technician_id: selectedTechnician[bookingId],
+        technician_id:
+          selectedTechnician[bookingId],
 
-        visit_date: visitDate[bookingId],
+        visit_date:
+          visitDate[bookingId],
 
-        visit_time: visitTime[bookingId]
+        visit_time:
+          visitTime[bookingId]
 
       }
 
     )
 
-    alert("Technician Assigned Successfully")
+    alert("Visit Scheduled Successfully")
 
     fetchBookings()
 
-  } catch (error) {
+  }
 
-    console.log(error)
+  catch (err) {
 
-    alert("Assignment Failed")
+    console.log(err)
+
+    alert("Failed")
 
   }
 
@@ -319,26 +336,19 @@ useEffect(() => {
                 </td>
                <td className="p-4">
 
-                  {booking.technician_name ? (
+                {booking.status === "Pending" ? (
 
-                    <span className="bg-blue-100 text-blue-900 px-3 py-2 rounded-lg font-semibold">
-                      {booking.technician_name}
-                    </span>
-
-                  ) : booking.status === "Accepted" ? (
+                  <div className="space-y-2">
 
                     <select
-                     value={selectedTechnician[booking.id] || ""}
-
                       onChange={(e) =>
-                        setSelectedTechnician({
-                          ...selectedTechnician,
-                          [booking.id]: e.target.value
-                        })
+                        assignTechnician(
+                          booking.id,
+                          e.target.value
+                        )
                       }
-                      className="border border-gray-300 rounded-lg p-2"
+                      className="border rounded-lg p-2 w-full"
                     >
-
                       <option value="">
                         Select Technician
                       </option>
@@ -356,15 +366,49 @@ useEffect(() => {
 
                     </select>
 
-                  ) : (
+                    <input
+                      type="date"
+                      className="border rounded-lg p-2 w-full"
+                      value={visitDate[booking.id] || ""}
+                      onChange={(e) =>
+                        setVisitDate({
+                          ...visitDate,
+                          [booking.id]: e.target.value,
+                        })
+                      }
+                    />
 
-                    <span className="text-gray-400">
-                      Not Assigned
-                    </span>
+                    <input
+                      type="time"
+                      className="border rounded-lg p-2 w-full"
+                      value={visitTime[booking.id] || ""}
+                      onChange={(e) =>
+                        setVisitTime({
+                          ...visitTime,
+                          [booking.id]: e.target.value,
+                        })
+                      }
+                    />
 
-                  )}
+                  </div>
 
-                </td>
+                ) : (
+
+                  <div>
+
+                    <div className="font-semibold text-blue-900">
+                      {booking.technician_name}
+                    </div>
+
+                    <div className="text-sm text-gray-500">
+                      {booking.technician_phone}
+                    </div>
+
+                  </div>
+
+                )}
+
+              </td>
 
                <td className="p-4">
 
@@ -373,8 +417,10 @@ useEffect(() => {
                   <div className="flex flex-col gap-2">
 
                     <button
-                      onClick={() => scheduleVisit(booking.id)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                      onClick={() =>
+                        scheduleVisit(booking.id)
+                      }
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
                     >
                       Assign & Accept
                     </button>
@@ -386,7 +432,7 @@ useEffect(() => {
                           "Rejected"
                         )
                       }
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
                     >
                       Reject
                     </button>
@@ -404,30 +450,29 @@ useEffect(() => {
                         "Completed"
                       )
                     }
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
                   >
-                    Complete
+                    Mark Completed
                   </button>
 
                 )}
 
-                {booking.status === "Completed" && (
+                {(booking.status === "Completed" ||
+                  booking.status === "Rejected") && (
 
-                  <span className="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold">
-                    Completed
+                  <span
+                    className={`px-4 py-2 rounded-lg text-white ${
+                      booking.status === "Completed"
+                        ? "bg-green-600"
+                        : "bg-red-600"
+                    }`}
+                  >
+                    Locked
                   </span>
 
                 )}
 
-                {booking.status === "Rejected" && (
-
-                  <span className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-semibold">
-                    Rejected
-                  </span>
-
-                )}
-
-                </td>
+              </td>
 
               </tr>
 
