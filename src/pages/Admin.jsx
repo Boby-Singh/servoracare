@@ -8,35 +8,15 @@ function Admin() {
   const navigate = useNavigate()
   const [bookings, setBookings] = useState([])
 
-  const assignTechnician = async (
+const assignTechnician = (
   bookingId,
   technicianId
 ) => {
 
-  if (!technicianId) return
-
-  try {
-
-    const response = await axios.put(
-      `${API}/api/admin/assign-technician/${bookingId}`,
-      {
-        technician_id: technicianId
-      }
-    )
-
-    console.log(response.data)
-
-    alert("Technician Assigned Successfully")
-
-    fetchBookings()
-
-  } catch (error) {
-
-    console.log(error)
-
-    alert("Assignment Failed")
-
-  }
+  setSelectedTechnician(prev => ({
+    ...prev,
+    [bookingId]: technicianId
+  }))
 
 }
 
@@ -341,6 +321,7 @@ useEffect(() => {
                   <div className="space-y-2">
 
                     <select
+                      value={selectedTechnician[booking.id] || ""}
                       onChange={(e) =>
                         assignTechnician(
                           booking.id,
@@ -349,21 +330,16 @@ useEffect(() => {
                       }
                       className="border rounded-lg p-2 w-full"
                     >
-                      <option value="">
-                        Select Technician
-                      </option>
+                      <option value="">Select Technician</option>
 
                       {technicians.map((tech) => (
-
                         <option
                           key={tech.id}
                           value={tech.id}
                         >
                           {tech.name}
                         </option>
-
                       ))}
-
                     </select>
 
                     <input
