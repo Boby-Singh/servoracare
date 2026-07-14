@@ -96,6 +96,55 @@ function Admin() {
 }
 
 const [technicians, setTechnicians] = useState([])
+const [selectedTechnician, setSelectedTechnician] = useState({})
+const [visitDate, setVisitDate] = useState({})
+const [visitTime, setVisitTime] = useState({})
+
+const scheduleVisit = async (bookingId) => {
+
+  if (
+    !selectedTechnician[bookingId] ||
+    !visitDate[bookingId] ||
+    !visitTime[bookingId]
+  ) {
+
+    alert("Please select Technician, Visit Date and Visit Time")
+
+    return
+
+  }
+
+  try {
+
+    await axios.put(
+
+      `${API}/api/admin/assign-technician/${bookingId}`,
+
+      {
+
+        technician_id: selectedTechnician[bookingId],
+
+        visit_date: visitDate[bookingId],
+
+        visit_time: visitTime[bookingId]
+
+      }
+
+    )
+
+    alert("Technician Assigned Successfully")
+
+    fetchBookings()
+
+  } catch (error) {
+
+    console.log(error)
+
+    alert("Assignment Failed")
+
+  }
+
+}
 
 useEffect(() => {
 
@@ -279,11 +328,13 @@ useEffect(() => {
                   ) : booking.status === "Accepted" ? (
 
                     <select
+                     value={selectedTechnician[booking.id] || ""}
+
                       onChange={(e) =>
-                        assignTechnician(
-                          booking.id,
-                          e.target.value
-                        )
+                        setSelectedTechnician({
+                          ...selectedTechnician,
+                          [booking.id]: e.target.value
+                        })
                       }
                       className="border border-gray-300 rounded-lg p-2"
                     >
@@ -315,22 +366,17 @@ useEffect(() => {
 
                 </td>
 
-                <td className="p-4">
+               <td className="p-4">
 
                 {booking.status === "Pending" && (
 
-                  <div className="flex justify-center gap-2">
+                  <div className="flex flex-col gap-2">
 
                     <button
-                      onClick={() =>
-                        updateStatus(
-                          booking.id,
-                          "Accepted"
-                        )
-                      }
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                      onClick={() => scheduleVisit(booking.id)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                     >
-                      Accept
+                      Assign & Accept
                     </button>
 
                     <button
@@ -368,7 +414,7 @@ useEffect(() => {
                 {booking.status === "Completed" && (
 
                   <span className="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold">
-                    Locked
+                    Completed
                   </span>
 
                 )}
@@ -376,13 +422,12 @@ useEffect(() => {
                 {booking.status === "Rejected" && (
 
                   <span className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-semibold">
-                    Locked
+                    Rejected
                   </span>
 
                 )}
 
-              </td>
-                    
+                </td>
 
               </tr>
 
