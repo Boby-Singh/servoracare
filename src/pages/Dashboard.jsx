@@ -138,92 +138,147 @@ function Dashboard() {
           <table className="w-full">
 
             <thead className="bg-blue-900 text-white">
-
-              <tr>
+            <tr>
                 <th className="p-4">Service</th>
-                <th className="p-4">My_Phone</th>
                 <th className="p-4">Address</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Technician</th>
                 <th className="p-4">Technician Phone</th>
-                <th className="p-4">Date</th>
-                <th className="p-4">Pay</th>
+                <th className="p-4">Assigned On</th>
+                <th className="p-4">Visit Date</th>
+                <th className="p-4">Visit Time</th>
+                <th className="p-4">Payment</th>
                 <th className="p-4">Technician Report</th>
-              </tr>
-
+            </tr>
             </thead>
 
             <tbody>
 
-              {bookings.map((booking) => (
+            {bookings.map((booking) => (
 
-                <tr
-                  key={booking.id}
-                  className="text-center border-b"
-                >
+            <tr
+                key={booking.id}
+                className="border-b text-center hover:bg-gray-50"
+            >
 
-                  <td className="p-4">
+                <td className="p-4 font-medium">
                     {booking.service_type}
-                  </td>
+                </td>
 
-                  <td className="p-4">
-                    {booking.phone}
-                  </td>
-
-                  <td className="p-4">
+                <td className="p-4">
                     {booking.address}
-                  </td>
+                </td>
 
-                  <td className="p-4">
+                <td className="p-4">
 
                     <span
-                      className={`
-                        px-4 py-2 rounded-lg text-white
+                        className={`px-4 py-2 rounded-full text-white text-sm
 
-                        ${booking.status === "Pending"
-                          ? "bg-yellow-500"
-                          : booking.status === "Accepted"
-                          ? "bg-blue-500"
-                          : booking.status === "Completed"
-                          ? "bg-green-500"
-                          : "bg-red-500"}
-                      `}
+                        ${
+                            booking.status === "Pending"
+                                ? "bg-yellow-500"
+
+                                : booking.status === "Accepted"
+                                ? "bg-blue-600"
+
+                                : booking.status === "Completed"
+                                ? "bg-green-600"
+
+                                : "bg-red-500"
+                        }`}
                     >
-                      {booking.status}
+                        {booking.status}
                     </span>
 
-                  </td>
+                </td>
 
-                  <td className="p-4">
-                    {booking.technician_name || "-"}
-                  </td>
+                <td className="p-4">
 
-                  <td className="p-4">
+                    {booking.technician_name ? (
+
+                        <div>
+
+                            <div className="font-semibold">
+                                {booking.technician_name}
+                            </div>
+
+                        </div>
+
+                    ) : (
+
+                        <span className="text-gray-500">
+                            Not Assigned
+                        </span>
+
+                    )}
+
+                </td>
+
+                <td className="p-4">
+
                     {booking.technician_phone || "-"}
-                  </td>
 
-                  <td className="p-4">
-                    {new Date(
-                      booking.created_at
-                    ).toLocaleString()}
-                  </td>
+                </td>
 
-                  <td>
-                    <button
-                      onClick={() => makePayment(booking.id)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg"
-                    >
-                      Pay Now
-                    </button>
-                  </td>
-                  
-                  <td className="p-4">
+                <td className="p-4">
+
+                    {booking.assigned_at
+
+                        ? new Date(
+                              booking.assigned_at
+                          ).toLocaleString()
+
+                        : "-"}
+
+                </td>
+
+                <td className="p-4">
+
+                    {booking.visit_date || "-"}
+
+                </td>
+
+                <td className="p-4">
+
+                    {booking.visit_time || "-"}
+
+                </td>
+
+                <td className="p-4">
+
+                    {booking.payment_status === "Paid" ? (
+
+                        <span className="text-green-600 font-semibold">
+                            Paid
+                        </span>
+
+                    ) : (
+
+                        <button
+                            onClick={() =>
+                                makePayment(
+                                    booking.id,
+                                    booking.amount
+                                )
+                            }
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                        >
+                            Pay Now
+                        </button>
+
+                    )}
+
+                </td>
+
+                <td className="p-4">
+
                     {booking.technician_comment || "-"}
-                  </td>
 
-                </tr>
+                </td>
 
-              ))}
+            </tr>
+
+            ))}
 
             </tbody>
 
