@@ -85,7 +85,8 @@ function Booking() {
 
           ...formData,
 
-          user_id: user.id
+          user_id: user.id,
+          amount: visitingCharge
 
         }
 
