@@ -30,7 +30,7 @@ function Contact() {
 
   e.preventDefault()
 
-  const phone = "7828908522" //  your WhatsApp number
+  const phone = "917828908522" //  your WhatsApp number
 
   const message = `📩 *New Contact Query*
 
@@ -141,9 +141,12 @@ ${formData.message}`
                   Email
                 </h3>
 
-                <p className="text-gray-600">
+                <a
+                  href="mailto:support@servoracare.in"
+                  className="text-blue-700 hover:underline"
+                >
                   support@servoracare.in
-                </p>
+                </a>
 
               </div>
 
@@ -206,21 +209,21 @@ ${formData.message}`
             <div className="flex gap-5">
 
               <a
-                href="#"
+                href="https://www.facebook.com/Boby.Singh.saini.908/"
                 className="bg-blue-900 text-white p-4 rounded-full hover:scale-110 duration-300"
               >
                 <FaFacebook />
               </a>
 
               <a
-                href="#"
+                href="https://www.instagram.com/themanager.bs/"
                 className="bg-pink-600 text-white p-4 rounded-full hover:scale-110 duration-300"
               >
                 <FaInstagram />
               </a>
 
               <a
-                href="#"
+                href="https://www.linkedin.com/in/bobysingh1/"
                 className="bg-blue-700 text-white p-4 rounded-full hover:scale-110 duration-300"
               >
                 <FaLinkedin />
