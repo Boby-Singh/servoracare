@@ -203,6 +203,8 @@ function TechnicianDashboard() {
                 <th className="p-4">Cust_Phone</th>
                 <th className="p-4">Cust_Address</th>
                 <th className="p-4">Service</th>
+                <th className="p-4">Visit Date</th>
+                <th className="p-4">Visit Time</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Action</th>
 
@@ -233,6 +235,16 @@ function TechnicianDashboard() {
 
                   <td className="p-4">
                     {job.service_type}
+                  </td>
+
+                  <td className="p-4">
+                    {job.visit_date
+                      ? new Date(job.visit_date).toLocaleDateString()
+                      : "-"}
+                  </td>
+
+                  <td className="p-4">
+                    {job.visit_time || "-"}
                   </td>
 
                   <td className="p-4">
@@ -309,42 +321,42 @@ function TechnicianDashboard() {
         }
         rows="6"
         placeholder="Example:
-• Equipment inspected
-• Fault repaired
-• Parts replaced
-• Testing completed successfully"
+        • Equipment inspected
+        • Fault repaired
+        • Parts replaced
+        • Testing completed successfully"
         className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+        />
 
-      <div className="flex justify-end gap-3 mt-6">
+              <div className="flex justify-end gap-3 mt-6">
 
-        <button
-          onClick={() => {
+                <button
+                  onClick={() => {
 
-            setShowModal(false)
+                    setShowModal(false)
 
-            setWorkReport("")
+                    setWorkReport("")
 
-          }}
-          className="px-5 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-        >
-          Cancel
-        </button>
+                  }}
+                  className="px-5 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
 
-        <button
-          onClick={completeJob}
-          className="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-        >
-          Submit & Complete
-        </button>
+                <button
+                  onClick={completeJob}
+                  className="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                >
+                  Submit & Complete
+                </button>
 
-      </div>
+              </div>
 
-    </div>
+            </div>
 
-  </div>
+          </div>
 
-)}
+        )}
 
         </div>
 
