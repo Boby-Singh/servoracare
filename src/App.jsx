@@ -6,6 +6,7 @@ import Contact from "./pages/Contact"
 import Booking from "./pages/Booking"
 import ServicesPage from "./pages/ServicesPage"
 import Careers from "./pages/Careers";
+import ApplyJob from "./pages/ApplyJob";
 import Admin from "./pages/Admin"
 import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -37,6 +38,11 @@ function App() {
         <Route 
         path="/careers" 
         element={<Careers />} 
+        />
+
+        <Route 
+        path="/apply-job" 
+        element={<ApplyJob />} 
         />
 
         <Route
