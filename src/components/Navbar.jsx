@@ -53,7 +53,7 @@ function Navbar() {
           <img
             src={logo}
             alt="ServoraCare"
-            className="h-18 w-18 rounded-full bg-white p-2 shadow-md"
+            className="h-16 w-16 rounded-full bg-white p-1 shadow-md"
           />
 
           <div>
