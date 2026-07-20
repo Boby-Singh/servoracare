@@ -5,6 +5,7 @@ import About from "./pages/About"
 import Contact from "./pages/Contact"
 import Booking from "./pages/Booking"
 import ServicesPage from "./pages/ServicesPage"
+import Careers from "./pages/Careers";
 import Admin from "./pages/Admin"
 import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -31,6 +32,11 @@ function App() {
         <Route
           path="/contact"
           element={<Contact />}
+        />
+
+        <Route 
+        path="/careers" 
+        element={<Careers />} 
         />
 
         <Route

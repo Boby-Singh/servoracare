@@ -84,6 +84,12 @@ function Navbar() {
             </li>
           </Link>
 
+          <Link to="/careers">
+            <li className="hover:text-orange-400 transition">
+              Careers
+            </li>
+          </Link>
+
           <Link to="/about">
             <li className="hover:text-orange-400 transition">
               About
@@ -194,6 +200,15 @@ function Navbar() {
             >
               <li className="hover:text-orange-400">
                 Services
+              </li>
+            </Link>
+
+            <Link
+              to="/careers"
+              onClick={() => setMenuOpen(false)}
+            >
+              <li className="hover:text-orange-400">
+                Careers
               </li>
             </Link>
 
