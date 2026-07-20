@@ -2,12 +2,15 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 const API = import.meta.env.VITE_API_URL;
 import { Link, useNavigate } from "react-router-dom"
+import QRCode from "react-qr-code";
 
 function Dashboard() {
 
   const navigate = useNavigate()
 
   const [bookings, setBookings] = useState([])
+  const [showQR, setShowQR] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState("");
 
   const user =
     JSON.parse(localStorage.getItem("user"))
@@ -48,7 +51,7 @@ function Dashboard() {
 
   }
 
-  const makePayment = async (bookingId, amount) => {
+const makePayment = async (bookingId, amount) => {
 
   try {
 
@@ -58,30 +61,39 @@ function Dashboard() {
         bookingId,
         amount
       }
-    )
+    );
 
-    if (data.success) {
+    if (!data.success) {
 
-      window.open(
-        data.redirectUrl,
-        "_self"
-      )
+      alert(data.message);
+      return;
+
+    }
+
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+
+      // Open UPI App
+      window.location.href = data.paymentUrl;
 
     } else {
 
-      alert(data.message)
+      // Show QR Code
+      setPaymentUrl(data.paymentUrl);
+      setShowQR(true);
 
     }
 
   } catch (error) {
 
-    console.log(error)
-
-    alert("Unable to start payment")
+    console.log(error);
+    alert("Unable to start payment");
 
   }
 
-}
+};
 
   return (
 
@@ -144,7 +156,7 @@ function Dashboard() {
                 <th className="p-4">Status</th>
                 <th className="p-4">Technician</th>
                 <th className="p-4">Technician Phone</th>
-                <th className="p-4">Assigned On</th>
+                <th className="p-4">Accepted at</th>
                 <th className="p-4">Visit Date</th>
                 <th className="p-4">Visit Time</th>
                 <th className="p-4">Payment</th>
@@ -222,10 +234,10 @@ function Dashboard() {
 
                 <td className="p-4">
 
-                    {booking.assigned_at
+                    {booking.accepted_at
 
                         ? new Date(
-                              booking.assigned_at
+                              booking.accepted_at
                           ).toLocaleString()
 
                         : "-"}
@@ -287,6 +299,69 @@ function Dashboard() {
         </div>
 
       </div>
+      {
+  showQR && (
+
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+      <div className="bg-white rounded-3xl shadow-2xl p-8 w-[420px]">
+
+        <h2 className="text-3xl font-bold text-center text-blue-900">
+          Scan & Pay
+        </h2>
+
+        <p className="text-center text-gray-500 mt-2">
+          Scan using any UPI App
+        </p>
+
+        <div className="flex justify-center my-8">
+
+          <QRCode
+            value={paymentUrl}
+            size={220}
+          />
+
+        </div>
+
+        <div className="bg-gray-100 rounded-xl p-4">
+
+          <p className="text-sm text-gray-600">
+            UPI ID
+          </p>
+
+          <div className="flex justify-between items-center">
+
+            <span className="font-semibold">
+              7828908522@axl
+            </span>
+
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText("7822@axl");
+                alert("UPI ID Copied");
+              }}
+              className="text-blue-600 font-semibold"
+            >
+              Copy
+            </button>
+
+          </div>
+
+        </div>
+
+        <button
+          onClick={() => setShowQR(false)}
+          className="mt-6 w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-800"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  )
+}
 
     </div>
 
