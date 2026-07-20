@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
+import logo from "../assets/logo.jpeg"
 
 function Navbar() {
 
@@ -41,16 +42,30 @@ function Navbar() {
 
   return (
 
-    <nav className="bg-blue-900 text-white px-6 py-4 sticky top-0 z-50 shadow-lg">
+    <nav className="bg-blue-900 text-white px-6 py-2 sticky top-0 z-50 shadow-lg">
 
       <div className="flex justify-between items-center">
 
         {/* Logo */}
 
-        <Link to="/">
-          <h1 className="text-3xl font-bold cursor-pointer">
-            ServoraCare
-          </h1>
+        <Link to="/" className="flex items-center gap-3">
+
+          <img
+            src={logo}
+            alt="ServoraCare"
+            className="h-16 w-16 rounded-full bg-white p-1 shadow-md"
+          />
+
+          <div>
+            <h1 className="text-2xl font-bold leading-none">
+              ServoraCare
+            </h1>
+
+            <p className="text-xs text-orange-300">
+              Trusted Home Services
+            </p>
+          </div>
+
         </Link>
 
         {/* Desktop Menu */}
