@@ -14,10 +14,9 @@ function Navbar() {
   const handleLogout = () => {
 
     localStorage.removeItem("user")
+    localStorage.removeItem("token")
 
     navigate("/")
-
-    window.location.reload()
 
   }
 
@@ -53,15 +52,15 @@ function Navbar() {
           <img
             src={logo}
             alt="ServoraCare"
-            className="h-16 w-16 rounded-full bg-white p-1 shadow-md"
+            className="h-20 w-20 rounded-full bg-white p-1 shadow-md"
           />
 
           <div>
-            <h1 className="text-2xl font-bold leading-none">
+            <h1 className="text-3xl font-extrabold leading-none tracking-wide">
               ServoraCare
             </h1>
 
-            <p className="text-xs text-orange-300">
+            <p className="text-sm text-orange-300">
               Trusted Home Services
             </p>
           </div>
@@ -70,7 +69,7 @@ function Navbar() {
 
         {/* Desktop Menu */}
 
-        <ul className="hidden md:flex gap-8 text-lg items-center">
+        <ul className="hidden md:flex gap-10 text-lg items-center">
 
           <Link to="/">
             <li className="hover:text-orange-400 transition">
@@ -131,7 +130,7 @@ function Navbar() {
 
                 <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center font-bold">
 
-                  {user.name.charAt(0).toUpperCase()}
+                  {user?.name?.charAt(0)?.toUpperCase() || "U"}
 
                 </div>
 
