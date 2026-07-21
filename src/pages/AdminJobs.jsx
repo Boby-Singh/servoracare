@@ -63,24 +63,24 @@ function AdminJobs() {
 
         <div className="overflow-x-auto">
 
-          <table className="w-full bg-white rounded-xl shadow">
+        <table className="min-w-[1800px] bg-white rounded-xl shadow">
 
             <thead className="bg-blue-900 text-white">
             <tr>
-                <th className="p-3">Name</th>
-                <th className="p-3">Phone</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">City</th>
-                <th className="p-3">Position</th>
-                <th className="p-3">Experience</th>
-                <th className="p-3">Aadhaar</th>
-                <th className="p-3">PAN</th>
-                <th className="p-3">Resume</th>
-                <th className="p-3">Aadhaar File</th>
-                <th className="p-3">Photo</th>
-                <th className="p-3">Applied On</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Action</th>
+                <th className="px-6 py-4 whitespace-nowrap">Name</th>
+                <th className="px-6 py-4 whitespace-nowrap">Phone</th>
+                <th className="px-6 py-4 whitespace-nowrap">Email</th>
+                <th className="px-6 py-4 whitespace-nowrap">City</th>
+                <th className="px-6 py-4 whitespace-nowrap">Position</th>
+                <th className="px-6 py-4 whitespace-nowrap">Experience</th>
+                <th className="px-6 py-4 whitespace-nowrap">Aadhaar</th>
+                <th className="px-6 py-4 whitespace-nowrap">PAN</th>
+                <th className="px-6 py-4 whitespace-nowrap">Resume</th>
+                <th className="px-6 py-4 whitespace-nowrap">Aadhaar File</th>
+                <th className="px-6 py-4 whitespace-nowrap">Photo</th>
+                <th className="px-6 py-4 whitespace-nowrap">Applied On</th>
+                <th className="px-6 py-4 whitespace-nowrap">Status</th>
+                <th className="px-6 py-4 whitespace-nowrap">Action</th>
             </tr>
             </thead>
 
@@ -88,107 +88,126 @@ function AdminJobs() {
 
             {applications.map((job) => (
 
-            <tr
+                <tr
                 key={job.id}
-                className="border-b text-center hover:bg-gray-50"
-            >
+                className="border-b hover:bg-gray-50 text-center"
+                >
 
-            <td>{job.full_name}</td>
+                <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                    {job.full_name}
+                </td>
 
-            <td>{job.phone}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.phone}
+                </td>
 
-            <td>{job.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.email}
+                </td>
 
-            <td>{job.city}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.city}
+                </td>
 
-            <td>{job.position}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.position}
+                </td>
 
-            <td>{job.experience}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.experience}
+                </td>
 
-            <td>{job.aadhaar}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.aadhaar}
+                </td>
 
-            <td>{job.pan}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {job.pan}
+                </td>
 
-            <td>
-                <a
+                <td className="px-6 py-4 whitespace-nowrap">
+                    <a
                     href={`${API}/uploads/${job.resume}`}
                     target="_blank"
+                    rel="noreferrer"
                     className="text-blue-600 underline"
-                >
-                    Resume
-                </a>
-            </td>
+                    >
+                    View Resume
+                    </a>
+                </td>
 
-            <td>
-                <a
+                <td className="px-6 py-4 whitespace-nowrap">
+                    <a
                     href={`${API}/uploads/${job.aadhaar_file}`}
                     target="_blank"
+                    rel="noreferrer"
                     className="text-blue-600 underline"
-                >
-                    Aadhaar
-                </a>
-            </td>
+                    >
+                    View Aadhaar
+                    </a>
+                </td>
 
-            <td>
+                <td className="px-6 py-4">
+                    <img
+                    src={`${API}/uploads/${job.photo}`}
+                    alt=""
+                    className="w-16 h-16 rounded-full object-cover mx-auto border"
+                    />
+                </td>
 
-            <img
-                src={`${API}/uploads/${job.photo}`}
-                alt=""
-                className="w-12 h-12 rounded-full object-cover mx-auto"
-            />
+                <td className="px-6 py-4 whitespace-nowrap">
+                    {new Date(job.created_at).toLocaleDateString()}
+                </td>
 
-            </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                    className={`px-3 py-1 rounded-full text-white
+                        ${
+                        job.status === "Applied"
+                            ? "bg-yellow-500"
+                            : job.status === "Shortlisted"
+                            ? "bg-blue-600"
+                            : job.status === "Selected"
+                            ? "bg-green-600"
+                            : "bg-red-500"
+                        }`}
+                    >
+                    {job.status}
+                    </span>
+                </td>
 
-            <td>
+                <td className="px-6 py-4 whitespace-nowrap space-x-2">
 
-            {new Date(job.created_at).toLocaleDateString()}
+                    <button
+                    onClick={() => updateStatus(job.id, "Shortlisted")}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    >
+                    Shortlist
+                    </button>
 
-            </td>
+                    <button
+                    onClick={() => updateStatus(job.id, "Selected")}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                    >
+                    Select
+                    </button>
 
-            <td>
+                    <button
+                    onClick={() => updateStatus(job.id, "Rejected")}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                    >
+                    Reject
+                    </button>
 
-            <span
-            className={`px-3 py-1 rounded-full text-white
-            ${
-            job.status==="Applied"
-            ?"bg-yellow-500"
-            :job.status==="Shortlisted"
-            ?"bg-blue-600"
-            :job.status==="Selected"
-            ?"bg-green-600"
-            :"bg-red-500"
-            }`}
-            >
+                </td>
 
-            {job.status}
-
-            </span>
-
-            </td>
-
-            <td>
-
-            <button className="bg-blue-500 text-white px-3 py-1 rounded">
-            Shortlist
-            </button>
-
-            <button className="bg-green-600 text-white px-3 py-1 rounded ml-2">
-            Select
-            </button>
-
-            <button className="bg-red-500 text-white px-3 py-1 rounded ml-2">
-            Reject
-            </button>
-
-            </td>
-
-            </tr>
+                </tr>
 
             ))}
 
             </tbody>
 
-          </table>
+        </table>
 
         </div>
 
