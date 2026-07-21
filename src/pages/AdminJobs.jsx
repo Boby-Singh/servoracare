@@ -66,128 +66,125 @@ function AdminJobs() {
           <table className="w-full bg-white rounded-xl shadow">
 
             <thead className="bg-blue-900 text-white">
-
-              <tr>
-
-                <th className="p-4">Name</th>
-                <th className="p-4">Phone</th>
-                <th className="p-4">Position</th>
-                <th className="p-4">Experience</th>
-                <th className="p-4">Resume</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Action</th>
-
-              </tr>
-
+            <tr>
+                <th className="p-3">Name</th>
+                <th className="p-3">Phone</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">City</th>
+                <th className="p-3">Position</th>
+                <th className="p-3">Experience</th>
+                <th className="p-3">Aadhaar</th>
+                <th className="p-3">PAN</th>
+                <th className="p-3">Resume</th>
+                <th className="p-3">Aadhaar File</th>
+                <th className="p-3">Photo</th>
+                <th className="p-3">Applied On</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Action</th>
+            </tr>
             </thead>
 
             <tbody>
 
-              {applications.map((app) => (
+            {applications.map((job) => (
 
-                <tr
-                  key={app.id}
-                  className="text-center border-b"
+            <tr
+                key={job.id}
+                className="border-b text-center hover:bg-gray-50"
+            >
+
+            <td>{job.full_name}</td>
+
+            <td>{job.phone}</td>
+
+            <td>{job.email}</td>
+
+            <td>{job.city}</td>
+
+            <td>{job.position}</td>
+
+            <td>{job.experience}</td>
+
+            <td>{job.aadhaar}</td>
+
+            <td>{job.pan}</td>
+
+            <td>
+                <a
+                    href={`${API}/uploads/${job.resume}`}
+                    target="_blank"
+                    className="text-blue-600 underline"
                 >
+                    Resume
+                </a>
+            </td>
 
-                  <td className="p-4">{app.full_name}</td>
+            <td>
+                <a
+                    href={`${API}/uploads/${job.aadhaar_file}`}
+                    target="_blank"
+                    className="text-blue-600 underline"
+                >
+                    Aadhaar
+                </a>
+            </td>
 
-                  <td>{app.phone}</td>
+            <td>
 
-                  <td>{app.position}</td>
+            <img
+                src={`${API}/uploads/${job.photo}`}
+                alt=""
+                className="w-12 h-12 rounded-full object-cover mx-auto"
+            />
 
-                  <td>{app.experience}</td>
+            </td>
 
-                  <td>
+            <td>
 
-                    <a
+            {new Date(job.created_at).toLocaleDateString()}
 
-                      href={`${API}/uploads/${app.resume}`}
+            </td>
 
-                      target="_blank"
+            <td>
 
-                      className="text-blue-600"
+            <span
+            className={`px-3 py-1 rounded-full text-white
+            ${
+            job.status==="Applied"
+            ?"bg-yellow-500"
+            :job.status==="Shortlisted"
+            ?"bg-blue-600"
+            :job.status==="Selected"
+            ?"bg-green-600"
+            :"bg-red-500"
+            }`}
+            >
 
-                    >
+            {job.status}
 
-                      View Resume
+            </span>
 
-                    </a>
+            </td>
 
-                  </td>
+            <td>
 
-                  <td>
+            <button className="bg-blue-500 text-white px-3 py-1 rounded">
+            Shortlist
+            </button>
 
-                    <span className="font-semibold">
+            <button className="bg-green-600 text-white px-3 py-1 rounded ml-2">
+            Select
+            </button>
 
-                      {app.status}
+            <button className="bg-red-500 text-white px-3 py-1 rounded ml-2">
+            Reject
+            </button>
 
-                    </span>
+            </td>
 
-                  </td>
+            </tr>
 
-                  <td>
-
-                    <div className="flex justify-center gap-2">
-
-                      <button
-
-                        onClick={() =>
-                          updateStatus(
-                            app.id,
-                            "Shortlisted"
-                          )
-                        }
-
-                        className="bg-blue-500 text-white px-3 py-2 rounded"
-
-                      >
-
-                        Shortlist
-
-                      </button>
-
-                      <button
-
-                        onClick={() =>
-                          updateStatus(
-                            app.id,
-                            "Selected"
-                          )
-                        }
-
-                        className="bg-green-500 text-white px-3 py-2 rounded"
-
-                      >
-
-                        Select
-
-                      </button>
-
-                      <button
-
-                        onClick={() =>
-                          updateStatus(
-                            app.id,
-                            "Rejected"
-                          )
-                        }
-
-                        className="bg-red-500 text-white px-3 py-2 rounded"
-
-                      >
-
-                        Reject
-
-                      </button>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              ))}
+            ))}
 
             </tbody>
 
