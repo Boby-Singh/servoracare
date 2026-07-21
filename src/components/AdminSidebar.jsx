@@ -35,6 +35,12 @@ function AdminSidebar() {
         </li>
 
         <li>
+          <Link to="/admin/jobs">
+            Recruitment
+          </Link>
+        </li>
+
+        <li>
           <Link to="/admin/add-technician">
             Add Technician
           </Link>

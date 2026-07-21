@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+const API = import.meta.env.VITE_API_URL;
 
 function ApplyJob() {
 
-  const [formData, setFormData] = useState({
-    full_name: "",
-    phone: "",
-    email: "",
-    city: "",
-    position: "",
-    experience: "",
-    aadhaar: "",
-    pan: "",
-  });
+ const [formData, setFormData] = useState({
+  full_name: "",
+  phone: "",
+  email: "",
+  city: "",
+  position: "",
+  experience: "",
+  aadhaar: "",
+  pan: "",
+});
+
+const [resume, setResume] = useState(null);
+const [aadhaarFile, setAadhaarFile] = useState(null);
+const [photo, setPhoto] = useState(null);
 
   const handleChange = (e) => {
 
@@ -23,15 +29,63 @@ function ApplyJob() {
 
   };
 
-  const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
-    console.log(formData);
+  try {
 
-    alert("Application Submitted Successfully!");
+    const data = new FormData();
 
-  };
+    data.append("full_name", formData.full_name);
+    data.append("phone", formData.phone);
+    data.append("email", formData.email);
+    data.append("city", formData.city);
+    data.append("position", formData.position);
+    data.append("experience", formData.experience);
+    data.append("aadhaar", formData.aadhaar);
+    data.append("pan", formData.pan);
+
+    data.append("resume", resume);
+    data.append("aadhaar_file", aadhaarFile);
+    data.append("photo", photo);
+
+    const response = await axios.post(
+      `${API}/api/apply-job`,
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    alert(response.data.message);
+
+    setFormData({
+      full_name: "",
+      phone: "",
+      email: "",
+      city: "",
+      position: "",
+      experience: "",
+      aadhaar: "",
+      pan: "",
+    });
+
+    setResume(null);
+    setAadhaarFile(null);
+    setPhoto(null);
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert("Application Failed");
+
+  }
+
+};
 
   return (
 
@@ -72,6 +126,7 @@ function ApplyJob() {
 
           <form
             onSubmit={handleSubmit}
+            encType="multipart/form-data"
             className="grid md:grid-cols-2 gap-6"
           >
 
@@ -181,10 +236,11 @@ function ApplyJob() {
                 Upload Resume
               </label>
 
-              <input
-                type="file"
-                className="w-full border rounded-xl p-3 mt-2"
-              />
+            <input
+            type="file"
+            className="w-full border rounded-xl p-3 mt-2"
+            onChange={(e) => setResume(e.target.files[0])}
+            />
 
             </div>
 
@@ -197,8 +253,9 @@ function ApplyJob() {
               </label>
 
               <input
-                type="file"
-                className="w-full border rounded-xl p-3 mt-2"
+              type="file"
+              className="w-full border rounded-xl p-3 mt-2"
+              onChange={(e) => setAadhaarFile(e.target.files[0])}
               />
 
             </div>
@@ -212,8 +269,9 @@ function ApplyJob() {
               </label>
 
               <input
-                type="file"
-                className="w-full border rounded-xl p-3 mt-2"
+              type="file"
+              className="w-full border rounded-xl p-3 mt-2"
+              onChange={(e) => setPhoto(e.target.files[0])}
               />
 
             </div>

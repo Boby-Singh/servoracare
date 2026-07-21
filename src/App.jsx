@@ -16,6 +16,7 @@ import TechnicianDashboard from "./pages/TechnicianDashboard"
 import AdminRoute from "./components/AdminRoute"
 import Customers from "./pages/admin/Customers"
 import Technicians from "./pages/admin/Technicians"
+import AdminJobs from "./pages/AdminJobs";
 import AddTechnician from "./pages/admin/AddTechnician"
 function App() {
   return (
@@ -111,6 +112,11 @@ function App() {
               <Technicians />
             </AdminRoute>
           }
+        />
+
+        <Route
+          path="/admin/jobs"
+          element={<AdminJobs />}
         />
 
         <Route
