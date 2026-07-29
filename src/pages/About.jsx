@@ -164,66 +164,191 @@ function About() {
 
       </div>
 
-      {/* Founder Section */}
-      <div className="max-w-7xl mx-auto px-8 mt-20">
+{/* ================= Founder Section ================= */}
 
-        {/* Keep your founder section here */}
+<section className="max-w-7xl mx-auto px-8 py-24">
 
-      </div>
+  <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-      {/* Core Values */}
-      <div className="max-w-7xl mx-auto px-8 mt-20">
+    {/* Founder Image */}
 
-          <img
-              src={profilePhoto}
-              alt="Founder"
-              className="w-[320px] h-[420px] object-cover rounded-lg shadow-2xl"
-          />
-          <div className="p-6 text-center">
+    <div className="flex justify-center">
 
-              <h2 className="text-2xl font-bold text-blue-900">
-                  Boby Singh
-              </h2>
+      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden w-[360px]">
 
-              <p className="text-orange-500 font-semibold mt-2">
-                  Founder & CEO
-              </p>
+        <img
+          src={profilePhoto}
+          alt="Founder"
+          className="w-full h-[480px] object-cover"
+        />
 
-          </div>
-           <div className="md:col-span-2">
+        <div className="bg-blue-900 text-white text-center py-6">
 
-              <h2 className="text-4xl font-bold text-blue-900 mb-6">
-                  Message From Our Founder
-              </h2>
+          <h3 className="text-3xl font-bold">
+            Boby Singh
+          </h3>
 
-              <p className="text-gray-700 text-lg leading-8">
+          <p className="text-orange-300 mt-2 text-lg">
+            Founder & CEO
+          </p>
 
-                  At ServoraCare, our vision is to redefine how
-                  households access trusted professional services.
-                  We believe every family deserves safe, affordable,
-                  and reliable home solutions delivered with complete
-                  transparency.
-
-              </p>
-
-              <p className="mt-6 text-gray-700 text-lg leading-8">
-
-                  Our goal is to empower skilled technicians with
-                  digital opportunities while ensuring customers
-                  receive exceptional service quality every time.
-
-              </p>
-
-          </div>
+        </div>
 
       </div>
 
-      {/* CTA */}
-      <div className="max-w-7xl mx-auto px-8 mt-20 mb-20">
+    </div>
 
-        {/* Keep your CTA here */}
+    {/* Founder Message */}
+
+    <div>
+
+      <span className="uppercase tracking-widest text-orange-500 font-semibold">
+        Leadership
+      </span>
+
+      <h2 className="text-5xl font-bold text-blue-900 mt-3 mb-8">
+        Message From Our Founder
+      </h2>
+
+      <p className="text-gray-700 text-lg leading-9">
+
+        ServoraCare was founded with a simple vision—to make
+        trusted home services easily accessible for every family.
+        We believe customers deserve professional service,
+        transparent pricing and complete peace of mind.
+
+      </p>
+
+      <p className="mt-8 text-gray-700 text-lg leading-9">
+
+        By combining technology with skilled professionals,
+        we are creating a platform where homeowners receive
+        dependable services while technicians gain meaningful
+        employment opportunities.
+
+      </p>
+
+      <p className="mt-8 text-gray-700 text-lg leading-9">
+
+        Our commitment is to build one of India's most trusted
+        home service brands through innovation, integrity,
+        customer satisfaction and operational excellence.
+
+      </p>
+
+      <div className="mt-10">
+
+        <h4 className="text-2xl font-bold text-blue-900">
+          Boby Singh
+        </h4>
+
+        <p className="text-orange-500 font-semibold">
+          Founder & CEO
+        </p>
 
       </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+{/* ================= Core Values ================= */}
+
+<section className="bg-gray-50 py-24">
+
+  <div className="max-w-7xl mx-auto px-8">
+
+    <h2 className="text-5xl font-bold text-center text-blue-900">
+      Our Core Values
+    </h2>
+
+    <p className="text-center text-gray-600 mt-5 max-w-3xl mx-auto text-lg">
+      The principles that guide every decision and every
+      service we deliver.
+    </p>
+
+    <div className="grid md:grid-cols-4 gap-8 mt-16">
+
+      <div className="bg-white rounded-2xl shadow-lg p-10 text-center hover:-translate-y-2 transition">
+
+        <h3 className="text-2xl font-bold text-blue-900">
+          Trust
+        </h3>
+
+        <p className="mt-4 text-gray-600">
+          Verified professionals with complete transparency.
+        </p>
+
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-10 text-center hover:-translate-y-2 transition">
+
+        <h3 className="text-2xl font-bold text-blue-900">
+          Quality
+        </h3>
+
+        <p className="mt-4 text-gray-600">
+          Consistent service standards and customer satisfaction.
+        </p>
+
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-10 text-center hover:-translate-y-2 transition">
+
+        <h3 className="text-2xl font-bold text-blue-900">
+          Innovation
+        </h3>
+
+        <p className="mt-4 text-gray-600">
+          Technology-driven solutions for modern households.
+        </p>
+
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-10 text-center hover:-translate-y-2 transition">
+
+        <h3 className="text-2xl font-bold text-blue-900">
+          Integrity
+        </h3>
+
+        <p className="mt-4 text-gray-600">
+          Honest pricing, ethical practices and accountability.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+{/* ================= CTA ================= */}
+
+<section className="bg-blue-900 text-white py-24">
+
+  <div className="max-w-5xl mx-auto text-center px-8">
+
+    <h2 className="text-5xl font-bold">
+      Ready to Experience Professional Home Services?
+    </h2>
+
+    <p className="mt-6 text-xl text-blue-100">
+      Book trusted professionals with ServoraCare and enjoy
+      reliable, safe and hassle-free home services.
+    </p>
+
+    <button className="mt-10 bg-orange-500 hover:bg-orange-600 px-10 py-4 rounded-xl text-xl font-semibold transition">
+
+      Book a Service
+
+    </button>
+
+  </div>
+
+</section>
 
     </div>
   );
