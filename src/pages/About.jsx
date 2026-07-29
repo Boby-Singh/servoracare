@@ -1,7 +1,9 @@
 import profilePhoto from "../assets/profile.jpg";
 import heroImage from "../assets/page.png"; 
 import StoryImage from "../assets/Story.jfif"
+import { useNavigate } from "react-router-dom";
 function About() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-white">
 
@@ -329,10 +331,11 @@ function About() {
       reliable, safe and hassle-free home services.
     </p>
 
-    <button className="mt-10 bg-orange-500 hover:bg-orange-600 px-10 py-4 rounded-xl text-xl font-semibold transition">
-
+    <button
+      onClick={() => navigate("/book-service")}
+      className="mt-10 bg-orange-500 hover:bg-orange-600 px-10 py-4 rounded-xl text-xl font-semibold transition"
+    >
       Book a Service
-
     </button>
 
   </div>
