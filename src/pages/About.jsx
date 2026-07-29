@@ -129,7 +129,7 @@ function About() {
         <img
             src={profilePhoto}
             alt="Founder"
-            className="w-60 h-60 rounded-full mx-auto object-cover shadow-xl border-8 border-blue-100"
+            className="w-64 h-64 mx-auto object-cover rounded-xl shadow-2xl border-4 border-white"
         />
 
         <h2 className="text-3xl font-bold mt-6">
