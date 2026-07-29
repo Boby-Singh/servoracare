@@ -73,31 +73,31 @@ function Navbar() {
 
           <Link to="/">
             <li className="hover:text-orange-400 transition">
-              Home
+              HOME
             </li>
           </Link>
 
           <Link to="/services">
             <li className="hover:text-orange-400 transition">
-              Services
+              SERVICES
             </li>
           </Link>
 
           <Link to="/careers">
             <li className="hover:text-orange-400 transition">
-              Careers
+              CAREERS
             </li>
           </Link>
 
           <Link to="/about">
             <li className="hover:text-orange-400 transition">
-              About
+              ABOUT US
             </li>
           </Link>
 
           <Link to="/contact">
             <li className="hover:text-orange-400 transition">
-              Contact
+              CONTACT US
             </li>
           </Link>
 
@@ -144,7 +144,7 @@ function Navbar() {
 
               <Link to={getDashboardLink()}>
                 <button className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-blue-900 transition">
-                  Dashboard
+                  DASHBOARD
                 </button>
               </Link>
 
@@ -154,7 +154,7 @@ function Navbar() {
                 onClick={handleLogout}
                 className="bg-red-500 px-5 py-2 rounded-lg hover:bg-red-600 transition"
               >
-                Logout
+                LOG OUT
               </button>
 
             </>
@@ -189,7 +189,7 @@ function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <li className="hover:text-orange-400">
-                Home
+                HOME
               </li>
             </Link>
 
@@ -198,7 +198,7 @@ function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <li className="hover:text-orange-400">
-                Services
+                SERVICES
               </li>
             </Link>
 
@@ -207,7 +207,7 @@ function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <li className="hover:text-orange-400">
-                Careers
+                CAREERS
               </li>
             </Link>
 
@@ -216,7 +216,7 @@ function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <li className="hover:text-orange-400">
-                About
+                ABOUT US
               </li>
             </Link>
 
@@ -225,7 +225,7 @@ function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <li className="hover:text-orange-400">
-                Contact
+                CONTACT US
               </li>
             </Link>
 
@@ -246,7 +246,7 @@ function Navbar() {
               >
 
                 <button className="border border-white px-5 py-2 rounded-lg w-full hover:bg-white hover:text-blue-900 transition">
-                  Login
+                  LOGIN
                 </button>
 
               </Link>
@@ -275,7 +275,7 @@ function Navbar() {
                 >
 
                   <button className="border border-white px-5 py-2 rounded-lg w-full hover:bg-white hover:text-blue-900 transition">
-                    Dashboard
+                    DASHBOARD
                   </button>
 
                 </Link>
@@ -284,7 +284,7 @@ function Navbar() {
                   onClick={handleLogout}
                   className="bg-red-500 px-5 py-2 rounded-lg w-full hover:bg-red-600 transition"
                 >
-                  Logout
+                  LOGOUT
                 </button>
 
               </>
