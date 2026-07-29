@@ -236,18 +236,6 @@ function About() {
 
       </p>
 
-      <div className="mt-10">
-
-        <h4 className="text-2xl font-bold text-blue-900">
-          Boby Singh
-        </h4>
-
-        <p className="text-orange-500 font-semibold">
-          Founder & CEO
-        </p>
-
-      </div>
-
     </div>
 
   </div>
