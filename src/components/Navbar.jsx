@@ -107,12 +107,6 @@ function Navbar() {
 
         <div className="hidden md:flex items-center gap-4">
 
-          <Link to="/book-service">
-            <button className="bg-orange-500 px-5 py-2 rounded-lg hover:bg-orange-600 transition">
-              BOOK NOW
-            </button>
-          </Link>
-
           {!user ? (
 
             <Link to="/login">
@@ -227,15 +221,6 @@ function Navbar() {
               <li className="hover:text-orange-400">
                 CONTACT US
               </li>
-            </Link>
-
-            <Link
-              to="/book-service"
-              onClick={() => setMenuOpen(false)}
-            >
-              <button className="bg-orange-500 px-5 py-2 rounded-lg w-full hover:bg-orange-600 transition">
-                BOOK NOW
-              </button>
             </Link>
 
             {!user ? (
