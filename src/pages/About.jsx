@@ -1,6 +1,6 @@
 import profilePhoto from "../assets/profile.jpg";
 import heroImage from "../assets/page.png"; 
-
+import StoryImage from "../assets/Story.jfif"
 function About() {
   return (
     <div className="min-h-screen bg-white">
@@ -92,7 +92,7 @@ function About() {
             <div>
 
               <img
-                src="/about-story.jpg"
+                src={StoryImage}
                 className="rounded-3xl shadow-2xl"
                 alt="Our Story"
               />
