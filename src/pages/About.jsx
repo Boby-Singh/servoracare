@@ -1,4 +1,5 @@
 import profilePhoto from "../assets/profile.jpg";
+import heroImage from "../assets/page.png"; 
 
 function About() {
   return (
@@ -70,7 +71,7 @@ function About() {
           <div>
 
             <img
-              src="/home-service.jpg"
+              src={heroImage}
               className="rounded-3xl shadow-xl"
               alt="Home Service"
             />
