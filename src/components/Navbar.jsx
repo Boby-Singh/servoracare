@@ -109,7 +109,7 @@ function Navbar() {
 
           <Link to="/book-service">
             <button className="bg-orange-500 px-5 py-2 rounded-lg hover:bg-orange-600 transition">
-              Book Now
+              BOOK NOW
             </button>
           </Link>
 
@@ -234,7 +234,7 @@ function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <button className="bg-orange-500 px-5 py-2 rounded-lg w-full hover:bg-orange-600 transition">
-                Book Now
+                BOOK NOW
               </button>
             </Link>
 

@@ -85,46 +85,7 @@ function About() {
           </div>
 
         </div>
-         {/* Statistics */}
-        <div className="grid md:grid-cols-4 gap-6 mb-10">
-
-          <div className="bg-white p-8 rounded-3xl shadow-lg text-center">
-            <h2 className="text-4xl font-bold text-blue-900">
-              100+
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Customers
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-lg text-center">
-            <h2 className="text-4xl font-bold text-blue-900">
-              150+
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Services Completed
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-lg text-center">
-            <h2 className="text-4xl font-bold text-blue-900">
-              25+
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Technicians
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-lg text-center">
-            <h2 className="text-4xl font-bold text-blue-900">
-              5+
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Cities Covered
-            </p>
-          </div>
-
-        </div>
+         
 
       </div>
 
