@@ -124,24 +124,27 @@ function About() {
 
       <div className="grid md:grid-cols-3 gap-10 items-center mt-20">
 
-    <div className="text-center">
+    <div className="bg-white shadow-2xl rounded-2xl overflow-hidden w-80 mx-auto">
 
-        <img
-            src={profilePhoto}
-            alt="Founder"
-            className="w-64 h-64 mx-auto object-cover rounded-xl shadow-2xl border-4 border-white"
-        />
+          <img
+              src={profilePhoto}
+              alt="Founder"
+              className="w-full h-[420px] object-cover"
+          />
 
-        <h2 className="text-3xl font-bold mt-6">
-            Boby Singh
-        </h2>
+          <div className="p-6 text-center">
 
-        <p className="text-orange-500 font-semibold">
-            Founder & CEO
-        </p>
+              <h2 className="text-2xl font-bold text-blue-900">
+                  Boby Singh
+              </h2>
 
-    </div>
+              <p className="text-orange-500 font-semibold mt-2">
+                  Founder & CEO
+              </p>
 
+          </div>
+
+      </div>
     <div className="md:col-span-2">
 
         <h2 className="text-4xl font-bold text-blue-900 mb-6">
