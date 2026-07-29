@@ -1,18 +1,62 @@
 import profilePhoto from "../assets/profile.jpg";
 function About() {
   return (
-    <div className="min-h-screen bg-gray-100 py-16 px-6">
+    <div className="min-h-screen bg-white">
 
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-lg p-10">
+      {/* Hero Section */}
 
-        <h1 className="text-5xl font-extrabold text-blue-900 text-center">
-          About ServoraCare
-        </h1>
+      <section
+        className="relative h-[600px] bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/about-banner.jpg')",
+        }}
+      >
 
-        <p className="text-xl text-gray-600 text-center mt-4 max-w-3xl mx-auto">
-          Transforming home services through trusted professionals,
-          technology, and customer-first experiences across India.
-        </p>
+        <div className="absolute inset-0 bg-blue-950/70"></div>
+
+        <div className="relative z-10 flex items-center h-full">
+
+          <div className="max-w-7xl mx-auto px-8">
+
+            <span className="bg-orange-500 text-white px-6 py-2 rounded-full uppercase tracking-widest text-sm font-semibold">
+
+              ABOUT SERVORACARE
+
+            </span>
+
+            <h1 className="text-6xl md:text-7xl font-extrabold text-white mt-8 leading-tight">
+
+              Building India's
+              <br />
+
+              Trusted Home
+              <span className="text-orange-400">
+                {" "}Service Platform
+              </span>
+
+            </h1>
+
+            <p className="text-xl text-gray-200 mt-8 max-w-3xl leading-9">
+
+              ServoraCare connects homeowners with trusted,
+              verified and skilled professionals using
+              technology, transparency and exceptional service.
+
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* Main Content */}
+
+    
+    <div className="max-w-7xl mx-auto px-8 py-24">
+
+
+        
 
         <div className="mt-14 grid md:grid-cols-2 gap-12 items-center">
 
@@ -50,36 +94,58 @@ function About() {
 
     </div>
 
-        <div className="space-y-5 text-gray-700 text-lg leading-relaxed">
+        <section className="mt-24">
 
-          <p>
-            Hello, I'm Boby Singh, the founder of ServoraCare.
-            My vision is to simplify home services by connecting
-            customers with trusted and verified professionals.
-          </p>
+<h2 className="text-5xl font-bold text-blue-900 mb-10 text-center">
 
-          <p>
-            Through ServoraCare, we aim to provide reliable
-            services such as electrical work, plumbing,
-            AC repair, CCTV installation, appliance maintenance,
-            and many more—all through a simple and transparent
-            booking platform.
-          </p>
+Our Story
 
-          <p>
-            As an engineering professional with experience in
-            operations, maintenance, technology, and process
-            improvement, I believe technology can solve everyday
-            service challenges and improve customer experiences.
-          </p>
+</h2>
 
-          <p>
-            Our mission is to create a trusted ecosystem where
-            customers receive quality service and skilled
-            technicians gain better opportunities to grow.
-          </p>
+<div className="grid lg:grid-cols-2 gap-14 items-center">
 
-        </div>
+<div>
+
+<img
+src="/about-story.jpg"
+className="rounded-3xl shadow-2xl"
+alt=""
+/>
+
+</div>
+
+<div>
+
+<p className="text-gray-700 text-lg leading-9">
+
+ServoraCare was founded with one simple belief —
+finding reliable home service professionals should
+be easy, transparent and stress-free.
+
+</p>
+
+<p className="mt-8 text-gray-700 text-lg leading-9">
+
+Our platform connects verified technicians with
+customers through a seamless digital experience,
+ensuring quality, safety and trust in every service.
+
+</p>
+
+<p className="mt-8 text-gray-700 text-lg leading-9">
+
+From electrical work and plumbing to AC repair,
+CCTV installation and appliance servicing,
+ServoraCare aims to become India's most trusted
+technology-driven home service company.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
         {/* Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-8 mb-10">
 
