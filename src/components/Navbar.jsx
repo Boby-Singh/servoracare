@@ -117,7 +117,7 @@ function Navbar() {
 
             <Link to="/login">
               <button className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-blue-900 transition">
-                Login
+                LOGIN
               </button>
             </Link>
 
