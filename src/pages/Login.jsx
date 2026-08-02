@@ -35,9 +35,32 @@ function Login() {
     newErrors.email = "Enter a valid email";
   }
 
-  if (!formData.password) {
-    newErrors.password = "Password is required";
-  }
+const password = formData.password;
+
+if (!password) {
+  newErrors.password = "Password is required";
+} else if (password.length < 8) {
+  newErrors.password =
+    "Password must be at least 8 characters";
+} else if (password.length > 20) {
+  newErrors.password =
+    "Password cannot exceed 20 characters";
+} else if (/\s/.test(password)) {
+  newErrors.password =
+    "Password cannot contain spaces";
+} else if (!/(?=.*[A-Z])/.test(password)) {
+  newErrors.password =
+    "Include at least one uppercase letter";
+} else if (!/(?=.*[a-z])/.test(password)) {
+  newErrors.password =
+    "Include at least one lowercase letter";
+} else if (!/(?=.*\d)/.test(password)) {
+  newErrors.password =
+    "Include at least one number";
+} else if (!/(?=.*[@$!%*?&])/.test(password)) {
+  newErrors.password =
+    "Include at least one special character (@$!%*?&)";
+}
 
   setErrors(newErrors);
 
