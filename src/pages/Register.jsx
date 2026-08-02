@@ -43,7 +43,7 @@ const validateForm = () => {
     newErrors.email = "Email is required";
   } else if (!emailRegex.test(email)) {
     newErrors.email = "Enter a valid email";
-  } else if (email.length > 80) {
+  } else if (email.length > 100) {
     newErrors.email = "Email is too long";
   }
 
