@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef  } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 const API = import.meta.env.VITE_API_URL;
@@ -20,31 +20,49 @@ const [resume, setResume] = useState(null);
 const [aadhaarFile, setAadhaarFile] = useState(null);
 const [photo, setPhoto] = useState(null);
 
-  const handleChange = (e) => {
+const [errors, setErrors] = useState({});
+const [message, setMessage] = useState("");
+const [messageType, setMessageType] = useState("");
+const [loading, setLoading] = useState(false);
 
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+const resumeRef = useRef(null);
+const aadhaarRef = useRef(null);
+const photoRef = useRef(null);
 
-  };
+const handleChange = (e) => {
+
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+
+  setErrors({
+    ...errors,
+    [e.target.name]: "",
+  });
+
+  setMessage("");
+
+};
 
 const handleSubmit = async (e) => {
 
   e.preventDefault();
+  if (!validateForm()) return;
+  setLoading(true);
 
   try {
 
     const data = new FormData();
 
-    data.append("full_name", formData.full_name);
-    data.append("phone", formData.phone);
-    data.append("email", formData.email);
-    data.append("city", formData.city);
+    data.append("full_name", formData.full_name.trim());
+    data.append("phone", formData.phone.trim());
+    data.append("email", formData.email.trim().toLowerCase());
+    data.append("city", formData.city.trim());
     data.append("position", formData.position);
     data.append("experience", formData.experience);
     data.append("aadhaar", formData.aadhaar);
-    data.append("pan", formData.pan);
+    data.append("pan", formData.pan.toUpperCase());
 
     data.append("resume", resume);
     data.append("aadhaar_file", aadhaarFile);
@@ -60,7 +78,8 @@ const handleSubmit = async (e) => {
       }
     );
 
-    alert(response.data.message);
+    setMessage(response.data.message);
+    setMessageType("success");
 
     setFormData({
       full_name: "",
@@ -77,14 +96,143 @@ const handleSubmit = async (e) => {
     setAadhaarFile(null);
     setPhoto(null);
 
+    resumeRef.current.value = "";
+    aadhaarRef.current.value = "";
+    photoRef.current.value = "";
+
   } catch (error) {
 
-    console.log(error);
+    setMessage(
+    error.response?.data?.message ||
+    "Application Failed"
+    );
 
-    alert("Application Failed");
+    setMessageType("error");
+
+  }
+  finally{
+    setLoading(false);
+  }
+
+};
+
+const validateForm = () => {
+
+  let newErrors = {};
+  
+
+  // Full Name
+  if (!formData.full_name.trim()) {
+    newErrors.full_name = "Full Name is required";
+  } else if (formData.full_name.trim().length < 3) {
+    newErrors.full_name = "Enter a valid name";
+  } else if (formData.full_name.length > 50) {
+    newErrors.full_name = "Maximum 50 characters allowed";
+  }
+
+  // Phone
+  if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+    newErrors.phone = "Enter a valid 10 digit mobile number";
+  }
+
+  if (!formData.position) {
+    newErrors.position = "Please select a position";
+  }
+
+  if (!formData.experience) {
+    newErrors.experience = "Please select experience";
+  }
+
+  // Email
+  if (
+    formData.email &&
+    !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formData.email)
+  ) {
+    newErrors.email = "Enter a valid email";
+  }
+
+  // City
+  if (!formData.city.trim()) {
+    newErrors.city = "City is required";
+  }
+
+  // Aadhaar
+  if (!/^\d{12}$/.test(formData.aadhaar)) {
+    newErrors.aadhaar = "Enter valid 12 digit Aadhaar";
+  }
+
+  // PAN
+  if (
+    formData.pan &&
+    !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.pan.toUpperCase())
+  ) {
+    newErrors.pan = "Invalid PAN Number";
+  }
+
+  // Resume
+  if (!resume) {
+    newErrors.resume = "Resume is required";
+  } else {
+
+    // Check file type
+    if (resume.type !== "application/pdf") {
+      newErrors.resume = "Resume must be in PDF format";
+    }
+
+    // Check file size (Maximum 2MB)
+    if (resume.size > 2 * 1024 * 1024) {
+      newErrors.resume = "Resume size must be less than 2MB";
+    }
 
   }
 
+if (!aadhaarFile) {
+  newErrors.aadhaarFile = "Aadhaar file is required";
+} else {
+
+  const allowedTypes = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png"
+  ];
+
+  if (!allowedTypes.includes(aadhaarFile.type)) {
+    newErrors.aadhaarFile =
+      "Upload PDF, JPG or PNG only";
+  }
+
+  if (aadhaarFile.size > 2 * 1024 * 1024) {
+    newErrors.aadhaarFile =
+      "Maximum file size is 2MB";
+  }
+
+}
+
+if (!photo) {
+  newErrors.photo = "Photo is required";
+} else {
+
+  const allowedImageTypes = [
+    "image/jpeg",
+    "image/png"
+  ];
+
+  if (!allowedImageTypes.includes(photo.type)) {
+    newErrors.photo =
+      "Only JPG or PNG images are allowed";
+  }
+
+  if (photo.size > 2 * 1024 * 1024) {
+    newErrors.photo =
+      "Photo size must be less than 2MB";
+  }
+
+}
+
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
 };
 
   return (
@@ -137,18 +285,41 @@ const handleSubmit = async (e) => {
               value={formData.full_name}
               onChange={handleChange}
               className="border rounded-xl p-4"
+              autoComplete="name"
               required
             />
+            {errors.full_name && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.full_name}
+              </p>
+            )}
 
             <input
               type="tel"
               name="phone"
               placeholder="Phone Number"
+              autoComplete="tel"
               value={formData.phone}
-              onChange={handleChange}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  phone: e.target.value.replace(/\D/g, ""),
+                });
+
+                setErrors({
+                  ...errors,
+                  phone: "",
+                });
+              }}
               className="border rounded-xl p-4"
+              maxLength={10}
               required
             />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.phone}
+              </p>
+            )}
 
             <input
               type="email"
@@ -157,7 +328,14 @@ const handleSubmit = async (e) => {
               value={formData.email}
               onChange={handleChange}
               className="border rounded-xl p-4"
+              autoComplete="email"
+              required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email}
+              </p>
+            )}
 
             <input
               type="text"
@@ -168,6 +346,11 @@ const handleSubmit = async (e) => {
               className="border rounded-xl p-4"
               required
             />
+            {errors.city && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.city}
+              </p>
+            )}
 
             <select
               name="position"
@@ -189,6 +372,11 @@ const handleSubmit = async (e) => {
               <option>Cleaning Executive</option>
 
             </select>
+            {errors.position && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.position}
+                </p>
+              )}
 
             <select
               name="experience"
@@ -208,25 +396,64 @@ const handleSubmit = async (e) => {
               <option>5+ Years</option>
 
             </select>
+            {errors.experience && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.experience}
+                </p>
+              )}
 
             <input
               type="text"
               name="aadhaar"
               placeholder="Aadhaar Number"
+              maxLength={12}
               value={formData.aadhaar}
-              onChange={handleChange}
+             onChange={(e) => {
+              setFormData({
+                ...formData,
+                aadhaar: e.target.value.replace(/\D/g, ""),
+              });
+
+              setErrors({
+                ...errors,
+                aadhaar: "",
+              });
+            }}
               className="border rounded-xl p-4"
               required
             />
+            {errors.aadhaar && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.aadhaar}
+              </p>
+            )}
 
             <input
               type="text"
               name="pan"
               placeholder="PAN Number"
               value={formData.pan}
-              onChange={handleChange}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  pan: e.target.value.toUpperCase(),
+                });
+
+                setErrors({
+                  ...errors,
+                  pan: "",
+                });
+              }}
               className="border rounded-xl p-4"
+              maxLength={10}
+              style={{textTransform:"uppercase"}}
+              required
             />
+            {errors.pan && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.pan}
+              </p>
+            )}
 
             {/* Resume */}
 
@@ -238,9 +465,24 @@ const handleSubmit = async (e) => {
 
             <input
             type="file"
+            ref={resumeRef}
             className="w-full border rounded-xl p-3 mt-2"
-            onChange={(e) => setResume(e.target.files[0])}
+            onChange={(e) => {
+              setResume(e.target.files[0]);
+
+              setErrors({
+                ...errors,
+                resume: "",
+              });
+            }}
+            accept=".pdf"
+            required
             />
+            {errors.resume && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.resume}
+              </p>
+            )}
 
             </div>
 
@@ -254,9 +496,24 @@ const handleSubmit = async (e) => {
 
               <input
               type="file"
+              ref={aadhaarRef}
               className="w-full border rounded-xl p-3 mt-2"
-              onChange={(e) => setAadhaarFile(e.target.files[0])}
+              onChange={(e) => {
+                setAadhaarFile(e.target.files[0]);
+
+                setErrors({
+                  ...errors,
+                  aadhaarFile: "",
+                });
+              }}
+              accept=".pdf,.jpg,.jpeg,.png"
+              required
               />
+              {errors.aadhaarFile && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.aadhaarFile}
+                </p>
+              )}
 
             </div>
 
@@ -270,19 +527,61 @@ const handleSubmit = async (e) => {
 
               <input
               type="file"
+              ref={photoRef}
               className="w-full border rounded-xl p-3 mt-2"
-              onChange={(e) => setPhoto(e.target.files[0])}
+              onChange={(e) => {
+                setPhoto(e.target.files[0]);
+
+                setErrors({
+                  ...errors,
+                  photo: "",
+                });
+              }}
+              accept=".jpg,.jpeg,.png"
+              required
               />
+              {errors.photo && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.photo}
+                </p>
+              )}
 
             </div>
 
             <div className="md:col-span-2">
 
               <button
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl text-lg font-semibold transition"
+              type="submit"
+              disabled={loading}
+              className={`w-full py-4 rounded-xl text-white
+              ${
+              loading
+              ?
+              "bg-gray-400 cursor-not-allowed"
+              :
+              "bg-orange-500 hover:bg-orange-600"
+              }`}
               >
-                Submit Application
+
+              {loading
+              ?
+              "Submitting..."
+              :
+              "Submit Application"}
+
               </button>
+
+              {message && (
+                <div
+                  className={`p-3 rounded-lg text-center font-medium ${
+                    messageType === "success"
+                      ? "bg-green-100 text-green-700 border border-green-300"
+                      : "bg-red-100 text-red-700 border border-red-300"
+                  }`}
+                >
+                  {message}
+                </div>
+              )}
 
             </div>
 
