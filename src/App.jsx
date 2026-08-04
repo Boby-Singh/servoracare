@@ -116,7 +116,7 @@ function App() {
         />
 
         <Route
-        path="/admin/AllBookings"
+        path="/admin/all-bookings"
         element={
           <AdminRoute>
             <AllBookings/>
