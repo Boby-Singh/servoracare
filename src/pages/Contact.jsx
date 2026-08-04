@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -61,6 +62,72 @@ ${formData.message}`
 
 
   return (
+    <>
+     <Helmet>
+
+      <title>
+        Contact ServoraCare | Home Service Support
+      </title>
+
+      <meta
+        name="description"
+        content="Contact ServoraCare for trusted home services including electrician, plumbing, AC repair, CCTV installation, painting and cleaning support."
+      />
+
+      <meta
+        name="keywords"
+        content="ServoraCare contact, home service support, electrician contact, plumber contact, AC repair support"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/contact"
+      />
+
+
+      {/* Open Graph */}
+      <meta
+        property="og:title"
+        content="Contact ServoraCare"
+      />
+
+      <meta
+        property="og:description"
+        content="Get in touch with ServoraCare for reliable home service solutions."
+      />
+
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/contact"
+      />
+
+      <meta
+        property="og:type"
+        content="website"
+      />
+
+
+      {/* Local Business Schema */}
+      <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "ServoraCare",
+        "url": "https://servoracare.vercel.app",
+        "telephone": "+91-7828908522",
+        "email": "support@servoracare.in",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Morena",
+          "addressRegion": "Madhya Pradesh",
+          "addressCountry": "India"
+        },
+        "openingHours": "Mo-Su 08:00-20:00"
+      })}
+      </script>
+
+    </Helmet>
+
     <div className="min-h-screen bg-gray-100">
 
        <div className="mb-8">
@@ -331,6 +398,7 @@ ${formData.message}`
       </div>
 
     </div>
+    </>
   )
 }
 

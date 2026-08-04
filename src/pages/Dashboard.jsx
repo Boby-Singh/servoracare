@@ -3,6 +3,7 @@ import axios from "axios"
 const API = import.meta.env.VITE_API_URL;
 import { Link, useNavigate } from "react-router-dom"
 import QRCode from "react-qr-code";
+import { Helmet } from "react-helmet-async";
 
 function Dashboard() {
 
@@ -96,6 +97,53 @@ const makePayment = async (bookingId, amount) => {
 };
 
   return (
+    <>
+    <Helmet>
+
+      <title>
+        Customer Dashboard | ServoraCare
+      </title>
+
+      <meta name="robots" content="noindex,nofollow" />
+
+      <meta
+        name="description"
+        content="Manage your ServoraCare bookings, track service status, assigned technicians and make secure payments."
+      />
+
+      <meta
+        name="keywords"
+        content="ServoraCare dashboard, booking history, home service tracking, technician details, online payment"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/dashboard"
+      />
+
+
+      {/* Open Graph */}
+      <meta
+        property="og:title"
+        content="ServoraCare Customer Dashboard"
+      />
+
+      <meta
+        property="og:description"
+        content="Track your home service bookings and payments with ServoraCare."
+      />
+
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/dashboard"
+      />
+
+      <meta
+        property="og:type"
+        content="website"
+      />
+
+    </Helmet>
 
     <div className="min-h-screen bg-gray-100 p-10">
 
@@ -337,7 +385,7 @@ const makePayment = async (bookingId, amount) => {
 
             <button
               onClick={() => {
-                navigator.clipboard.writeText("7822@axl");
+                navigator.clipboard.writeText("7828908522@axl");
                 alert("UPI ID Copied");
               }}
               className="text-blue-600 font-semibold"
@@ -364,6 +412,7 @@ const makePayment = async (bookingId, amount) => {
 }
 
     </div>
+    </>
 
   )
 }

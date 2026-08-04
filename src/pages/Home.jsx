@@ -7,6 +7,7 @@ import CTA from "../components/CTA"
 import Footer from "../components/Footer"
 import ChatBot from "../components/ChatBot"
 
+
 function Home() {
 
   return (

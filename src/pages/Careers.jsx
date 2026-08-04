@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   Briefcase,
   Users,
@@ -57,6 +58,66 @@ function Careers() {
   ];
 
   return (
+    <>
+    <Helmet>
+
+      <title>
+        Careers at ServoraCare | Join Our Professional Team
+      </title>
+
+      <meta
+        name="description"
+        content="Join ServoraCare as an electrician, plumber, AC technician, CCTV technician, painter or cleaning executive. Build your career with India's growing home service platform."
+      />
+
+      <meta
+        name="keywords"
+        content="ServoraCare careers, electrician jobs, plumber jobs, AC technician jobs, home service jobs, technician jobs India"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/careers"
+      />
+
+
+      {/* Open Graph */}
+      <meta
+        property="og:title"
+        content="Careers at ServoraCare"
+      />
+
+      <meta
+        property="og:description"
+        content="Become part of ServoraCare's professional home service network."
+      />
+
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/careers"
+      />
+
+      <meta
+        property="og:type"
+        content="website"
+      />
+
+
+      {/* Job Organization Schema */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "ServoraCare",
+          "url": "https://servoracare.vercel.app",
+          "description":
+            "Technology-driven home service platform connecting customers with skilled professionals.",
+          "department": "Careers"
+        })}
+      </script>
+
+    </Helmet>
+
     <div className="bg-gray-100 min-h-screen">
 
       {/* Breadcrumb */}
@@ -281,6 +342,7 @@ function Careers() {
       </section>
 
     </div>
+    </>
   );
 }
 

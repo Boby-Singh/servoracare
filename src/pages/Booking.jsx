@@ -3,6 +3,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useLocation } from "react-router-dom"
 const API = import.meta.env.VITE_API_URL;
+import { Helmet } from "react-helmet-async";
 function Booking() {
 
   const visitingCharges = {
@@ -87,11 +88,11 @@ const validateForm = () => {
 
     e.preventDefault()
     if (!validateForm()) return;
-    setLoading(true);
+    
 
     // User not logged in
     if (!user) {
-
+      setLoading(true);
       navigate("/login", {
       state: {
       from: "/booking",
@@ -152,6 +153,50 @@ const validateForm = () => {
   }
 
   return (
+    <>
+    <Helmet>
+
+      <title>
+        Book Home Services Online | ServoraCare
+      </title>
+
+      <meta
+        name="description"
+        content="Book trusted home services including electrician, plumber, AC repair, CCTV installation, painting and cleaning services with ServoraCare."
+      />
+
+      <meta
+        name="keywords"
+        content="book electrician, plumber near me, AC repair service, home cleaning, CCTV installation, ServoraCare booking"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/booking"
+      />
+
+      {/* Open Graph */}
+      <meta
+        property="og:title"
+        content="Book Home Services | ServoraCare"
+      />
+
+      <meta
+        property="og:description"
+        content="Schedule reliable and verified home services through ServoraCare."
+      />
+
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/booking"
+      />
+
+      <meta
+        property="og:type"
+        content="website"
+      />
+
+    </Helmet>
 
     <div className="min-h-screen p-10 bg-gray-100">
 
@@ -317,6 +362,7 @@ const validateForm = () => {
       </div>
 
     </div>
+    </>
 
   )
 

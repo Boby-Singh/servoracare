@@ -2,6 +2,7 @@ import { useState, useRef  } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 const API = import.meta.env.VITE_API_URL;
+import { Helmet } from "react-helmet-async";
 
 function ApplyJob() {
 
@@ -236,6 +237,66 @@ if (!photo) {
 };
 
   return (
+    <>
+     <Helmet>
+      <title>
+        Apply for Jobs at ServoraCare | Join Our Professional Team
+      </title>
+
+      <meta
+        name="description"
+        content="Apply for electrician, plumber, AC technician, CCTV technician, painter and cleaning executive jobs at ServoraCare."
+      />
+
+      <meta
+        name="keywords"
+        content="ServoraCare jobs, technician jobs, electrician jobs, plumber jobs, AC technician jobs, home service jobs"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/apply-job"
+      />
+
+      {/* Open Graph */}
+      <meta
+        property="og:title"
+        content="Join ServoraCare Professional Team"
+      />
+
+      <meta
+        property="og:description"
+        content="Become a verified home service professional with ServoraCare."
+      />
+
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/apply-job"
+      />
+
+      <meta
+        property="og:type"
+        content="website"
+      />
+
+
+      {/* Schema */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "JobPosting",
+          "title": "Home Service Professional",
+          "description":
+            "Join ServoraCare as an electrician, plumber, AC technician, CCTV technician, painter or cleaning executive.",
+          "hiringOrganization": {
+            "@type": "Organization",
+            "name": "ServoraCare",
+            "sameAs": "https://servoracare.vercel.app"
+          }
+        })}
+      </script>
+
+    </Helmet>
 
     <div className="min-h-screen bg-gray-100 py-16 px-6">
 
@@ -592,6 +653,7 @@ if (!photo) {
       </div>
 
     </div>
+    </>
 
   );
 

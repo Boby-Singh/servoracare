@@ -2,6 +2,7 @@ import { useState } from "react"
 import axios from "axios"
 const API = import.meta.env.VITE_API_URL;
 import { useNavigate, Link } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
 
 function Register() {
 
@@ -145,6 +146,14 @@ const handleSubmit = async (e) => {
 };
 
   return (
+    <>
+    <Helmet>
+    <title>Create Account | ServoraCare</title>
+    <meta
+    name="description"
+    content="Register with ServoraCare and book trusted home services."
+    />
+    </Helmet>
 
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
 
@@ -262,6 +271,7 @@ const handleSubmit = async (e) => {
       </div>
 
     </div>
+    </>
 
   )
 }

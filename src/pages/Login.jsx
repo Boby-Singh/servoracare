@@ -2,6 +2,8 @@ import { useState } from "react"
 import axios from "axios"
 const API = import.meta.env.VITE_API_URL;
 import { useNavigate, Link } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
+
 
 function Login() {
 
@@ -157,6 +159,24 @@ if (!password) {
   };
 
   return (
+    <>
+    <Helmet>
+
+      <title>
+        Login | ServoraCare
+      </title>
+
+      <meta
+        name="robots"
+        content="noindex,nofollow"
+      />
+
+      <meta
+        name="description"
+        content="Login to your ServoraCare account to manage home service bookings and access your dashboard."
+      />
+
+    </Helmet>
 
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
 
@@ -266,6 +286,7 @@ if (!password) {
       </div>
 
     </div>
+    </>
 
   )
 }

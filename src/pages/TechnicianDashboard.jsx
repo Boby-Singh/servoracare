@@ -8,8 +8,8 @@ function TechnicianDashboard() {
   const navigate = useNavigate()
 
   const user = JSON.parse(
-    localStorage.getItem("user")
-  )
+  localStorage.getItem("user") || "null"
+)
 
   const [jobs, setJobs] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -90,6 +90,24 @@ function TechnicianDashboard() {
 }
 
   return (
+    <>
+    <Helmet>
+
+      <title>
+        Technician Dashboard | ServoraCare
+      </title>
+
+      <meta
+        name="robots"
+        content="noindex,nofollow"
+      />
+
+      <meta
+        name="description"
+        content="ServoraCare technician dashboard to manage assigned service jobs, update work status and submit completion reports."
+      />
+
+    </Helmet>
 
     <div className="min-h-screen bg-gray-100 p-8">
 
@@ -363,6 +381,7 @@ function TechnicianDashboard() {
       </div>
 
     </div>
+    </>
 
   )
 

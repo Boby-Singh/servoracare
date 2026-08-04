@@ -2,9 +2,40 @@ import profilePhoto from "../assets/profile.jpg";
 import heroImage from "../assets/page.png"; 
 import StoryImage from "../assets/Story.jfif"
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 function About() {
   const navigate = useNavigate();
   return (
+    <>
+     <Helmet>
+      <title>About ServoraCare | Trusted Home Services</title>
+
+      <meta
+        name="description"
+        content="Learn about ServoraCare, our mission, vision, founder and commitment to trusted home services across India."
+      />
+
+      <meta
+        name="keywords"
+        content="About ServoraCare, home services, electrician, plumber, AC repair, CCTV installation"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/about"
+      />
+
+      <meta property="og:title" content="About ServoraCare" />
+      <meta
+        property="og:description"
+        content="Meet the team behind ServoraCare and discover our mission to simplify home services."
+      />
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/about"
+      />
+    </Helmet>
+    
     <div className="min-h-screen bg-white">
 
       {/* Hero Section */}
@@ -343,7 +374,13 @@ function About() {
 </section>
 
     </div>
+
+    </>
+
+    
   );
+
+  
 }
 
 export default About;

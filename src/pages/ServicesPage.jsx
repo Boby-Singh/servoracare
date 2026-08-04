@@ -8,6 +8,7 @@ import {
   Sparkles,
   CheckCircle,
 } from "lucide-react"
+import { Helmet } from "react-helmet-async";
 
 function ServicesPage() {
 
@@ -54,6 +55,74 @@ function ServicesPage() {
   ]
 
   return (
+    <>
+    <Helmet>
+
+      <title>
+        Home Services | Electrician, Plumber, AC Repair | ServoraCare
+      </title>
+
+      <meta
+        name="description"
+        content="Book trusted home services from ServoraCare including electrician, plumber, AC repair, CCTV installation, painting and professional cleaning services."
+      />
+
+      <meta
+        name="keywords"
+        content="electrician service, plumber service, AC repair, CCTV installation, home cleaning, painting service, ServoraCare"
+      />
+
+      <link
+        rel="canonical"
+        href="https://servoracare.vercel.app/services"
+      />
+
+
+      {/* Open Graph */}
+      <meta
+        property="og:title"
+        content="Professional Home Services | ServoraCare"
+      />
+
+      <meta
+        property="og:description"
+        content="Verified professionals for electrical, plumbing, AC repair, CCTV, painting and cleaning services."
+      />
+
+      <meta
+        property="og:url"
+        content="https://servoracare.vercel.app/services"
+      />
+
+      <meta
+        property="og:type"
+        content="website"
+      />
+
+
+      {/* Service Schema */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Home Services",
+          "provider": {
+            "@type": "Organization",
+            "name": "ServoraCare",
+            "url": "https://servoracare.vercel.app"
+          },
+          "serviceType": [
+            "Electrician",
+            "Plumber",
+            "AC Repair",
+            "CCTV Installation",
+            "Painting",
+            "Room Cleaning"
+          ]
+        })}
+      </script>
+
+    </Helmet>
 
     <div className="bg-gray-100 min-h-screen">
 
@@ -230,6 +299,7 @@ function ServicesPage() {
       </section>
 
     </div>
+    </>
 
   )
 
