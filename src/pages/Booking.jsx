@@ -14,6 +14,32 @@ function Booking() {
   "Room Cleaning": 199,
 }
 
+const [errors, setErrors] = useState({});
+const [message, setMessage] = useState("");
+const [messageType, setMessageType] = useState("");
+const [loading, setLoading] = useState(false);
+
+const validateForm = () => {
+  let newErrors = {};
+
+  if (!formData.full_name.trim()) {
+    newErrors.full_name = "Full Name is required";
+  } else if (formData.full_name.trim().length < 3) {
+    newErrors.full_name = "Enter a valid name";
+  }
+
+  if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+    newErrors.phone = "Enter a valid mobile number";
+  }
+
+  if (!formData.address.trim()) {
+    newErrors.address = "Address is required";
+  } 
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
+
   
 
 
@@ -60,13 +86,18 @@ function Booking() {
   const handleSubmit = async (e) => {
 
     e.preventDefault()
+    if (!validateForm()) return;
+    setLoading(true);
 
     // User not logged in
     if (!user) {
 
-      alert("Please Login First")
-
-      navigate("/login")
+      navigate("/login", {
+      state: {
+      from: "/booking",
+      service: formData.service_type
+      }
+      });
 
       return
 
@@ -77,22 +108,23 @@ function Booking() {
 
     try {
 
+      const payload = {
+        full_name: formData.full_name.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        service_type: formData.service_type,
+        user_id: user.id,
+        amount: visitingCharge,
+      };
+
       const response = await axios.post(
 
         `${API}/api/book-service`,
-
-        {
-
-          ...formData,
-
-          user_id: user.id,
-          amount: visitingCharge
-
-        }
-
+        payload
       )
 
-      alert(response.data.message)
+      setMessage(response.data.message);
+      setMessageType("success");
 
       // Clear Form
       setFormData({
@@ -105,12 +137,17 @@ function Booking() {
       })
 
     } catch (error) {
+      setMessage(
+      error.response?.data?.message ||
+      "Booking Failed"
+      );
 
-      console.log(error)
-
-      alert("Booking Failed")
+      setMessageType("error");
 
     }
+    finally {
+   setLoading(false);
+}
 
   }
 
@@ -140,11 +177,19 @@ function Booking() {
           />
 
           <input
-            type="text"
+            type="tel"
+            inputMode="numeric"
             name="phone"
             placeholder="Phone Number"
             value={formData.phone}
-            onChange={handleChange}
+            onChange={(e) => {
+            const value = e.target.value.replace(/\D/g, "");
+            setFormData({
+              ...formData,
+              phone: value,
+            });
+            }}
+            maxLength={10}
             className="w-full border p-4 rounded-lg"
             required
           />
@@ -243,11 +288,28 @@ function Booking() {
 
           )}
 
-          <button
-            type="submit"
-            className="bg-orange-500 text-white px-8 py-4 rounded-xl w-full text-lg hover:bg-orange-600 transition"
+          {message && (
+          <div
+          className={`p-3 rounded-lg text-center font-medium ${
+          messageType==="success"
+          ? "bg-green-100 text-green-700 border border-green-300"
+          : "bg-red-100 text-red-700 border border-red-300"
+          }`}
           >
-            Book Now
+          {message}
+          </div>
+          )}
+
+          <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-4 rounded-xl text-white ${
+          loading
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-orange-500 hover:bg-orange-600"
+          }`}
+          >
+          {loading ? "Booking..." : "Book Now"}
           </button>
 
         </form>

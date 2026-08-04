@@ -136,7 +136,7 @@ if (!password) {
               navigate("/");
           }
 
-      }, 2000);
+      }, 1000);
 
     } catch (error) {
 

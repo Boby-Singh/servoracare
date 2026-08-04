@@ -29,7 +29,7 @@ function AdminSidebar() {
         </li>
 
         <li>
-          <Link to="/admin/bookings">
+          <Link to="/all-bookings">
             Bookings
           </Link>
         </li>

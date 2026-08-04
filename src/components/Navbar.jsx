@@ -69,7 +69,7 @@ function Navbar() {
 
         {/* Desktop Menu */}
 
-        <ul className="hidden md:flex gap-10 text-lg items-center">
+        <ul className="hidden md:flex gap-5 text-lg items-center">
 
           <Link to="/">
             <li className="hover:text-orange-400 transition">
