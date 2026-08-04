@@ -8,6 +8,7 @@ import ServicesPage from "./pages/ServicesPage"
 import Careers from "./pages/Careers";
 import ApplyJob from "./pages/ApplyJob";
 import Admin from "./pages/Admin"
+import AllBookings from "./pages/admin/Booking"
 import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Register from "./pages/Register"
@@ -112,6 +113,15 @@ function App() {
               <Technicians />
             </AdminRoute>
           }
+        />
+
+        <Route
+        path="/admin/AllBookings"
+        element={
+          <AdminRoute>
+            <AllBookings/>
+          </AdminRoute>
+        }
         />
 
         <Route
