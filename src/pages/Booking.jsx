@@ -104,9 +104,6 @@ const validateForm = () => {
 
     }
 
-    console.log(user)
-    console.log(user.id)
-
     try {
 
       const payload = {
