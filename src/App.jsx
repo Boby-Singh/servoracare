@@ -19,6 +19,9 @@ import Customers from "./pages/admin/Customers"
 import Technicians from "./pages/admin/Technicians"
 import AdminJobs from "./pages/AdminJobs";
 import AddTechnician from "./pages/admin/AddTechnician"
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOTP from "./pages/VerifyOTP";
+import ResetPassword from "./pages/ResetPassword";
 function App() {
   return (
     <BrowserRouter>
@@ -40,6 +43,18 @@ function App() {
         <Route 
         path="/careers" 
         element={<Careers />} 
+        />
+        <Route 
+        path="/forgot-password" 
+        element={<ForgotPassword />} 
+        />
+        <Route 
+        path="/verify-otp" 
+        element={<VerifyOTP />} 
+        />
+        <Route 
+        path="/reset-password" 
+        element={<ResetPassword />} 
         />
 
         <Route 
