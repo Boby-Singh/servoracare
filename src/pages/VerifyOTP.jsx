@@ -16,7 +16,7 @@ function VerifyOTP() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(`${API}/api/verify-otp`, {
+      const res = await axios.post(`${API}/api/auth/verify-otp`, {
         email,
         otp,
       });
