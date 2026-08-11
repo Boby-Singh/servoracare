@@ -15,6 +15,7 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import TechnicianDashboard from "./pages/TechnicianDashboard"
 import AdminRoute from "./components/AdminRoute"
+import Layout from "./components/Layout";
 import Customers from "./pages/admin/Customers"
 import Technicians from "./pages/admin/Technicians"
 import AdminJobs from "./pages/AdminJobs";
@@ -27,6 +28,8 @@ function App() {
     <BrowserRouter>
 
       <Routes>
+        {/* GLOBAL NAVBAR */} 
+        <Route element={<Layout />}>
 
         <Route path="/" element={<Home />} />
 
@@ -153,7 +156,7 @@ function App() {
           }
         />
         
-        
+        </Route>
 
       </Routes>
 

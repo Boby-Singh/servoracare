@@ -86,7 +86,7 @@ function Navbar() {
           <Link to="/careers">
             <li className="hover:text-orange-400 transition">
               CAREERS
-            </li>
+            </li> 
           </Link>
 
           <Link to="/about">
