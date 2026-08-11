@@ -40,7 +40,7 @@ function About() {
 
       {/* Hero Section */}
       <section
-        className="relative h-[600px] bg-cover bg-center"
+        className="relative min-h-[650px] md:h-[600px] bg-cover bg-center"
         style={{
           backgroundImage: "url('/about-banner.jpg')",
         }}
@@ -48,13 +48,12 @@ function About() {
         <div className="absolute inset-0 bg-blue-950/70"></div>
 
         <div className="relative z-10 flex items-center h-full">
-          <div className="max-w-[1600px] mx-auto px-8">
-
+          <div className="max-w-[1600px] mx-auto px-6 sm:px-8">
             <span className="bg-orange-500 text-white px-6 py-2 rounded-full uppercase tracking-widest text-sm font-semibold">
               ABOUT SERVORACARE
             </span>
 
-            <h1 className="text-6xl md:text-7xl font-extrabold text-white mt-8 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mt-6 md:mt-8 leading-[1.1]">
               Building India's
               <br />
               Trusted Home
@@ -63,7 +62,7 @@ function About() {
               </span>
             </h1>
 
-            <p className="text-xl text-gray-200 mt-8 max-w-3xl leading-9">
+            <p className="text-base sm:text-lg md:text-xl text-gray-200 mt-6 md:mt-8 max-w-3xl leading-7 md:leading-9">
               ServoraCare connects homeowners with trusted,
               verified and skilled professionals using
               technology, transparency and exceptional service.
