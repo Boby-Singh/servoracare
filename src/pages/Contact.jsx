@@ -129,24 +129,6 @@ ${formData.message}`
     </Helmet>
 
     <div className="min-h-screen bg-gray-100">
-
-       <div className="mb-8">
-
-        <Link
-          to="/"
-          className="text-blue-700 hover:text-orange-500 font-medium"
-        >
-          Home
-        </Link>
-
-        <span className="mx-2 text-gray-500">/</span>
-
-        <span className="text-gray-600">
-          Contact
-        </span>
-
-      </div>
-
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
 

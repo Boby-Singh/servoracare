@@ -302,25 +302,6 @@ if (!photo) {
 
       <div className="max-w-4xl mx-auto">
 
-        {/* Breadcrumb */}
-
-        <div className="mb-8">
-
-          <Link
-            to="/careers"
-            className="text-blue-700 hover:text-orange-500"
-          >
-            Careers
-          </Link>
-
-          <span className="mx-2 text-gray-500">/</span>
-
-          <span className="text-gray-600">
-            Apply Job
-          </span>
-
-        </div>
-
         {/* Card */}
 
         <div className="bg-white rounded-3xl shadow-xl p-10">

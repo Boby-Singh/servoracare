@@ -120,25 +120,6 @@ function Careers() {
 
     <div className="bg-gray-100 min-h-screen">
 
-      {/* Breadcrumb */}
-
-      <div className="max-w-7xl mx-auto px-6 py-6">
-
-        <Link
-          to="/"
-          className="text-blue-700 hover:text-orange-500 font-medium"
-        >
-          Home
-        </Link>
-
-        <span className="mx-2 text-gray-500">/</span>
-
-        <span className="text-gray-600">
-          Careers
-        </span>
-
-      </div>
-
       {/* Hero */}
 
       <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-24">

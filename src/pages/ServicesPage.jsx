@@ -126,23 +126,6 @@ function ServicesPage() {
 
     <div className="bg-gray-100 min-h-screen">
 
-      <div className="mb-8">
-
-        <Link
-          to="/"
-          className="text-blue-700 hover:text-orange-500 font-medium"
-        >
-          Home
-        </Link>
-
-        <span className="mx-2 text-gray-500">/</span>
-
-        <span className="text-gray-600">
-          Services
-        </span>
-
-      </div>
-
       {/* Hero Section */}
 
       <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-20">
