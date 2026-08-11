@@ -48,7 +48,7 @@ function About() {
         <div className="absolute inset-0 bg-blue-950/70"></div>
 
         <div className="relative z-10 flex items-center h-full">
-          <div className="max-w-7xl mx-auto px-8">
+          <div className="max-w-[1600px] mx-auto px-8">
 
             <span className="bg-orange-500 text-white px-6 py-2 rounded-full uppercase tracking-widest text-sm font-semibold">
               ABOUT SERVORACARE
