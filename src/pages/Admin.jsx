@@ -6,842 +6,854 @@ const API = import.meta.env.VITE_API_URL;
 
 function Admin() {
 
-  const [bookings, setBookings] = useState([]);
-  const [technicians, setTechnicians] = useState([]);
+    const [bookings, setBookings] = useState([]);
+    const [technicians, setTechnicians] = useState([]);
 
-  const [selectedTechnician, setSelectedTechnician] = useState({});
-  const [visitDate, setVisitDate] = useState({});
-  const [visitTime, setVisitTime] = useState({});
-
-
-  // ==========================================
-  // FETCH BOOKINGS
-  // ==========================================
-
-  const fetchBookings = async () => {
-
-    try {
-
-      const response = await axios.get(
-        `${API}/api/all-bookings`
-      );
-
-      setBookings(response.data);
-
-    } catch (error) {
-
-      console.error(
-        "Fetch Bookings Error:",
-        error
-      );
-
-    }
-
-  };
+    const [selectedTechnician, setSelectedTechnician] = useState({});
+    const [visitDate, setVisitDate] = useState({});
+    const [visitTime, setVisitTime] = useState({});
 
 
-  // ==========================================
-  // FETCH TECHNICIANS
-  // ==========================================
+    // ==========================================
+    // FETCH BOOKINGS
+    // ==========================================
 
-  const fetchTechnicians = async () => {
+    const fetchBookings = async () => {
 
-    try {
+        try {
 
-      const response = await axios.get(
-        `${API}/api/admin/technicians`
-      );
+            const response = await axios.get(
+                `${API}/api/all-bookings`
+            );
 
-      setTechnicians(response.data);
+            setBookings(response.data);
 
-    } catch (error) {
+        } catch (error) {
 
-      console.error(
-        "Fetch Technicians Error:",
-        error
-      );
+            console.error(
+                "Fetch Bookings Error:",
+                error
+            );
 
-    }
-
-  };
-
-
-  // ==========================================
-  // LOAD DATA
-  // ==========================================
-
-  useEffect(() => {
-
-    fetchBookings();
-    fetchTechnicians();
-
-  }, []);
-
-
-  // ==========================================
-  // SELECT TECHNICIAN
-  // ==========================================
-
-  const assignTechnician = (
-    bookingId,
-    technicianId
-  ) => {
-
-    setSelectedTechnician((prev) => ({
-
-      ...prev,
-
-      [bookingId]: technicianId
-
-    }));
-
-  };
-
-
-  // ==========================================
-  // UPDATE STATUS
-  // ==========================================
-
-  const updateStatus = async (
-    bookingId,
-    status
-  ) => {
-
-    try {
-
-      await axios.put(
-
-        `${API}/api/update-status/${bookingId}`,
-
-        {
-          status
         }
 
-      );
-
-      fetchBookings();
-
-    } catch (error) {
-
-      console.error(
-        "Update Status Error:",
-        error
-      );
-
-    }
-
-  };
+    };
 
 
-  // ==========================================
-  // SCHEDULE VISIT
-  // ==========================================
+    // ==========================================
+    // FETCH TECHNICIANS
+    // ==========================================
 
-  const scheduleVisit = async (bookingId) => {
+    const fetchTechnicians = async () => {
 
-    const technicianId =
-      selectedTechnician[bookingId];
+        try {
 
-    const date =
-      visitDate[bookingId];
+            const response = await axios.get(
+                `${API}/api/admin/technicians`
+            );
 
-    const time =
-      visitTime[bookingId];
+            setTechnicians(response.data);
 
+        } catch (error) {
 
-    if (!technicianId) {
+            console.error(
+                "Fetch Technicians Error:",
+                error
+            );
 
-      alert("Please select technician");
+        }
 
-      return;
-
-    }
-
-
-    if (!date) {
-
-      alert("Please select visit date");
-
-      return;
-
-    }
+    };
 
 
-    if (!time) {
+    // ==========================================
+    // LOAD DATA
+    // ==========================================
 
-      alert("Please select visit time");
+    useEffect(() => {
 
-      return;
+        fetchBookings();
+        fetchTechnicians();
 
-    }
+    }, []);
 
 
-    try {
+    // ==========================================
+    // SELECT TECHNICIAN
+    // ==========================================
 
-      console.log(
-        "Assigning Booking:",
-        bookingId
-      );
-
-      console.log(
-        "Technician:",
+    const assignTechnician = (
+        mongoBookingId,
         technicianId
-      );
+    ) => {
+
+        setSelectedTechnician((prev) => ({
+
+            ...prev,
+
+            [mongoBookingId]:
+                technicianId
+
+        }));
+
+    };
 
 
-      await axios.put(
+    // ==========================================
+    // UPDATE STATUS
+    // ==========================================
 
-        `${API}/api/admin/assign-technician/${bookingId}`,
+    const updateStatus = async (
+        mongoBookingId,
+        status
+    ) => {
 
-        {
+        try {
 
-          technician_id: technicianId,
+            await axios.put(
 
-          visit_date: date,
+                `${API}/api/update-status/${mongoBookingId}`,
 
-          visit_time: time
+                {
+                    status
+                }
+
+            );
+
+            fetchBookings();
+
+        } catch (error) {
+
+            console.error(
+                "Update Status Error:",
+                error
+            );
 
         }
 
-      );
+    };
 
 
-      alert(
-        "Visit Scheduled Successfully"
-      );
+    // ==========================================
+    // SCHEDULE VISIT
+    // ==========================================
 
+    const scheduleVisit = async (
+        bookingNumber,
+        mongoBookingId
+    ) => {
 
-      fetchBookings();
+        const technicianId =
+        selectedTechnician[mongoBookingId];
 
+        const date =
+            visitDate[mongoBookingId];
 
-    } catch (error) {
+        const time =
+            visitTime[mongoBookingId];
 
-      console.error(
-        "Assignment Error:",
-        error
-      );
 
+        if (!technicianId) {
 
-      alert(
-        error.response?.data?.message ||
-        "Assignment Failed"
-      );
+            alert(
+                "Please select technician"
+            );
 
-    }
+            return;
 
-  };
+        }
 
 
-  return (
+        if (!date) {
 
-    <AdminLayout>
+            alert(
+                "Please select visit date"
+            );
 
-      <div className="min-h-screen bg-gray-100 p-8">
+            return;
 
+        }
 
-        {/* ==========================================
-            HEADER
-        ========================================== */}
 
-        <div className="flex justify-between items-center mb-10">
+        if (!time) {
 
-          <h1 className="text-5xl font-bold text-blue-900">
+            alert(
+                "Please select visit time"
+            );
 
-            Admin Dashboard
+            return;
 
-          </h1>
+        }
 
-        </div>
 
+        try {
 
+            console.log(
+                "Assigning MongoDB Booking:",
+                mongoBookingId
+            );
 
-        {/* ==========================================
-            DASHBOARD CARDS
-        ========================================== */}
+            console.log(
+                "Technician:",
+                technicianId
+            );
 
-        <div className="grid md:grid-cols-3 gap-6 mb-10">
 
+           await axios.put(
+               `${API}/api/admin/assign-technician/${bookingNumber}`,
 
-          {/* TOTAL */}
+                {
 
-          <div className="bg-white p-6 rounded-2xl shadow-md">
+                    technician_id:
+                        technicianId,
 
-            <h2 className="text-gray-500 text-lg">
+                    visit_date:
+                        date,
 
-              Total Bookings
+                    visit_time:
+                        time
 
-            </h2>
+                }
 
+            );
 
-            <p className="text-4xl font-bold text-blue-900 mt-3">
 
-              {bookings.length}
+            alert(
+                "Visit Scheduled Successfully"
+            );
 
-            </p>
 
-          </div>
+            fetchBookings();
 
 
+        } catch (error) {
 
-          {/* PENDING */}
+            console.error(
+                "Assignment Error:",
+                error
+            );
 
-          <div className="bg-white p-6 rounded-2xl shadow-md">
 
-            <h2 className="text-gray-500 text-lg">
+            alert(
 
-              Pending
+                error.response?.data?.message ||
 
-            </h2>
+                "Assignment Failed"
 
+            );
 
-            <p className="text-4xl font-bold text-yellow-500 mt-3">
+        }
 
-              {
+    };
 
-                bookings.filter(
 
-                  (booking) =>
-                    booking.status === "Pending"
+    return (
 
-                ).length
+        <AdminLayout>
 
-              }
+            <div className="min-h-screen bg-gray-100 p-8">
 
-            </p>
 
-          </div>
+                {/* ==========================================
+                    HEADER
+                ========================================== */}
 
+                <div className="flex justify-between items-center mb-10">
 
+                    <h1 className="text-5xl font-bold text-blue-900">
 
-          {/* COMPLETED */}
+                        Admin Dashboard
 
-          <div className="bg-white p-6 rounded-2xl shadow-md">
+                    </h1>
 
-            <h2 className="text-gray-500 text-lg">
+                </div>
 
-              Completed
 
-            </h2>
+                {/* ==========================================
+                    DASHBOARD CARDS
+                ========================================== */}
 
+                <div className="grid md:grid-cols-3 gap-6 mb-10">
 
-            <p className="text-4xl font-bold text-green-500 mt-3">
 
-              {
+                    {/* TOTAL */}
 
-                bookings.filter(
+                    <div className="bg-white p-6 rounded-2xl shadow-md">
 
-                  (booking) =>
-                    booking.status === "Completed"
+                        <h2 className="text-gray-500 text-lg">
 
-                ).length
+                            Total Bookings
 
-              }
+                        </h2>
 
-            </p>
+                        <p className="text-4xl font-bold text-blue-900 mt-3">
 
-          </div>
+                            {bookings.length}
 
-        </div>
+                        </p>
 
+                    </div>
 
 
-        {/* ==========================================
-            BOOKINGS TABLE
-        ========================================== */}
+                    {/* PENDING */}
 
-        <div className="overflow-x-auto">
+                    <div className="bg-white p-6 rounded-2xl shadow-md">
 
-          <table className="w-full bg-white rounded-2xl overflow-hidden shadow-lg">
+                        <h2 className="text-gray-500 text-lg">
 
+                            Pending
 
-            {/* TABLE HEADER */}
+                        </h2>
 
-            <thead className="bg-blue-900 text-white">
+                        <p className="text-4xl font-bold text-yellow-500 mt-3">
 
-              <tr>
+                            {
+                                bookings.filter(
 
-                <th className="p-4">
-                  ID
-                </th>
+                                    (booking) =>
+                                        booking.status ===
+                                        "Pending"
 
-                <th className="p-4">
-                  Cust_Name
-                </th>
-
-                <th className="p-4">
-                  Cust_Phone
-                </th>
-
-                <th className="p-4">
-                  Cust_Address
-                </th>
-
-                <th className="p-4">
-                  Service
-                </th>
-
-                <th className="p-4">
-                  Date
-                </th>
-
-                <th className="p-4">
-                  Status
-                </th>
-
-                <th className="p-4">
-                  Technician
-                </th>
-
-                <th className="p-4">
-                  Action
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-
-            {/* TABLE BODY */}
-
-            <tbody>
-
-              {bookings.map((booking) => {
-
-
-                // ==========================================
-                // IMPORTANT
-                // MongoDB uses _id instead of id
-                // ==========================================
-
-                const bookingId =
-                  booking._id;
-
-
-                return (
-
-                  <tr
-
-                    key={bookingId}
-
-                    className="text-center border-b hover:bg-gray-50 transition"
-
-                  >
-
-
-                    {/* BOOKING ID */}
-
-                    <td className="p-4">
-
-                      {bookingId}
-
-                    </td>
-
-
-
-                    {/* CUSTOMER NAME */}
-
-                    <td className="p-4">
-
-                      {booking.full_name}
-
-                    </td>
-
-
-
-                    {/* CUSTOMER PHONE */}
-
-                    <td className="p-4">
-
-                      {booking.phone}
-
-                    </td>
-
-
-
-                    {/* ADDRESS */}
-
-                    <td className="p-4">
-
-                      {booking.address}
-
-                    </td>
-
-
-
-                    {/* SERVICE */}
-
-                    <td className="p-4">
-
-                      {booking.service_type}
-
-                    </td>
-
-
-
-                    {/* CREATED DATE */}
-
-                    <td className="p-4">
-
-                      {booking.created_at
-
-                        ? new Date(
-                            booking.created_at
-                          ).toLocaleString()
-
-                        : "-"
-
-                      }
-
-                    </td>
-
-
-
-                    {/* STATUS */}
-
-                    <td className="p-4">
-
-                      <span
-
-                        className={`px-4 py-2 rounded-full text-white text-sm font-semibold
-
-                        ${
-                          booking.status === "Pending"
-
-                            ? "bg-yellow-500"
-
-                            : booking.status === "Accepted"
-
-                            ? "bg-blue-500"
-
-                            : booking.status === "Completed"
-
-                            ? "bg-green-500"
-
-                            : "bg-red-500"
-
-                        }
-
-                        `}
-
-                      >
-
-                        {booking.status}
-
-                      </span>
-
-                    </td>
-
-
-
-                    {/* ======================================
-                        TECHNICIAN
-                    ====================================== */}
-
-                    <td className="p-4">
-
-
-                      {booking.status === "Pending" ? (
-
-
-                        <div className="space-y-2">
-
-
-                          {/* TECHNICIAN SELECT */}
-
-                          <select
-
-                            value={
-                              selectedTechnician[
-                                bookingId
-                              ] || ""
+                                ).length
                             }
 
-                            onChange={(e) =>
+                        </p>
 
-                              assignTechnician(
+                    </div>
 
-                                bookingId,
 
-                                e.target.value
+                    {/* COMPLETED */}
 
-                              )
+                    <div className="bg-white p-6 rounded-2xl shadow-md">
 
+                        <h2 className="text-gray-500 text-lg">
+
+                            Completed
+
+                        </h2>
+
+                        <p className="text-4xl font-bold text-green-500 mt-3">
+
+                            {
+                                bookings.filter(
+
+                                    (booking) =>
+                                        booking.status ===
+                                        "Completed"
+
+                                ).length
                             }
 
-                            className="border rounded-lg p-2 w-full"
+                        </p>
 
-                          >
+                    </div>
 
-                            <option value="">
+                </div>
 
-                              Select Technician
 
-                            </option>
+                {/* ==========================================
+                    BOOKINGS TABLE
+                ========================================== */}
 
+                <div className="overflow-x-auto">
 
-                            {technicians.map(
-                              (tech) => (
+                    <table className="w-full bg-white rounded-2xl overflow-hidden shadow-lg">
 
-                              <option
 
-                                key={tech._id}
+                        {/* TABLE HEADER */}
 
-                                value={tech._id}
+                        <thead className="bg-blue-900 text-white">
 
-                              >
+                            <tr>
 
-                                {tech.name}
+                                <th className="p-4">
+                                    Booking ID
+                                </th>
 
-                              </option>
+                                <th className="p-4">
+                                    Cust_Name
+                                </th>
 
-                            ))}
+                                <th className="p-4">
+                                    Cust_Phone
+                                </th>
 
-                          </select>
+                                <th className="p-4">
+                                    Cust_Address
+                                </th>
 
+                                <th className="p-4">
+                                    Service
+                                </th>
 
+                                <th className="p-4">
+                                    Date
+                                </th>
 
-                          {/* VISIT DATE */}
+                                <th className="p-4">
+                                    Status
+                                </th>
 
-                          <input
+                                <th className="p-4">
+                                    Technician
+                                </th>
 
-                            type="date"
+                                <th className="p-4">
+                                    Action
+                                </th>
 
-                            className="border rounded-lg p-2 w-full"
+                            </tr>
 
-                            value={
-                              visitDate[
-                                bookingId
-                              ] || ""
-                            }
+                        </thead>
 
-                            onChange={(e) =>
 
-                              setVisitDate(
-                                (prev) => ({
+                        {/* TABLE BODY */}
 
-                                  ...prev,
+                        <tbody>
 
-                                  [bookingId]:
-                                    e.target.value
+                            {bookings.map((booking) => {
 
-                                })
-                              )
+                                // ==========================================
+                                // TWO DIFFERENT IDs
+                                // ==========================================
 
-                            }
+                                const mongoBookingId =
+                                    booking._id;
 
-                          />
+                                const bookingNumber =
+                                    booking.booking_id;
 
 
+                                return (
 
-                          {/* VISIT TIME */}
+                                    <tr
 
-                          <input
+                                        key={
+                                            mongoBookingId
+                                        }
 
-                            type="time"
+                                        className="text-center border-b hover:bg-gray-50 transition"
 
-                            className="border rounded-lg p-2 w-full"
+                                    >
 
-                            value={
-                              visitTime[
-                                bookingId
-                              ] || ""
-                            }
 
-                            onChange={(e) =>
+                                        {/* ==================================
+                                            6 DIGIT BOOKING ID
+                                        ================================== */}
 
-                              setVisitTime(
-                                (prev) => ({
+                                        <td className="p-4">
 
-                                  ...prev,
+                                            <span className="font-bold text-blue-900">
 
-                                  [bookingId]:
-                                    e.target.value
+                                                {bookingNumber}
 
-                                })
-                              )
+                                            </span>
 
-                            }
+                                        </td>
 
-                          />
 
-                        </div>
+                                        {/* CUSTOMER NAME */}
 
+                                        <td className="p-4">
 
-                      ) : (
+                                            {booking.full_name}
 
+                                        </td>
 
-                        <div>
 
+                                        {/* CUSTOMER PHONE */}
 
-                          <div className="font-semibold text-blue-900">
+                                        <td className="p-4">
 
-                            {booking.technician_name ||
-                              "Not Assigned"}
+                                            {booking.phone}
 
-                          </div>
+                                        </td>
 
 
-                          <div className="text-sm text-gray-500">
+                                        {/* ADDRESS */}
 
-                            {booking.technician_phone ||
-                              ""}
+                                        <td className="p-4">
 
-                          </div>
+                                            {booking.address}
 
-                        </div>
+                                        </td>
 
-                      )}
 
-                    </td>
+                                        {/* SERVICE */}
 
+                                        <td className="p-4">
 
+                                            {booking.service_type}
 
-                    {/* ======================================
-                        ACTION
-                    ====================================== */}
+                                        </td>
 
-                    <td className="p-4">
 
+                                        {/* CREATED DATE */}
 
-                      {/* PENDING */}
+                                        <td className="p-4">
 
-                      {booking.status === "Pending" && (
+                                            {booking.created_at
 
-                        <div className="flex flex-col gap-2">
+                                                ? new Date(
+                                                    booking.created_at
+                                                ).toLocaleString()
 
+                                                : "-"
 
-                          {/* ASSIGN */}
+                                            }
 
-                          <button
+                                        </td>
 
-                            onClick={() =>
 
-                              scheduleVisit(
-                                bookingId
-                              )
+                                        {/* STATUS */}
 
-                            }
+                                        <td className="p-4">
 
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                                            <span
 
-                          >
+                                                className={`px-4 py-2 rounded-full text-white text-sm font-semibold
 
-                            Assign & Accept
+                                                ${
+                                                    booking.status ===
+                                                    "Pending"
 
-                          </button>
+                                                        ? "bg-yellow-500"
 
+                                                        : booking.status ===
+                                                          "Accepted"
 
+                                                        ? "bg-blue-500"
 
-                          {/* REJECT */}
+                                                        : booking.status ===
+                                                          "Completed"
 
-                          <button
+                                                        ? "bg-green-500"
 
-                            onClick={() =>
+                                                        : "bg-red-500"
+                                                }
 
-                              updateStatus(
+                                                `}
 
-                                bookingId,
+                                            >
 
-                                "Rejected"
+                                                {booking.status}
 
-                              )
+                                            </span>
 
-                            }
+                                        </td>
 
-                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
 
-                          >
+                                        {/* ==================================
+                                            TECHNICIAN
+                                        ================================== */}
 
-                            Reject
+                                        <td className="p-4">
 
-                          </button>
 
-                        </div>
+                                            {booking.status ===
+                                            "Pending" ? (
 
-                      )}
+                                                <div className="space-y-2">
 
 
+                                                    {/* TECHNICIAN SELECT */}
 
-                      {/* ACCEPTED */}
+                                                    <select
 
-                      {booking.status === "Accepted" && (
+                                                        value={
+                                                            selectedTechnician[
+                                                                mongoBookingId
+                                                            ] || ""
+                                                        }
 
-                        <button
+                                                        onChange={(e) =>
 
-                          onClick={() =>
+                                                            assignTechnician(
 
-                            updateStatus(
+                                                                mongoBookingId,
 
-                              bookingId,
+                                                                e.target.value
 
-                              "Completed"
+                                                            )
 
-                            )
+                                                        }
 
-                          }
+                                                        className="border rounded-lg p-2 w-full"
 
-                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                                                    >
 
-                        >
+                                                        <option value="">
 
-                          Mark Completed
+                                                            Select Technician
 
-                        </button>
+                                                        </option>
 
-                      )}
 
+                                                        {technicians.map(
+                                                            (tech) => (
 
+                                                                <option
 
-                      {/* COMPLETED / REJECTED */}
+                                                                    key={
+                                                                        tech.id
+                                                                    }
 
-                      {(booking.status === "Completed" ||
-                        booking.status === "Rejected") && (
+                                                                    value={
+                                                                        tech.id
+                                                                    }
 
-                        <span
+                                                                >
 
-                          className={`px-4 py-2 rounded-lg text-white
+                                                                    {tech.name}
 
-                          ${
-                            booking.status ===
-                            "Completed"
+                                                                </option>
 
-                              ? "bg-green-600"
+                                                            )
+                                                        )}
 
-                              : "bg-red-600"
+                                                    </select>
 
-                          }
 
-                          `}
+                                                    {/* VISIT DATE */}
 
-                        >
+                                                    <input
 
-                          Locked
+                                                        type="date"
 
-                        </span>
+                                                        className="border rounded-lg p-2 w-full"
 
-                      )}
+                                                        value={
+                                                            visitDate[
+                                                                mongoBookingId
+                                                            ] || ""
+                                                        }
 
-                    </td>
+                                                        onChange={(e) =>
 
+                                                            setVisitDate(
+                                                                (prev) => ({
 
-                  </tr>
+                                                                    ...prev,
 
-                );
+                                                                    [mongoBookingId]:
+                                                                        e.target.value
 
-              })}
+                                                                })
+                                                            )
 
-            </tbody>
+                                                        }
 
-          </table>
+                                                    />
 
-        </div>
 
-      </div>
+                                                    {/* VISIT TIME */}
 
-    </AdminLayout>
+                                                    <input
 
-  );
+                                                        type="time"
+
+                                                        className="border rounded-lg p-2 w-full"
+
+                                                        value={
+                                                            visitTime[
+                                                                mongoBookingId
+                                                            ] || ""
+                                                        }
+
+                                                        onChange={(e) =>
+
+                                                            setVisitTime(
+                                                                (prev) => ({
+
+                                                                    ...prev,
+
+                                                                    [mongoBookingId]:
+                                                                        e.target.value
+
+                                                                })
+                                                            )
+
+                                                        }
+
+                                                    />
+
+                                                </div>
+
+                                            ) : (
+
+                                                <div>
+
+                                                    <div className="font-semibold text-blue-900">
+
+                                                        {
+                                                            booking.technician_name ||
+                                                            "Not Assigned"
+                                                        }
+
+                                                    </div>
+
+                                                    <div className="text-sm text-gray-500">
+
+                                                        {
+                                                            booking.technician_phone ||
+                                                            ""
+                                                        }
+
+                                                    </div>
+
+                                                </div>
+
+                                            )}
+
+                                        </td>
+
+
+                                        {/* ==================================
+                                            ACTION
+                                        ================================== */}
+
+                                        <td className="p-4">
+
+
+                                            {/* PENDING */}
+
+                                            {booking.status ===
+                                            "Pending" && (
+
+                                                <div className="flex flex-col gap-2">
+
+
+                                                    {/* ASSIGN */}
+
+                                                    <button
+
+                                                        onClick={() =>
+
+                                                            scheduleVisit(
+                                                                bookingNumber,
+                                                                mongoBookingId
+                                                            )
+
+                                                        }
+
+                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+
+                                                    >
+
+                                                        Assign & Accept
+
+                                                    </button>
+
+
+                                                    {/* REJECT */}
+
+                                                    <button
+
+                                                        onClick={() =>
+
+                                                            updateStatus(
+
+                                                                mongoBookingId,
+
+                                                                "Rejected"
+
+                                                            )
+
+                                                        }
+
+                                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+
+                                                    >
+
+                                                        Reject
+
+                                                    </button>
+
+                                                </div>
+
+                                            )}
+
+
+                                            {/* ACCEPTED */}
+
+                                            {booking.status ===
+                                            "Accepted" && (
+
+                                                <button
+
+                                                    onClick={() =>
+
+                                                        updateStatus(
+
+                                                            mongoBookingId,
+
+                                                            "Completed"
+
+                                                        )
+
+                                                    }
+
+                                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+
+                                                >
+
+                                                    Mark Completed
+
+                                                </button>
+
+                                            )}
+
+
+                                            {/* COMPLETED / REJECTED */}
+
+                                            {(booking.status ===
+                                                "Completed" ||
+
+                                                booking.status ===
+                                                "Rejected") && (
+
+                                                <span
+
+                                                    className={`px-4 py-2 rounded-lg text-white
+
+                                                    ${
+                                                        booking.status ===
+                                                        "Completed"
+
+                                                            ? "bg-green-600"
+
+                                                            : "bg-red-600"
+                                                    }
+
+                                                    `}
+
+                                                >
+
+                                                    Locked
+
+                                                </span>
+
+                                            )}
+
+                                        </td>
+
+                                    </tr>
+
+                                );
+
+                            })}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </AdminLayout>
+
+    );
 
 }
 
