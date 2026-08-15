@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 const API = import.meta.env.VITE_API_URL;
 import {Link, Navigate, useNavigate } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
 
 function TechnicianDashboard() {
 
