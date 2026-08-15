@@ -87,6 +87,8 @@ const validateForm = () => {
   const handleSubmit = async (e) => {
 
     e.preventDefault()
+     // Prevent multiple submissions
+    if (loading) return;
     if (!validateForm()) return;
     
 
@@ -103,6 +105,9 @@ const validateForm = () => {
       return
 
     }
+
+      // Lock button immediately
+     setLoading(true);
 
     try {
 
@@ -217,6 +222,11 @@ const validateForm = () => {
             className="w-full border p-4 rounded-lg"
             required
           />
+          {errors.full_name && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.full_name}
+            </p>
+          )}
 
           <input
             type="tel"
@@ -235,6 +245,11 @@ const validateForm = () => {
             className="w-full border p-4 rounded-lg"
             required
           />
+          {errors.phone && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.phone}
+            </p>
+          )}
 
           <input
             type="text"
@@ -245,6 +260,11 @@ const validateForm = () => {
             className="w-full border p-4 rounded-lg"
             required
           />
+          {errors.address && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.address}
+            </p>
+          )}
 
           <select
             name="service_type"
@@ -283,6 +303,11 @@ const validateForm = () => {
             </option>
 
           </select>
+          {errors.service_type && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.service_type}
+            </p>
+          )}
 
           {/* Visiting Charge */}
 
@@ -343,15 +368,15 @@ const validateForm = () => {
           )}
 
           <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-4 rounded-xl text-white ${
-          loading
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-orange-500 hover:bg-orange-600"
-          }`}
+            type="submit"
+            disabled={loading}
+            className={`w-full py-4 rounded-xl text-white font-semibold transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-orange-500 hover:bg-orange-600"
+            }`}
           >
-          {loading ? "Booking..." : "Book Now"}
+            {loading ? "Booking..." : "Book Now"}
           </button>
 
         </form>
