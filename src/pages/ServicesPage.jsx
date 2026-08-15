@@ -74,7 +74,7 @@ function ServicesPage() {
 
       <link
         rel="canonical"
-        href="https://servoracare.vercel.app/services"
+        href="https://www.servoracare.in/services"
       />
 
 
@@ -91,7 +91,7 @@ function ServicesPage() {
 
       <meta
         property="og:url"
-        content="https://servoracare.vercel.app/services"
+        content="https://www.servoracare.in/services"
       />
 
       <meta
@@ -109,7 +109,7 @@ function ServicesPage() {
           "provider": {
             "@type": "Organization",
             "name": "ServoraCare",
-            "url": "https://servoracare.vercel.app"
+            "url": "https://www.servoracare.in"
           },
           "serviceType": [
             "Electrician",

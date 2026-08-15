@@ -77,7 +77,7 @@ function Careers() {
 
       <link
         rel="canonical"
-        href="https://servoracare.vercel.app/careers"
+        href="https://www.servoracare.in/careers"
       />
 
 
@@ -94,7 +94,7 @@ function Careers() {
 
       <meta
         property="og:url"
-        content="https://servoracare.vercel.app/careers"
+        content="https://www.servoracare.in/careers"
       />
 
       <meta
@@ -109,7 +109,7 @@ function Careers() {
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "ServoraCare",
-          "url": "https://servoracare.vercel.app",
+          "url": "https://www.servoracare.in",
           "description":
             "Technology-driven home service platform connecting customers with skilled professionals.",
           "department": "Careers"

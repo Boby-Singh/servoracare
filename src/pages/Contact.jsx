@@ -81,7 +81,7 @@ ${formData.message}`
 
       <link
         rel="canonical"
-        href="https://servoracare.vercel.app/contact"
+        href="https://www.servoracare.in/contact"
       />
 
 
@@ -98,7 +98,7 @@ ${formData.message}`
 
       <meta
         property="og:url"
-        content="https://servoracare.vercel.app/contact"
+        content="https://www.servoracare.in/contact"
       />
 
       <meta
@@ -113,7 +113,7 @@ ${formData.message}`
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "ServoraCare",
-        "url": "https://servoracare.vercel.app",
+        "url": "https://www.servoracare.in",
         "telephone": "+91-7828908522",
         "email": "support@servoracare.in",
         "address": {

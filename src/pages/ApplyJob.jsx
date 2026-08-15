@@ -255,7 +255,7 @@ if (!photo) {
 
       <link
         rel="canonical"
-        href="https://servoracare.vercel.app/apply-job"
+        href="https://www.servoracare.in/apply-job"
       />
 
       {/* Open Graph */}
@@ -271,7 +271,7 @@ if (!photo) {
 
       <meta
         property="og:url"
-        content="https://servoracare.vercel.app/apply-job"
+        content="https://www.servoracare.in/apply-job"
       />
 
       <meta
@@ -291,7 +291,7 @@ if (!photo) {
           "hiringOrganization": {
             "@type": "Organization",
             "name": "ServoraCare",
-            "sameAs": "https://servoracare.vercel.app"
+            "sameAs": "https://www.servoracare.in"
           }
         })}
       </script>

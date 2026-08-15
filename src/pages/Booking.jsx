@@ -174,7 +174,7 @@ const validateForm = () => {
 
       <link
         rel="canonical"
-        href="https://servoracare.vercel.app/booking"
+        href="https://www.servoracare.in/book-service"
       />
 
       {/* Open Graph */}
@@ -190,7 +190,7 @@ const validateForm = () => {
 
       <meta
         property="og:url"
-        content="https://servoracare.vercel.app/booking"
+        content="https://www.servoracare.in/book-service"
       />
 
       <meta

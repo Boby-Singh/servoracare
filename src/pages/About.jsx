@@ -22,7 +22,7 @@ function About() {
 
       <link
         rel="canonical"
-        href="https://servoracare.vercel.app/about"
+        href="https://www.servoracare.in/about"
       />
 
       <meta property="og:title" content="About ServoraCare" />
@@ -32,7 +32,7 @@ function About() {
       />
       <meta
         property="og:url"
-        content="https://servoracare.vercel.app/about"
+        content="https://www.servoracare.in/about"
       />
     </Helmet>
     
