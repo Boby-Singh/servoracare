@@ -1,403 +1,607 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-const API = import.meta.env.VITE_API_URL;
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import axios from "axios";
 import QRCode from "react-qr-code";
 import { Helmet } from "react-helmet-async";
 
+const API = import.meta.env.VITE_API_URL;
+
 function Dashboard() {
 
-  const navigate = useNavigate()
-
-  const [bookings, setBookings] = useState([])
+  const [bookings, setBookings] = useState([]);
   const [showQR, setShowQR] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
 
-  const user =
-    JSON.parse(localStorage.getItem("user"))
+  const user = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
 
-  useEffect(() => {
-
-    fetchBookings()
-
-  }, [])
+  // ==========================================
+  // FETCH BOOKINGS
+  // ==========================================
 
   const fetchBookings = async () => {
+
+    if (!user?.id) {
+      return;
+    }
 
     try {
 
       const response = await axios.get(
-
         `${API}/api/my-bookings/${user.id}`
+      );
 
-      )
-
-      setBookings(response.data)
+      setBookings(response.data);
 
     } catch (error) {
 
-      console.log(error)
+      console.error(
+        "Fetch Bookings Error:",
+        error
+      );
 
     }
 
-  }
+  };
 
-  const handleLogout = () => {
+  // ==========================================
+  // LOAD BOOKINGS
+  // ==========================================
 
-    localStorage.removeItem("token")
+  useEffect(() => {
 
-    localStorage.removeItem("user")
+    fetchBookings();
 
-    navigate("/login")
+  }, []);
 
-  }
+  // ==========================================
+  // PAYMENT
+  // ==========================================
 
-const makePayment = async (bookingId, amount) => {
+  const makePayment = async (
+    bookingId,
+    amount
+  ) => {
 
-  try {
+    try {
 
-    const { data } = await axios.post(
-      `${API}/api/create-payment`,
-      {
-        bookingId,
-        amount
+      const { data } = await axios.post(
+        `${API}/api/create-payment`,
+        {
+          bookingId,
+          amount
+        }
+      );
+
+      if (!data.success) {
+
+        alert(
+          data.message ||
+          "Payment failed"
+        );
+
+        return;
+
       }
-    );
 
-    if (!data.success) {
+      const isMobile =
+        /Android|iPhone|iPad|iPod/i.test(
+          navigator.userAgent
+        );
 
-      alert(data.message);
-      return;
+      if (isMobile) {
+
+        // Open UPI App
+
+        window.location.href =
+          data.paymentUrl;
+
+      } else {
+
+        // Show QR Code
+
+        setPaymentUrl(
+          data.paymentUrl
+        );
+
+        setShowQR(true);
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Payment Error:",
+        error
+      );
+
+      alert(
+        "Unable to start payment"
+      );
 
     }
 
-    const isMobile =
-      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    if (isMobile) {
-
-      // Open UPI App
-      window.location.href = data.paymentUrl;
-
-    } else {
-
-      // Show QR Code
-      setPaymentUrl(data.paymentUrl);
-      setShowQR(true);
-
-    }
-
-  } catch (error) {
-
-    console.log(error);
-    alert("Unable to start payment");
-
-  }
-
-};
+  };
 
   return (
+
     <>
-    <Helmet>
 
-      <title>
-        Customer Dashboard | ServoraCare
-      </title>
+      {/* ==========================================
+          SEO
+      ========================================== */}
 
-      <meta name="robots" content="noindex,nofollow" />
+      <Helmet>
 
-      <meta
-        name="description"
-        content="Manage your ServoraCare bookings, track service status, assigned technicians and make secure payments."
-      />
+        <title>
+          Customer Dashboard | ServoraCare
+        </title>
 
-      <meta
-        name="keywords"
-        content="ServoraCare dashboard, booking history, home service tracking, technician details, online payment"
-      />
+        <meta
+          name="robots"
+          content="noindex,nofollow"
+        />
 
-      <link
-        rel="canonical"
-        href="https://servoracare.vercel.app/dashboard"
-      />
+        <meta
+          name="description"
+          content="Manage your ServoraCare bookings, track service status, assigned technicians and make secure payments."
+        />
+
+      </Helmet>
 
 
-      {/* Open Graph */}
-      <meta
-        property="og:title"
-        content="ServoraCare Customer Dashboard"
-      />
+      {/* ==========================================
+          DASHBOARD
+      ========================================== */}
 
-      <meta
-        property="og:description"
-        content="Track your home service bookings and payments with ServoraCare."
-      />
+      <div className="min-h-screen bg-gray-100 p-10">
 
-      <meta
-        property="og:url"
-        content="https://servoracare.vercel.app/dashboard"
-      />
 
-      <meta
-        property="og:type"
-        content="website"
-      />
+        {/* ==========================================
+            HEADER
+        ========================================== */}
 
-    </Helmet>
-
-    <div className="min-h-screen bg-gray-100 p-10">
-
-      <div className="flex justify-between items-center mb-10">
-
-        <div>
+        <div className="mb-10">
 
           <h1 className="text-5xl font-bold text-blue-900">
-            Welcome, {user.name}
+
+            Welcome, {user?.name}
+
           </h1>
 
           <p className="text-gray-600 mt-2">
+
             Customer Dashboard
+
           </p>
 
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-6 py-3 rounded-xl hover:bg-red-600"
-        >
-          Logout
-        </button>
 
-      </div>
+        {/* ==========================================
+            BOOKINGS
+        ========================================== */}
 
-      <div className="bg-white rounded-3xl shadow-lg p-8">
+        <div className="bg-white rounded-3xl shadow-lg p-8">
 
-        <h2 className="text-3xl font-bold text-blue-900 mb-8">
-          My Bookings
-        </h2>
+          <h2 className="text-3xl font-bold text-blue-900 mb-8">
 
-        <div className="overflow-x-auto">
+            My Bookings
 
-          <table className="w-full">
+          </h2>
 
-            <thead className="bg-blue-900 text-white">
-            <tr>
-                <th className="p-4">Service</th>
-                <th className="p-4">Address</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Technician</th>
-                <th className="p-4">Technician Phone</th>
-                <th className="p-4">Accepted at</th>
-                <th className="p-4">Visit Date</th>
-                <th className="p-4">Visit Time</th>
-                <th className="p-4">Payment</th>
-                <th className="p-4">Technician Report</th>
-            </tr>
-            </thead>
 
-            <tbody>
+          <div className="overflow-x-auto">
 
-            {bookings.map((booking) => (
+            <table className="w-full">
 
-            <tr
-                key={booking.id}
-                className="border-b text-center hover:bg-gray-50"
-            >
 
-                <td className="p-4 font-medium">
-                    {booking.service_type}
-                </td>
+              {/* ======================================
+                  TABLE HEADER
+              ====================================== */}
 
-                <td className="p-4">
-                    {booking.address}
-                </td>
+              <thead className="bg-blue-900 text-white">
 
-                <td className="p-4">
+                <tr>
 
-                    <span
-                        className={`px-4 py-2 rounded-full text-white text-sm
+                  <th className="p-4">
+                    Booking ID
+                  </th>
 
-                        ${
-                            booking.status === "Pending"
-                                ? "bg-yellow-500"
+                  <th className="p-4">
+                    Service
+                  </th>
 
-                                : booking.status === "Accepted"
-                                ? "bg-blue-600"
+                  <th className="p-4">
+                    Address
+                  </th>
 
-                                : booking.status === "Completed"
-                                ? "bg-green-600"
+                  <th className="p-4">
+                    Status
+                  </th>
 
-                                : "bg-red-500"
-                        }`}
+                  <th className="p-4">
+                    Technician
+                  </th>
+
+                  <th className="p-4">
+                    Technician Phone
+                  </th>
+
+                  <th className="p-4">
+                    Accepted At
+                  </th>
+
+                  <th className="p-4">
+                    Visit Date
+                  </th>
+
+                  <th className="p-4">
+                    Visit Time
+                  </th>
+
+                  <th className="p-4">
+                    Payment
+                  </th>
+
+                  <th className="p-4">
+                    Technician Report
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              {/* ======================================
+                  TABLE BODY
+              ====================================== */}
+
+              <tbody>
+
+                {bookings.length === 0 ? (
+
+                  <tr>
+
+                    <td
+                      colSpan="11"
+                      className="p-8 text-center text-gray-500"
                     >
-                        {booking.status}
-                    </span>
 
-                </td>
+                      No bookings found.
 
-                <td className="p-4">
+                    </td>
 
-                    {booking.technician_name ? (
+                  </tr>
 
-                        <div>
+                ) : (
+
+                  bookings.map((booking) => (
+
+                    <tr
+                      key={booking._id}
+                      className="border-b text-center hover:bg-gray-50"
+                    >
+
+
+                      {/* ==================================
+                          6 DIGIT BOOKING ID
+                      ================================== */}
+
+                      <td className="p-4">
+
+                        <span className="font-bold text-blue-900">
+
+                          {booking.booking_id || "-"}
+
+                        </span>
+
+                      </td>
+
+
+                      {/* SERVICE */}
+
+                      <td className="p-4 font-medium">
+
+                        {booking.service_type}
+
+                      </td>
+
+
+                      {/* ADDRESS */}
+
+                      <td className="p-4">
+
+                        {booking.address}
+
+                      </td>
+
+
+                      {/* STATUS */}
+
+                      <td className="p-4">
+
+                        <span
+                          className={`px-4 py-2 rounded-full text-white text-sm
+
+                          ${
+                            booking.status === "Pending"
+
+                              ? "bg-yellow-500"
+
+                              : booking.status === "Accepted"
+
+                              ? "bg-blue-600"
+
+                              : booking.status === "Completed"
+
+                              ? "bg-green-600"
+
+                              : "bg-red-500"
+                          }
+
+                          `}
+                        >
+
+                          {booking.status}
+
+                        </span>
+
+                      </td>
+
+
+                      {/* TECHNICIAN */}
+
+                      <td className="p-4">
+
+                        {booking.technician_name ? (
+
+                          <div>
 
                             <div className="font-semibold">
-                                {booking.technician_name}
+
+                              {booking.technician_name}
+
                             </div>
 
-                        </div>
+                          </div>
 
-                    ) : (
+                        ) : (
 
-                        <span className="text-gray-500">
+                          <span className="text-gray-500">
+
                             Not Assigned
-                        </span>
 
-                    )}
+                          </span>
 
-                </td>
+                        )}
 
-                <td className="p-4">
+                      </td>
 
-                    {booking.technician_phone || "-"}
 
-                </td>
+                      {/* TECHNICIAN PHONE */}
 
-                <td className="p-4">
+                      <td className="p-4">
 
-                    {booking.accepted_at
+                        {booking.technician_phone || "-"}
 
-                        ? new Date(
+                      </td>
+
+
+                      {/* ACCEPTED AT */}
+
+                      <td className="p-4">
+
+                        {booking.accepted_at
+
+                          ? new Date(
                               booking.accepted_at
-                          ).toLocaleString()
+                            ).toLocaleString()
 
-                        : "-"}
+                          : "-"
 
-                </td>
+                        }
 
-                <td className="p-4">
+                      </td>
 
-                    {booking.visit_date || "-"}
 
-                </td>
+                      {/* VISIT DATE */}
 
-                <td className="p-4">
+                      <td className="p-4">
 
-                    {booking.visit_time || "-"}
+                        {booking.visit_date
+                          ? new Date(
+                              booking.visit_date
+                            ).toLocaleDateString()
+                          : "-"
+                        }
 
-                </td>
+                      </td>
 
-                <td className="p-4">
 
-                    {booking.payment_status === "Paid" ? (
+                      {/* VISIT TIME */}
 
-                        <span className="text-green-600 font-semibold">
+                      <td className="p-4">
+
+                        {booking.visit_time || "-"}
+
+                      </td>
+
+
+                      {/* ==================================
+                          PAYMENT
+                      ================================== */}
+
+                      <td className="p-4">
+
+                        {booking.payment_status === "Paid" ? (
+
+                          <span className="text-green-600 font-semibold">
+
                             Paid
-                        </span>
 
-                    ) : (
+                          </span>
 
-                        <button
+                        ) : (
+
+                          <button
+
                             onClick={() =>
-                                makePayment(
-                                    booking.id,
-                                    booking.amount
-                                )
+                              makePayment(
+                                booking._id,
+                                booking.amount
+                              )
                             }
+
                             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-                        >
+
+                          >
+
                             Pay Now
-                        </button>
 
-                    )}
+                          </button>
 
-                </td>
+                        )}
 
-                <td className="p-4">
+                      </td>
 
-                    {booking.technician_comment || "-"}
 
-                </td>
+                      {/* TECHNICIAN REPORT */}
 
-            </tr>
+                      <td className="p-4">
 
-            ))}
+                        {booking.technician_comment || "-"}
 
-            </tbody>
+                      </td>
 
-          </table>
 
-        </div>
+                    </tr>
 
-      </div>
-      {
-  showQR && (
+                  ))
 
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                )}
 
-      <div className="bg-white rounded-3xl shadow-2xl p-8 w-[420px]">
+              </tbody>
 
-        <h2 className="text-3xl font-bold text-center text-blue-900">
-          Scan & Pay
-        </h2>
-
-        <p className="text-center text-gray-500 mt-2">
-          Scan using any UPI App
-        </p>
-
-        <div className="flex justify-center my-8">
-
-          <QRCode
-            value={paymentUrl}
-            size={220}
-          />
-
-        </div>
-
-        <div className="bg-gray-100 rounded-xl p-4">
-
-          <p className="text-sm text-gray-600">
-            UPI ID
-          </p>
-
-          <div className="flex justify-between items-center">
-
-            <span className="font-semibold">
-              7828908522@axl
-            </span>
-
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText("7828908522@axl");
-                alert("UPI ID Copied");
-              }}
-              className="text-blue-600 font-semibold"
-            >
-              Copy
-            </button>
+            </table>
 
           </div>
 
         </div>
 
-        <button
-          onClick={() => setShowQR(false)}
-          className="mt-6 w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-800"
-        >
-          Close
-        </button>
+
+        {/* ==========================================
+            PAYMENT QR MODAL
+        ========================================== */}
+
+        {showQR && (
+
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+            <div className="bg-white rounded-3xl shadow-2xl p-8 w-[420px]">
+
+
+              <h2 className="text-3xl font-bold text-center text-blue-900">
+
+                Scan & Pay
+
+              </h2>
+
+
+              <p className="text-center text-gray-500 mt-2">
+
+                Scan using any UPI App
+
+              </p>
+
+
+              {/* QR */}
+
+              <div className="flex justify-center my-8">
+
+                <QRCode
+                  value={paymentUrl}
+                  size={220}
+                />
+
+              </div>
+
+
+              {/* UPI */}
+
+              <div className="bg-gray-100 rounded-xl p-4">
+
+                <p className="text-sm text-gray-600">
+
+                  UPI ID
+
+                </p>
+
+
+                <div className="flex justify-between items-center">
+
+                  <span className="font-semibold">
+
+                    7828908522@axl
+
+                  </span>
+
+
+                  <button
+
+                    onClick={() => {
+
+                      navigator.clipboard.writeText(
+                        "7828908522@axl"
+                      );
+
+                      alert(
+                        "UPI ID Copied"
+                      );
+
+                    }}
+
+                    className="text-blue-600 font-semibold"
+
+                  >
+
+                    Copy
+
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              {/* CLOSE */}
+
+              <button
+
+                onClick={() =>
+                  setShowQR(false)
+                }
+
+                className="mt-6 w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-800"
+
+              >
+
+                Close
+
+              </button>
+
+            </div>
+
+          </div>
+
+        )}
 
       </div>
 
-    </div>
-
-  )
-}
-
-    </div>
     </>
 
-  )
+  );
+
 }
 
-export default Dashboard
+export default Dashboard;
