@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 
 const API = import.meta.env.VITE_API_URL;
 
 function Admin() {
-
-  const navigate = useNavigate();
 
   const [bookings, setBookings] = useState([]);
   const [technicians, setTechnicians] = useState([]);
@@ -15,20 +12,6 @@ function Admin() {
   const [selectedTechnician, setSelectedTechnician] = useState({});
   const [visitDate, setVisitDate] = useState({});
   const [visitTime, setVisitTime] = useState({});
-
-
-  // ==========================================
-  // LOGOUT
-  // ==========================================
-
-  const handleLogout = () => {
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    navigate("/login");
-
-  };
 
 
   // ==========================================
@@ -267,19 +250,6 @@ function Admin() {
             Admin Dashboard
 
           </h1>
-
-
-          <button
-
-            onClick={handleLogout}
-
-            className="bg-red-500 text-white px-6 py-3 rounded-xl hover:bg-red-600"
-
-          >
-
-            Logout
-
-          </button>
 
         </div>
 
