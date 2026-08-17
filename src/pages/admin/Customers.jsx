@@ -180,7 +180,7 @@ function Customers() {
                   >
 
                     <td className="p-4">
-                      {customer.id}
+                      {customer._id}
                     </td>
 
                     <td className="p-4 font-medium">

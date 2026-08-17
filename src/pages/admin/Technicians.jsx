@@ -62,7 +62,7 @@ function Technicians() {
             >
 
               <td className="p-4">
-                {tech.id}
+                {tech._id}
               </td>
 
               <td className="p-4">

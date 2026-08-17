@@ -57,7 +57,7 @@ function AllBookings() {
                   className="border-b hover:bg-gray-50"
                 >
 
-                  <td className="p-4">{booking.id}</td>
+                  <td className="p-4">{booking._id}</td>
 
                   <td className="p-4 font-medium">
                     {booking.full_name}
