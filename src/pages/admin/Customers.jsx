@@ -143,7 +143,7 @@ function Customers() {
                 <tr className="bg-blue-900 text-white">
 
                   <th className="p-4 text-left">
-                    USER_ID
+                    User_id
                   </th>
 
                   <th className="p-4 text-left">
