@@ -235,11 +235,11 @@ ${formData.message}`
                 </h3>
 
                 <p className="text-gray-600">
-                  Monday - Sunday
+                  Monday - Saturday
                 </p>
 
                 <p className="text-gray-600">
-                  8:00 AM - 8:00 PM
+                  9:30 AM - 6:30 PM
                 </p>
 
               </div>
