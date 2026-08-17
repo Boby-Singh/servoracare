@@ -116,12 +116,13 @@ ${formData.message}`
         "url": "https://www.servoracare.in",
         "telephone": "+91-7828908522",
         "email": "support@servoracare.in",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Morena",
-          "addressRegion": "Madhya Pradesh",
-          "addressCountry": "India"
-        },
+       // Local Business Schema
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Gwalior",
+        "addressRegion": "Madhya Pradesh",
+        "addressCountry": "India"
+      },
         "openingHours": "Mo-Su 08:00-20:00"
       })}
       </script>
@@ -214,7 +215,7 @@ ${formData.message}`
                 </h3>
 
                 <p className="text-gray-600">
-                  Morena, Madhya Pradesh, India
+                  Gwalior, Madhya Pradesh, India
                 </p>
 
               </div>
@@ -367,8 +368,8 @@ ${formData.message}`
         <div className="rounded-3xl overflow-hidden shadow-lg">
 
           <iframe
-            title="location"
-            src="https://www.google.com/maps?q=Morena,Madhya%20Pradesh&output=embed"
+            title="ServoraCare Gwalior Location"
+            src="https://www.google.com/maps?q=Gwalior,Madhya%20Pradesh&output=embed"
             width="100%"
             height="450"
             style={{ border: 0 }}
