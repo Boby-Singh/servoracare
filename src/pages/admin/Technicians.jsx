@@ -42,7 +42,7 @@ function Technicians() {
 
           <tr>
 
-            <th className="p-4">USER_ID</th>
+            <th className="p-4">User_id</th>
             <th className="p-4">Name</th>
             <th className="p-4">Email</th>
             <th className="p-4">Employee_Code</th>
