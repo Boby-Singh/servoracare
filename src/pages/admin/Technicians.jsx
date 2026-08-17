@@ -42,7 +42,7 @@ function Technicians() {
 
           <tr>
 
-            <th className="p-4">ID</th>
+            <th className="p-4">USER_ID</th>
             <th className="p-4">Name</th>
             <th className="p-4">Email</th>
             <th className="p-4">Employee_Code</th>
@@ -62,7 +62,7 @@ function Technicians() {
             >
 
               <td className="p-4">
-                {tech._id}
+                {tech.user_id}
               </td>
 
               <td className="p-4">

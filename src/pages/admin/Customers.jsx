@@ -143,7 +143,7 @@ function Customers() {
                 <tr className="bg-blue-900 text-white">
 
                   <th className="p-4 text-left">
-                    ID
+                    USER_ID
                   </th>
 
                   <th className="p-4 text-left">
@@ -180,7 +180,7 @@ function Customers() {
                   >
 
                     <td className="p-4">
-                      {customer._id}
+                      {customer.user_id}
                     </td>
 
                     <td className="p-4 font-medium">
