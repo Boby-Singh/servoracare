@@ -11,6 +11,7 @@ function Dashboard() {
   const [showQR, setShowQR] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
   const [filter, setFilter] = useState("All");
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   const user = JSON.parse(
     localStorage.getItem("user") || "null"
@@ -144,6 +145,14 @@ function Dashboard() {
     return "🛠️";
   };
 
+  // ==========================================
+  // CLOSE BOOKING MODAL
+  // ==========================================
+
+  const closeBookingDetails = () => {
+    setSelectedBooking(null);
+  };
+
   return (
     <>
       <Helmet>
@@ -163,6 +172,7 @@ function Dashboard() {
       </Helmet>
 
       <div className="min-h-screen bg-slate-50">
+
         {/* =====================================================
             MAIN
         ===================================================== */}
@@ -176,7 +186,6 @@ function Dashboard() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
 
             <div>
-
               <p className="text-sm font-semibold text-blue-700 mb-1">
                 CUSTOMER PORTAL
               </p>
@@ -188,7 +197,6 @@ function Dashboard() {
               <p className="text-slate-500 mt-2">
                 Manage your home services and track your bookings.
               </p>
-
             </div>
 
             <Link
@@ -391,6 +399,7 @@ function Dashboard() {
               <table className="w-full">
 
                 <thead>
+
                   <tr className="bg-slate-50 border-b border-slate-200">
 
                     <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -421,7 +430,12 @@ function Dashboard() {
                       Report
                     </th>
 
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Details
+                    </th>
+
                   </tr>
+
                 </thead>
 
 
@@ -432,7 +446,7 @@ function Dashboard() {
                     <tr>
 
                       <td
-                        colSpan="7"
+                        colSpan="8"
                         className="py-16 text-center"
                       >
 
@@ -515,9 +529,10 @@ function Dashboard() {
                             )}`}
                           >
 
-                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
 
                             {booking.status || "-"}
+
                           </span>
 
                         </td>
@@ -536,12 +551,14 @@ function Dashboard() {
                               </p>
 
                               {booking.technician_phone && (
+
                                 <a
                                   href={`tel:${booking.technician_phone}`}
                                   className="text-xs text-blue-600 hover:underline"
                                 >
                                   📞 {booking.technician_phone}
                                 </a>
+
                               )}
 
                             </div>
@@ -637,9 +654,7 @@ function Dashboard() {
 
                               <button
                                 onClick={() =>
-                                  alert(
-                                    booking.technician_comment
-                                  )
+                                  setSelectedBooking(booking)
                                 }
                                 className="text-xs text-blue-600 font-semibold mt-1 hover:underline"
                               >
@@ -655,6 +670,22 @@ function Dashboard() {
                             </span>
 
                           )}
+
+                        </td>
+
+
+                        {/* DETAILS */}
+
+                        <td className="px-5 py-5">
+
+                          <button
+                            onClick={() =>
+                              setSelectedBooking(booking)
+                            }
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-sm font-bold transition"
+                          >
+                            View Details
+                          </button>
 
                         </td>
 
@@ -776,11 +807,13 @@ function Dashboard() {
                         </p>
 
                         <p className="text-sm font-semibold text-slate-700 mt-1">
+
                           {booking.visit_date
                             ? new Date(
                                 booking.visit_date
                               ).toLocaleDateString()
                             : "Not scheduled"}
+
                         </p>
 
                       </div>
@@ -814,6 +847,7 @@ function Dashboard() {
 
                       </div>
 
+
                       {booking.payment_status !== "Paid" && (
 
                         <button
@@ -843,13 +877,25 @@ function Dashboard() {
                           TECHNICIAN REPORT
                         </p>
 
-                        <p className="text-sm text-slate-600 mt-1">
+                        <p className="text-sm text-slate-600 mt-1 line-clamp-2">
                           {booking.technician_comment}
                         </p>
 
                       </div>
 
                     )}
+
+
+                    {/* VIEW DETAILS */}
+
+                    <button
+                      onClick={() =>
+                        setSelectedBooking(booking)
+                      }
+                      className="w-full mt-5 border border-blue-200 text-blue-700 hover:bg-blue-50 py-2.5 rounded-xl text-sm font-bold transition"
+                    >
+                      View Booking Details
+                    </button>
 
                   </div>
 
@@ -935,6 +981,419 @@ function Dashboard() {
 
 
         {/* =====================================================
+            BOOKING DETAILS MODAL
+        ===================================================== */}
+
+        {selectedBooking && (
+
+          <div
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={closeBookingDetails}
+          >
+
+            <div
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+
+              {/* MODAL HEADER */}
+
+              <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-5 flex items-center justify-between z-10">
+
+                <div>
+
+                  <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                    Booking Details
+                  </p>
+
+                  <h2 className="text-2xl font-extrabold text-slate-900 mt-1">
+                    #{selectedBooking.booking_id || "-"}
+                  </h2>
+
+                </div>
+
+                <button
+                  onClick={closeBookingDetails}
+                  className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg transition"
+                >
+                  ✕
+                </button>
+
+              </div>
+
+
+              <div className="p-6 space-y-6">
+
+                {/* STATUS */}
+
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+
+                  <div className="flex items-center justify-between gap-4">
+
+                    <div>
+
+                      <p className="text-xs font-bold uppercase text-slate-400">
+                        Current Status
+                      </p>
+
+                      <p className="text-lg font-bold text-slate-800 mt-1">
+                        {selectedBooking.status || "Unknown"}
+                      </p>
+
+                    </div>
+
+                    <span
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${getStatusStyle(
+                        selectedBooking.status
+                      )}`}
+                    >
+
+                      <span className="w-2 h-2 rounded-full bg-current" />
+
+                      {selectedBooking.status || "-"}
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                {/* SERVICE INFORMATION */}
+
+                <div>
+
+                  <h3 className="text-sm font-bold text-slate-900 mb-3">
+                    Service Information
+                  </h3>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Service
+                      </p>
+
+                      <div className="flex items-center gap-3 mt-2">
+
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
+                          {getServiceIcon(
+                            selectedBooking.service_type
+                          )}
+                        </div>
+
+                        <p className="font-bold text-slate-800">
+                          {selectedBooking.service_type || "-"}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Amount
+                      </p>
+
+                      <p className="text-xl font-extrabold text-slate-900 mt-2">
+                        ₹{selectedBooking.amount || "0"}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* CUSTOMER INFORMATION */}
+
+                <div>
+
+                  <h3 className="text-sm font-bold text-slate-900 mb-3">
+                    Customer Information
+                  </h3>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+
+                    <div className="bg-slate-50 rounded-xl p-4">
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Name
+                      </p>
+
+                      <p className="font-semibold text-slate-800 mt-1">
+                        {selectedBooking.full_name ||
+                          user?.name ||
+                          "-"}
+                      </p>
+
+                    </div>
+
+
+                    <div className="bg-slate-50 rounded-xl p-4">
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Phone
+                      </p>
+
+                      <p className="font-semibold text-slate-800 mt-1">
+                        {selectedBooking.phone || "-"}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="bg-slate-50 rounded-xl p-4 mt-4">
+
+                    <p className="text-xs font-semibold text-slate-400 uppercase">
+                      Service Address
+                    </p>
+
+                    <p className="font-semibold text-slate-800 mt-1">
+                      {selectedBooking.address || "-"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                {/* TECHNICIAN */}
+
+                <div>
+
+                  <h3 className="text-sm font-bold text-slate-900 mb-3">
+                    Technician
+                  </h3>
+
+                  <div className="border border-slate-200 rounded-2xl p-5">
+
+                    {selectedBooking.technician_name ? (
+
+                      <div className="flex items-center justify-between gap-4">
+
+                        <div className="flex items-center gap-4">
+
+                          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+                            👨‍🔧
+                          </div>
+
+                          <div>
+
+                            <p className="font-bold text-slate-800">
+                              {selectedBooking.technician_name}
+                            </p>
+
+                            <p className="text-sm text-slate-500">
+                              ServoraCare Technician
+                            </p>
+
+                          </div>
+
+                        </div>
+
+
+                        {selectedBooking.technician_phone && (
+
+                          <a
+                            href={`tel:${selectedBooking.technician_phone}`}
+                            className="px-4 py-2 rounded-lg bg-blue-50 text-blue-700 font-bold text-sm hover:bg-blue-100 transition"
+                          >
+                            📞 Call
+                          </a>
+
+                        )}
+
+                      </div>
+
+                    ) : (
+
+                      <div className="text-center py-4">
+
+                        <div className="text-3xl mb-2">
+                          👨‍🔧
+                        </div>
+
+                        <p className="font-semibold text-slate-700">
+                          Technician Not Assigned
+                        </p>
+
+                        <p className="text-sm text-slate-500 mt-1">
+                          A technician will be assigned to your booking soon.
+                        </p>
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                {/* VISIT */}
+
+                <div>
+
+                  <h3 className="text-sm font-bold text-slate-900 mb-3">
+                    Scheduled Visit
+                  </h3>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+
+                    <div className="bg-slate-50 rounded-xl p-4">
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Date
+                      </p>
+
+                      <p className="font-bold text-slate-800 mt-1">
+
+                        {selectedBooking.visit_date
+                          ? new Date(
+                              selectedBooking.visit_date
+                            ).toLocaleDateString()
+                          : "Not scheduled"}
+
+                      </p>
+
+                    </div>
+
+
+                    <div className="bg-slate-50 rounded-xl p-4">
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Time
+                      </p>
+
+                      <p className="font-bold text-slate-800 mt-1">
+                        {selectedBooking.visit_time ||
+                          "Not scheduled"}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* PAYMENT */}
+
+                <div>
+
+                  <h3 className="text-sm font-bold text-slate-900 mb-3">
+                    Payment
+                  </h3>
+
+                  <div className="flex items-center justify-between bg-slate-50 rounded-xl p-4">
+
+                    <div>
+
+                      <p className="text-xs font-semibold text-slate-400 uppercase">
+                        Payment Status
+                      </p>
+
+                      <p
+                        className={`font-bold mt-1 ${
+                          selectedBooking.payment_status === "Paid"
+                            ? "text-emerald-600"
+                            : "text-amber-600"
+                        }`}
+                      >
+
+                        {selectedBooking.payment_status === "Paid"
+                          ? "✓ Paid"
+                          : "Payment Pending"}
+
+                      </p>
+
+                    </div>
+
+
+                    {selectedBooking.payment_status !== "Paid" && (
+
+                      <button
+                        onClick={() => {
+
+                          const bookingId =
+                            selectedBooking._id;
+
+                          const amount =
+                            selectedBooking.amount;
+
+                          setSelectedBooking(null);
+
+                          makePayment(
+                            bookingId,
+                            amount
+                          );
+
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition"
+                      >
+                        Pay Now
+                      </button>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                {/* TECHNICIAN REPORT */}
+
+                {selectedBooking.technician_comment && (
+
+                  <div>
+
+                    <h3 className="text-sm font-bold text-slate-900 mb-3">
+                      Technician Report
+                    </h3>
+
+                    <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+
+                      <p className="text-sm leading-6 text-slate-700">
+                        {selectedBooking.technician_comment}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                )}
+
+              </div>
+
+
+              {/* FOOTER */}
+
+              <div className="border-t border-slate-200 px-6 py-4">
+
+                <button
+                  onClick={closeBookingDetails}
+                  className="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold transition"
+                >
+                  Close
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* =====================================================
             PAYMENT QR MODAL
         ===================================================== */}
 
@@ -1002,11 +1461,13 @@ function Dashboard() {
 
                   <button
                     onClick={() => {
+
                       navigator.clipboard.writeText(
                         "7828908522@axl"
                       );
 
                       alert("UPI ID Copied");
+
                     }}
                     className="text-blue-700 font-bold text-sm hover:underline"
                   >
