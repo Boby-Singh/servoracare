@@ -1,236 +1,515 @@
-import { Link, useNavigate } from "react-router-dom"
-import { Menu, X } from "lucide-react"
-import { useState } from "react"
-import logo from "../assets/logo.jpeg"
+// import { Link, useNavigate } from "react-router-dom"
+// import { Menu, X } from "lucide-react"
+// import { useState } from "react"
+// import logo from "../assets/logo.jpeg"
+
+// function Navbar() {
+
+//   const [menuOpen, setMenuOpen] = useState(false)
+
+//   const navigate = useNavigate()
+
+//   const user = JSON.parse(localStorage.getItem("user"))
+
+//   const handleLogout = () => {
+
+//     localStorage.removeItem("user")
+//     localStorage.removeItem("token")
+
+//     navigate("/")
+
+//   }
+
+//   const getDashboardLink = () => {
+
+//     if (!user) return "/login"
+
+//     switch (user.role) {
+
+//       case "admin":
+//         return "/admin"
+
+//       case "technician":
+//         return "/technician"
+
+//       default:
+//         return "/dashboard"
+
+//     }
+
+//   }
+
+//   return (
+
+//     <nav className="bg-blue-900 text-white px-6 py-4 sticky top-0 z-50 shadow-xl">
+
+//       <div className="flex justify-between items-center">
+
+//         {/* Logo */}
+
+//         <Link to="/" className="flex items-center gap-3">
+
+//           <img
+//             src={logo}
+//             alt="ServoraCare"
+//             className="h-20 w-20 rounded-full bg-white p-1 shadow-md"
+//           />
+
+//           <div>
+//             <h1 className="text-3xl font-extrabold leading-none tracking-wide">
+//               ServoraCare
+//             </h1>
+
+//             <p className="text-sm text-orange-300">
+//               Trusted Home Services
+//             </p>
+//           </div>
+
+//         </Link>
+
+//         {/* Desktop Menu */}
+
+//         <ul className="hidden md:flex gap-5 text-lg items-center">
+
+//           <Link to="/">
+//             <li className="hover:text-orange-400 transition">
+//               HOME
+//             </li>
+//           </Link>
+
+//           <Link to="/services">
+//             <li className="hover:text-orange-400 transition">
+//               SERVICES
+//             </li>
+//           </Link>
+
+//           <Link to="/careers">
+//             <li className="hover:text-orange-400 transition">
+//               CAREERS
+//             </li> 
+//           </Link>
+
+//           <Link to="/about">
+//             <li className="hover:text-orange-400 transition">
+//               ABOUT US
+//             </li>
+//           </Link>
+
+//           <Link to="/contact">
+//             <li className="hover:text-orange-400 transition">
+//               CONTACT US
+//             </li>
+//           </Link>
+
+//         </ul>
+
+//         {/* Desktop Right Side */}
+
+//         <div className="hidden md:flex items-center gap-4">
+
+//           {!user ? (
+
+//             <Link to="/login">
+//               <button className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-blue-900 transition">
+//                 LOGIN
+//               </button>
+//             </Link>
+
+//           ) : (
+
+//             <>
+//               {/* User */}
+
+//               <div className="flex items-center gap-3 bg-blue-800 px-4 py-2 rounded-full">
+
+//                 <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center font-bold">
+
+//                   {user?.name?.charAt(0)?.toUpperCase() || "U"}
+
+//                 </div>
+
+//                 <span className="font-medium">
+//                   {user.name}
+//                 </span>
+
+//               </div>
+
+//               {/* Dashboard */}
+
+//               <Link to={getDashboardLink()}>
+//                 <button className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-blue-900 transition">
+//                   DASHBOARD
+//                 </button>
+//               </Link>
+
+//               {/* Logout */}
+
+//               <button
+//                 onClick={handleLogout}
+//                 className="bg-red-500 px-5 py-2 rounded-lg hover:bg-red-600 transition"
+//               >
+//                 LOG OUT
+//               </button>
+
+//             </>
+
+//           )}
+
+//         </div>
+
+//         {/* Mobile Menu Button */}
+
+//         <button
+//           className="md:hidden"
+//           onClick={() => setMenuOpen(!menuOpen)}
+//         >
+
+//           {menuOpen ? <X size={32} /> : <Menu size={32} />}
+
+//         </button>
+
+//       </div>
+
+//       {/* Mobile Menu */}
+
+//       {menuOpen && (
+
+//         <div className="md:hidden mt-5 bg-blue-800 rounded-xl p-5 shadow-lg">
+
+//           <ul className="flex flex-col gap-5 text-lg">
+
+//             <Link
+//               to="/"
+//               onClick={() => setMenuOpen(false)}
+//             >
+//               <li className="hover:text-orange-400">
+//                 HOME
+//               </li>
+//             </Link>
+
+//             <Link
+//               to="/services"
+//               onClick={() => setMenuOpen(false)}
+//             >
+//               <li className="hover:text-orange-400">
+//                 SERVICES
+//               </li>
+//             </Link>
+
+//             <Link
+//               to="/careers"
+//               onClick={() => setMenuOpen(false)}
+//             >
+//               <li className="hover:text-orange-400">
+//                 CAREERS
+//               </li>
+//             </Link>
+
+//             <Link
+//               to="/about"
+//               onClick={() => setMenuOpen(false)}
+//             >
+//               <li className="hover:text-orange-400">
+//                 ABOUT US
+//               </li>
+//             </Link>
+
+//             <Link
+//               to="/contact"
+//               onClick={() => setMenuOpen(false)}
+//             >
+//               <li className="hover:text-orange-400">
+//                 CONTACT US
+//               </li>
+//             </Link>
+
+//             {!user ? (
+
+//               <Link
+//                 to="/login"
+//                 onClick={() => setMenuOpen(false)}
+//               >
+
+//                 <button className="border border-white px-5 py-2 rounded-lg w-full hover:bg-white hover:text-blue-900 transition">
+//                   LOGIN
+//                 </button>
+
+//               </Link>
+
+//             ) : (
+
+//               <>
+
+//                 <div className="flex items-center justify-center gap-3 bg-blue-700 rounded-lg py-3">
+
+//                   <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-bold">
+
+//                     {user.name.charAt(0).toUpperCase()}
+
+//                   </div>
+
+//                   <span className="font-semibold">
+//                     {user.name}
+//                   </span>
+
+//                 </div>
+
+//                 <Link
+//                   to={getDashboardLink()}
+//                   onClick={() => setMenuOpen(false)}
+//                 >
+
+//                   <button className="border border-white px-5 py-2 rounded-lg w-full hover:bg-white hover:text-blue-900 transition">
+//                     DASHBOARD
+//                   </button>
+
+//                 </Link>
+
+//                 <button
+//                   onClick={handleLogout}
+//                   className="bg-red-500 px-5 py-2 rounded-lg w-full hover:bg-red-600 transition"
+//                 >
+//                   LOGOUT
+//                 </button>
+
+//               </>
+
+//             )}
+
+//           </ul>
+
+//         </div>
+
+//       )}
+
+//     </nav>
+
+//   )
+
+// }
+
+// export default Navbar
+
+
+
+  import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  LogOut,
+  ChevronDown,
+  UserCircle,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+import logo from "../assets/logo.jpeg";
 
 function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const navigate = useNavigate()
+  // ==========================================
+  // GET USER
+  // ==========================================
 
-  const user = JSON.parse(localStorage.getItem("user"))
+  const getUser = () => {
+    try {
+      return JSON.parse(
+        localStorage.getItem("user") || "null"
+      );
+    } catch (error) {
+      console.error("User parsing error:", error);
+      return null;
+    }
+  };
 
-  const handleLogout = () => {
+  const user = getUser();
 
-    localStorage.removeItem("user")
-    localStorage.removeItem("token")
-
-    navigate("/")
-
-  }
+  // ==========================================
+  // DASHBOARD LINK
+  // ==========================================
 
   const getDashboardLink = () => {
-
-    if (!user) return "/login"
+    if (!user) return "/login";
 
     switch (user.role) {
-
       case "admin":
-        return "/admin"
+        return "/admin";
 
       case "technician":
-        return "/technician"
+        return "/technician";
 
       default:
-        return "/dashboard"
+        return "/dashboard";
+    }
+  };
 
+  // ==========================================
+  // LOGOUT
+  // ==========================================
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    setProfileOpen(false);
+    setMenuOpen(false);
+
+    navigate("/");
+  };
+
+  // ==========================================
+  // CLOSE MOBILE MENU ON ROUTE CHANGE
+  // ==========================================
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setProfileOpen(false);
+  }, [location.pathname]);
+
+  // ==========================================
+  // NAVIGATION LINKS
+  // ==========================================
+
+  const navLinks = [
+    {
+      name: "HOME",
+      path: "/",
+    },
+    {
+      name: "SERVICES",
+      path: "/services",
+    },
+    {
+      name: "CAREERS",
+      path: "/careers",
+    },
+    {
+      name: "ABOUT US",
+      path: "/about",
+    },
+    {
+      name: "CONTACT US",
+      path: "/contact",
+    },
+  ];
+
+  // ==========================================
+  // ACTIVE LINK
+  // ==========================================
+
+  const isActive = (path) => {
+    if (path === "/") {
+      return location.pathname === "/";
     }
 
-  }
+    return location.pathname.startsWith(path);
+  };
+
+  // ==========================================
+  // USER INITIAL
+  // ==========================================
+
+  const userInitial =
+    user?.name?.charAt(0)?.toUpperCase() || "U";
 
   return (
+    <nav className="bg-blue-900 text-white sticky top-0 z-50 shadow-xl">
 
-    <nav className="bg-blue-900 text-white px-6 py-4 sticky top-0 z-50 shadow-xl">
+      {/* =====================================================
+          NAVBAR CONTAINER
+      ===================================================== */}
 
-      <div className="flex justify-between items-center">
+      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Logo */}
+        <div className="h-20 flex items-center justify-between">
 
-        <Link to="/" className="flex items-center gap-3">
 
-          <img
-            src={logo}
-            alt="ServoraCare"
-            className="h-20 w-20 rounded-full bg-white p-1 shadow-md"
-          />
+          {/* =================================================
+              LOGO
+          ================================================= */}
 
-          <div>
-            <h1 className="text-3xl font-extrabold leading-none tracking-wide">
-              ServoraCare
-            </h1>
+          <Link
+            to="/"
+            className="flex items-center gap-3 shrink-0"
+          >
 
-            <p className="text-sm text-orange-300">
-              Trusted Home Services
-            </p>
-          </div>
+            <img
+              src={logo}
+              alt="ServoraCare Logo"
+              className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-white p-1 shadow-md object-cover"
+            />
 
-        </Link>
+            <div className="hidden sm:block">
 
-        {/* Desktop Menu */}
+              <h1 className="text-2xl sm:text-3xl font-extrabold leading-none tracking-wide">
+                ServoraCare
+              </h1>
 
-        <ul className="hidden md:flex gap-5 text-lg items-center">
+              <p className="text-xs sm:text-sm text-orange-300 mt-1">
+                Trusted Home Services
+              </p>
 
-          <Link to="/">
-            <li className="hover:text-orange-400 transition">
-              HOME
-            </li>
+            </div>
+
           </Link>
 
-          <Link to="/services">
-            <li className="hover:text-orange-400 transition">
-              SERVICES
-            </li>
-          </Link>
 
-          <Link to="/careers">
-            <li className="hover:text-orange-400 transition">
-              CAREERS
-            </li> 
-          </Link>
+          {/* =================================================
+              DESKTOP NAVIGATION
+          ================================================= */}
 
-          <Link to="/about">
-            <li className="hover:text-orange-400 transition">
-              ABOUT US
-            </li>
-          </Link>
+          <ul className="hidden lg:flex items-center gap-7">
 
-          <Link to="/contact">
-            <li className="hover:text-orange-400 transition">
-              CONTACT US
-            </li>
-          </Link>
+            {navLinks.map((link) => (
 
-        </ul>
+              <li key={link.path}>
 
-        {/* Desktop Right Side */}
+                <Link
+                  to={link.path}
+                  className={`relative text-sm font-semibold tracking-wide transition ${
+                    isActive(link.path)
+                      ? "text-orange-300"
+                      : "text-white hover:text-orange-300"
+                  }`}
+                >
 
-        <div className="hidden md:flex items-center gap-4">
+                  {link.name}
 
-          {!user ? (
+                  {/* ACTIVE INDICATOR */}
 
-            <Link to="/login">
-              <button className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-blue-900 transition">
-                LOGIN
-              </button>
-            </Link>
+                  {isActive(link.path) && (
+                    <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-orange-400 rounded-full" />
+                  )}
 
-          ) : (
+                </Link>
 
-            <>
-              {/* User */}
-
-              <div className="flex items-center gap-3 bg-blue-800 px-4 py-2 rounded-full">
-
-                <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center font-bold">
-
-                  {user?.name?.charAt(0)?.toUpperCase() || "U"}
-
-                </div>
-
-                <span className="font-medium">
-                  {user.name}
-                </span>
-
-              </div>
-
-              {/* Dashboard */}
-
-              <Link to={getDashboardLink()}>
-                <button className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-blue-900 transition">
-                  DASHBOARD
-                </button>
-              </Link>
-
-              {/* Logout */}
-
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 px-5 py-2 rounded-lg hover:bg-red-600 transition"
-              >
-                LOG OUT
-              </button>
-
-            </>
-
-          )}
-
-        </div>
-
-        {/* Mobile Menu Button */}
-
-        <button
-          className="md:hidden"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-
-          {menuOpen ? <X size={32} /> : <Menu size={32} />}
-
-        </button>
-
-      </div>
-
-      {/* Mobile Menu */}
-
-      {menuOpen && (
-
-        <div className="md:hidden mt-5 bg-blue-800 rounded-xl p-5 shadow-lg">
-
-          <ul className="flex flex-col gap-5 text-lg">
-
-            <Link
-              to="/"
-              onClick={() => setMenuOpen(false)}
-            >
-              <li className="hover:text-orange-400">
-                HOME
               </li>
-            </Link>
 
-            <Link
-              to="/services"
-              onClick={() => setMenuOpen(false)}
-            >
-              <li className="hover:text-orange-400">
-                SERVICES
-              </li>
-            </Link>
+            ))}
 
-            <Link
-              to="/careers"
-              onClick={() => setMenuOpen(false)}
-            >
-              <li className="hover:text-orange-400">
-                CAREERS
-              </li>
-            </Link>
+          </ul>
 
-            <Link
-              to="/about"
-              onClick={() => setMenuOpen(false)}
-            >
-              <li className="hover:text-orange-400">
-                ABOUT US
-              </li>
-            </Link>
 
-            <Link
-              to="/contact"
-              onClick={() => setMenuOpen(false)}
-            >
-              <li className="hover:text-orange-400">
-                CONTACT US
-              </li>
-            </Link>
+          {/* =================================================
+              DESKTOP RIGHT SIDE
+          ================================================= */}
+
+          <div className="hidden lg:flex items-center gap-3">
 
             {!user ? (
 
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-              >
+              /* LOGIN */
 
-                <button className="border border-white px-5 py-2 rounded-lg w-full hover:bg-white hover:text-blue-900 transition">
+              <Link to="/login">
+
+                <button
+                  className="border border-white/80 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-white hover:text-blue-900 transition"
+                >
                   LOGIN
                 </button>
 
@@ -240,52 +519,336 @@ function Navbar() {
 
               <>
 
-                <div className="flex items-center justify-center gap-3 bg-blue-700 rounded-lg py-3">
-
-                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-bold">
-
-                    {user.name.charAt(0).toUpperCase()}
-
-                  </div>
-
-                  <span className="font-semibold">
-                    {user.name}
-                  </span>
-
-                </div>
+                {/* DASHBOARD */}
 
                 <Link
                   to={getDashboardLink()}
-                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 border border-white/80 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-white hover:text-blue-900 transition"
                 >
 
-                  <button className="border border-white px-5 py-2 rounded-lg w-full hover:bg-white hover:text-blue-900 transition">
-                    DASHBOARD
-                  </button>
+                  <LayoutDashboard size={17} />
+
+                  DASHBOARD
 
                 </Link>
 
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 px-5 py-2 rounded-lg w-full hover:bg-red-600 transition"
-                >
-                  LOGOUT
-                </button>
+
+                {/* USER PROFILE */}
+
+                <div className="relative">
+
+                  <button
+                    onClick={() =>
+                      setProfileOpen(!profileOpen)
+                    }
+                    className="flex items-center gap-2 bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded-xl transition"
+                  >
+
+                    <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center font-bold text-sm">
+                      {userInitial}
+                    </div>
+
+                    <div className="text-left max-w-[130px]">
+
+                      <p className="font-semibold text-sm truncate">
+                        {user?.name || "User"}
+                      </p>
+
+                      <p className="text-[10px] text-blue-200 capitalize">
+                        {user?.role || "customer"}
+                      </p>
+
+                    </div>
+
+                    <ChevronDown
+                      size={16}
+                      className={`transition ${
+                        profileOpen
+                          ? "rotate-180"
+                          : ""
+                      }`}
+                    />
+
+                  </button>
+
+
+                  {/* PROFILE DROPDOWN */}
+
+                  {profileOpen && (
+
+                    <div className="absolute right-0 mt-3 w-60 bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+
+                      {/* USER INFO */}
+
+                      <div className="px-4 py-4 border-b border-slate-100">
+
+                        <div className="flex items-center gap-3">
+
+                          <div className="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+                            {userInitial}
+                          </div>
+
+                          <div className="min-w-0">
+
+                            <p className="font-bold truncate">
+                              {user?.name || "User"}
+                            </p>
+
+                            <p className="text-xs text-slate-500 truncate">
+                              {user?.email || ""}
+                            </p>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+
+                      {/* DASHBOARD */}
+
+                      <Link
+                        to={getDashboardLink()}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition"
+                      >
+
+                        <LayoutDashboard
+                          size={18}
+                          className="text-blue-700"
+                        />
+
+                        <span className="text-sm font-semibold">
+                          Dashboard
+                        </span>
+
+                      </Link>
+
+
+                      {/* PROFILE */}
+
+                      <button
+                        onClick={() => {
+                          setProfileOpen(false);
+                          navigate("/profile");
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition text-left"
+                      >
+
+                        <UserCircle
+                          size={18}
+                          className="text-slate-500"
+                        />
+
+                        <span className="text-sm font-semibold">
+                          My Profile
+                        </span>
+
+                      </button>
+
+
+                      {/* LOGOUT */}
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 border-t border-slate-100 text-red-600 hover:bg-red-50 transition text-left"
+                      >
+
+                        <LogOut size={18} />
+
+                        <span className="text-sm font-semibold">
+                          Logout
+                        </span>
+
+                      </button>
+
+                    </div>
+
+                  )}
+
+                </div>
 
               </>
 
             )}
 
-          </ul>
+          </div>
+
+
+          {/* =================================================
+              MOBILE MENU BUTTON
+          ================================================= */}
+
+          <button
+            className="lg:hidden w-11 h-11 rounded-xl bg-blue-800 hover:bg-blue-700 flex items-center justify-center transition"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle navigation menu"
+          >
+
+            {menuOpen ? (
+              <X size={27} />
+            ) : (
+              <Menu size={27} />
+            )}
+
+          </button>
 
         </div>
 
-      )}
+
+        {/* =================================================
+            MOBILE MENU
+        ================================================= */}
+
+        {menuOpen && (
+
+          <div className="lg:hidden pb-5">
+
+            <div className="bg-blue-800 rounded-2xl p-4 shadow-lg">
+
+              {/* USER */}
+
+              {user && (
+
+                <div className="flex items-center gap-3 bg-blue-700 rounded-xl p-4 mb-4">
+
+                  <div className="w-11 h-11 rounded-full bg-orange-500 flex items-center justify-center font-bold">
+                    {userInitial}
+                  </div>
+
+                  <div className="min-w-0">
+
+                    <p className="font-bold truncate">
+                      {user?.name || "User"}
+                    </p>
+
+                    <p className="text-xs text-blue-200 capitalize">
+                      {user?.role || "customer"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              )}
+
+
+              {/* NAVIGATION */}
+
+              <ul className="flex flex-col">
+
+                {navLinks.map((link) => (
+
+                  <li key={link.path}>
+
+                    <Link
+                      to={link.path}
+                      onClick={() =>
+                        setMenuOpen(false)
+                      }
+                      className={`block px-4 py-3 rounded-xl font-semibold text-sm transition ${
+                        isActive(link.path)
+                          ? "bg-white text-blue-900"
+                          : "text-white hover:bg-blue-700 hover:text-orange-300"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+
+                  </li>
+
+                ))}
+
+              </ul>
+
+
+              {/* USER ACTIONS */}
+
+              <div className="border-t border-blue-700 mt-4 pt-4">
+
+                {!user ? (
+
+                  <Link
+                    to="/login"
+                    onClick={() =>
+                      setMenuOpen(false)
+                    }
+                  >
+
+                    <button
+                      className="w-full border border-white px-5 py-3 rounded-xl font-bold hover:bg-white hover:text-blue-900 transition"
+                    >
+                      LOGIN
+                    </button>
+
+                  </Link>
+
+                ) : (
+
+                  <div className="space-y-3">
+
+                    {/* DASHBOARD */}
+
+                    <Link
+                      to={getDashboardLink()}
+                      onClick={() =>
+                        setMenuOpen(false)
+                      }
+                      className="flex items-center justify-center gap-2 w-full bg-white text-blue-900 px-5 py-3 rounded-xl font-bold hover:bg-blue-50 transition"
+                    >
+
+                      <LayoutDashboard size={18} />
+
+                      DASHBOARD
+
+                    </Link>
+
+
+                    {/* PROFILE */}
+
+                    <Link
+                      to="/profile"
+                      onClick={() =>
+                        setMenuOpen(false)
+                      }
+                      className="flex items-center justify-center gap-2 w-full bg-blue-700 text-white px-5 py-3 rounded-xl font-bold hover:bg-blue-600 transition"
+                    >
+
+                      <UserCircle size={18} />
+
+                      MY PROFILE
+
+                    </Link>
+
+
+                    {/* LOGOUT */}
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-2 w-full bg-red-500 text-white px-5 py-3 rounded-xl font-bold hover:bg-red-600 transition"
+                    >
+
+                      <LogOut size={18} />
+
+                      LOGOUT
+
+                    </button>
+
+                  </div>
+
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+      </div>
 
     </nav>
-
-  )
-
+  );
 }
 
-export default Navbar
+export default Navbar;

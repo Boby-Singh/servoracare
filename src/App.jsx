@@ -23,6 +23,7 @@ import AddTechnician from "./pages/admin/AddTechnician"
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOTP from "./pages/VerifyOTP";
 import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 function App() {
   return (
     <BrowserRouter>
@@ -104,6 +105,10 @@ function App() {
           element={
               <TechnicianDashboard />
           }
+        />
+        <Route
+          path="/profile"
+          element={<Profile />}
         />
 
         <Route
