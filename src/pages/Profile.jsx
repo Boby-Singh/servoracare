@@ -52,6 +52,10 @@ function Profile() {
       });
     } catch (error) {
       console.error("User loading error:", error);
+
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+
       navigate("/login");
     }
   }, [navigate]);
@@ -61,10 +65,12 @@ function Profile() {
   // ==========================================
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   // ==========================================
@@ -74,8 +80,19 @@ function Profile() {
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (!formData.name.trim()) {
+    const name = formData.name.trim();
+    const phone = formData.phone.trim();
+
+    if (!name) {
       alert("Please enter your name");
+      return;
+    }
+
+    // MongoDB ID
+    const userId = user?._id || user?.id;
+
+    if (!userId) {
+      alert("User ID not found. Please login again.");
       return;
     }
 
@@ -84,11 +101,19 @@ function Profile() {
 
       const token = localStorage.getItem("token");
 
+      if (!token) {
+        alert("Session expired. Please login again.");
+        navigate("/login");
+        return;
+      }
+
+      console.log("Updating profile for user:", userId);
+
       const response = await axios.put(
-        `${API}/api/update-profile/${user.id}`,
+        `${API}/api/update-profile/${userId}`,
         {
-          name: formData.name,
-          phone: formData.phone,
+          name,
+          phone,
         },
         {
           headers: {
@@ -97,11 +122,21 @@ function Profile() {
         }
       );
 
+      console.log("Profile update response:", response.data);
+
       if (response.data.success) {
+        /*
+         * If backend returns the updated user,
+         * use it.
+         */
+        const backendUser =
+          response.data.user || response.data.updatedUser;
+
         const updatedUser = {
           ...user,
-          name: formData.name,
-          phone: formData.phone,
+          ...(backendUser || {}),
+          name,
+          phone,
         };
 
         localStorage.setItem(
@@ -110,6 +145,12 @@ function Profile() {
         );
 
         setUser(updatedUser);
+
+        setFormData({
+          name: updatedUser.name || "",
+          phone: updatedUser.phone || "",
+        });
+
         setEditing(false);
 
         alert("Profile updated successfully");
@@ -120,7 +161,20 @@ function Profile() {
         );
       }
     } catch (error) {
-      console.error("Update Profile Error:", error);
+      console.error(
+        "Update Profile Error:",
+        error
+      );
+
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        alert("Your session has expired. Please login again.");
+
+        navigate("/login");
+        return;
+      }
 
       alert(
         error.response?.data?.message ||
@@ -129,6 +183,19 @@ function Profile() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ==========================================
+  // CANCEL EDIT
+  // ==========================================
+
+  const handleCancel = () => {
+    setEditing(false);
+
+    setFormData({
+      name: user?.name || "",
+      phone: user?.phone || "",
+    });
   };
 
   // ==========================================
@@ -156,8 +223,18 @@ function Profile() {
     );
   }
 
+  // ==========================================
+  // USER DATA
+  // ==========================================
+
   const initial =
     user?.name?.charAt(0)?.toUpperCase() || "U";
+
+  const role =
+    user?.role
+      ? user.role.charAt(0).toUpperCase() +
+        user.role.slice(1)
+      : "Customer";
 
   return (
     <>
@@ -182,7 +259,6 @@ function Profile() {
         ========================================== */}
 
         <div className="bg-blue-900 text-white">
-
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
             <p className="text-sm font-semibold text-orange-300">
@@ -198,9 +274,7 @@ function Profile() {
             </p>
 
           </div>
-
         </div>
-
 
         {/* ==========================================
             MAIN
@@ -225,37 +299,29 @@ function Profile() {
                 <div className="-mt-12 mb-5">
 
                   <div className="w-24 h-24 rounded-full bg-orange-500 border-4 border-white shadow-lg flex items-center justify-center text-white text-3xl font-extrabold">
-
                     {initial}
-
                   </div>
 
                 </div>
-
 
                 <h2 className="text-xl font-bold text-slate-900">
                   {user.name}
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-slate-500 mt-1 break-all">
                   {user.email}
                 </p>
-
 
                 {/* ROLE */}
 
                 <div className="mt-5">
 
-                  <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-bold capitalize">
-
+                  <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-bold">
                     <ShieldCheck size={15} />
-
-                    {user.role || "Customer"}
-
+                    {role}
                   </span>
 
                 </div>
-
 
                 {/* ACCOUNT INFO */}
 
@@ -281,7 +347,6 @@ function Profile() {
 
             </div>
 
-
             {/* ======================================
                 PERSONAL INFORMATION
             ====================================== */}
@@ -304,24 +369,17 @@ function Profile() {
 
                 </div>
 
-
                 {!editing && (
-
                   <button
                     onClick={() => setEditing(true)}
                     className="inline-flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition"
                   >
-
                     <Edit3 size={16} />
-
                     Edit
-
                   </button>
-
                 )}
 
               </div>
-
 
               {/* FORM */}
 
@@ -353,6 +411,7 @@ function Profile() {
                         value={formData.name}
                         onChange={handleChange}
                         disabled={!editing}
+                        autoComplete="name"
                         className={`w-full pl-10 pr-4 py-3 rounded-xl border outline-none transition ${
                           editing
                             ? "border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
@@ -363,7 +422,6 @@ function Profile() {
                     </div>
 
                   </div>
-
 
                   {/* EMAIL */}
 
@@ -384,6 +442,7 @@ function Profile() {
                         type="email"
                         value={user.email || ""}
                         disabled
+                        autoComplete="email"
                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500"
                       />
 
@@ -394,7 +453,6 @@ function Profile() {
                     </p>
 
                   </div>
-
 
                   {/* PHONE */}
 
@@ -417,7 +475,9 @@ function Profile() {
                         value={formData.phone}
                         onChange={handleChange}
                         disabled={!editing}
+                        autoComplete="tel"
                         placeholder="Enter phone number"
+                        maxLength={15}
                         className={`w-full pl-10 pr-4 py-3 rounded-xl border outline-none transition ${
                           editing
                             ? "border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
@@ -428,7 +488,6 @@ function Profile() {
                     </div>
 
                   </div>
-
 
                   {/* ROLE */}
 
@@ -447,14 +506,7 @@ function Profile() {
 
                       <input
                         type="text"
-                        value={
-                          user.role
-                            ? user.role
-                                .charAt(0)
-                                .toUpperCase() +
-                              user.role.slice(1)
-                            : "Customer"
-                        }
+                        value={role}
                         disabled
                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500"
                       />
@@ -465,49 +517,34 @@ function Profile() {
 
                 </div>
 
-
                 {/* EDIT ACTIONS */}
 
                 {editing && (
-
                   <div className="flex flex-col sm:flex-row justify-end gap-3 mt-7 pt-6 border-t border-slate-100">
 
                     <button
                       type="button"
-                      onClick={() => {
-                        setEditing(false);
-
-                        setFormData({
-                          name: user.name || "",
-                          phone: user.phone || "",
-                        });
-                      }}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-50 transition"
+                      onClick={handleCancel}
+                      disabled={loading}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-50 transition disabled:opacity-50"
                     >
-
                       <X size={17} />
-
                       Cancel
-
                     </button>
-
 
                     <button
                       type="submit"
                       disabled={loading}
                       className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 disabled:opacity-60 transition"
                     >
-
                       <Save size={17} />
 
                       {loading
                         ? "Saving..."
                         : "Save Changes"}
-
                     </button>
 
                   </div>
-
                 )}
 
               </form>
@@ -515,7 +552,6 @@ function Profile() {
             </div>
 
           </div>
-
 
           {/* ==========================================
               SECURITY
@@ -530,9 +566,7 @@ function Profile() {
                 <div className="flex items-start gap-4">
 
                   <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-
                     <Lock size={21} />
-
                   </div>
 
                   <div>
@@ -549,18 +583,14 @@ function Profile() {
 
                 </div>
 
-
                 <button
                   onClick={() =>
                     navigate("/forgot-password")
                   }
                   className="inline-flex items-center justify-center gap-2 border border-slate-300 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition"
                 >
-
                   <Lock size={16} />
-
                   Change Password
-
                 </button>
 
               </div>
@@ -568,7 +598,6 @@ function Profile() {
             </div>
 
           </div>
-
 
           {/* ==========================================
               LOGOUT
@@ -590,16 +619,12 @@ function Profile() {
 
               </div>
 
-
               <button
                 onClick={handleLogout}
                 className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"
               >
-
                 <LogOut size={17} />
-
                 Logout
-
               </button>
 
             </div>
