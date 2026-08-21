@@ -72,11 +72,6 @@ const handleSubmit = async (e) => {
     const response = await axios.post(
       `${API}/api/apply-job`,
       data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
     );
 
     setMessage(response.data.message);
@@ -469,7 +464,7 @@ if (!photo) {
                 {errors.aadhaar}
               </p>
             )}
-
+ 
             <input
               type="text"
               name="pan"

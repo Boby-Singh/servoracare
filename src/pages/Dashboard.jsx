@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import QRCode from "react-qr-code";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
-
   const [bookings, setBookings] = useState([]);
   const [showQR, setShowQR] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
+  const [filter, setFilter] = useState("All");
 
   const user = JSON.parse(
     localStorage.getItem("user") || "null"
@@ -20,68 +21,40 @@ function Dashboard() {
   // ==========================================
 
   const fetchBookings = async () => {
-
-    if (!user?.id) {
-      return;
-    }
+    if (!user?.id) return;
 
     try {
-
       const response = await axios.get(
         `${API}/api/my-bookings/${user.id}`
       );
 
       setBookings(response.data);
-
     } catch (error) {
-
-      console.error(
-        "Fetch Bookings Error:",
-        error
-      );
-
+      console.error("Fetch Bookings Error:", error);
     }
-
   };
 
-  // ==========================================
-  // LOAD BOOKINGS
-  // ==========================================
-
   useEffect(() => {
-
     fetchBookings();
-
   }, []);
 
   // ==========================================
   // PAYMENT
   // ==========================================
 
-  const makePayment = async (
-    bookingId,
-    amount
-  ) => {
-
+  const makePayment = async (bookingId, amount) => {
     try {
-
       const { data } = await axios.post(
         `${API}/api/create-payment`,
         {
           bookingId,
-          amount
+          amount,
         }
       );
 
       if (!data.success) {
-
-        alert(
-          data.message ||
-          "Payment failed"
-        );
-
+        alert(data.message || "Payment failed");
         return;
-
       }
 
       const isMobile =
@@ -90,49 +63,90 @@ function Dashboard() {
         );
 
       if (isMobile) {
-
-        // Open UPI App
-
-        window.location.href =
-          data.paymentUrl;
-
+        window.location.href = data.paymentUrl;
       } else {
+        setPaymentUrl(data.paymentUrl);
+        setShowQR(true);
+      }
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("Unable to start payment");
+    }
+  };
 
-        // Show QR Code
+  // ==========================================
+  // STATS
+  // ==========================================
 
-        setPaymentUrl(
-          data.paymentUrl
+  const totalBookings = bookings.length;
+
+  const pendingBookings = bookings.filter(
+    (booking) => booking.status === "Pending"
+  ).length;
+
+  const activeBookings = bookings.filter(
+    (booking) => booking.status === "Accepted"
+  ).length;
+
+  const completedBookings = bookings.filter(
+    (booking) => booking.status === "Completed"
+  ).length;
+
+  // ==========================================
+  // FILTER
+  // ==========================================
+
+  const filteredBookings =
+    filter === "All"
+      ? bookings
+      : bookings.filter(
+          (booking) => booking.status === filter
         );
 
-        setShowQR(true);
+  // ==========================================
+  // STATUS STYLE
+  // ==========================================
 
-      }
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Pending":
+        return "bg-amber-50 text-amber-700 border border-amber-200";
 
-    } catch (error) {
+      case "Accepted":
+        return "bg-blue-50 text-blue-700 border border-blue-200";
 
-      console.error(
-        "Payment Error:",
-        error
-      );
+      case "Completed":
+        return "bg-emerald-50 text-emerald-700 border border-emerald-200";
 
-      alert(
-        "Unable to start payment"
-      );
+      case "Rejected":
+        return "bg-red-50 text-red-700 border border-red-200";
 
+      default:
+        return "bg-gray-50 text-gray-600 border border-gray-200";
     }
+  };
 
+  // ==========================================
+  // SERVICE ICON
+  // ==========================================
+
+  const getServiceIcon = (service) => {
+    const value = service?.toLowerCase() || "";
+
+    if (value.includes("electric")) return "⚡";
+    if (value.includes("plumb")) return "🔧";
+    if (value.includes("ac")) return "❄️";
+    if (value.includes("cctv")) return "📹";
+    if (value.includes("paint")) return "🎨";
+    if (value.includes("clean")) return "🧹";
+    if (value.includes("appliance")) return "🔌";
+
+    return "🛠️";
   };
 
   return (
-
     <>
-
-      {/* ==========================================
-          SEO
-      ========================================== */}
-
       <Helmet>
-
         <title>
           Customer Dashboard | ServoraCare
         </title>
@@ -146,427 +160,967 @@ function Dashboard() {
           name="description"
           content="Manage your ServoraCare bookings, track service status, assigned technicians and make secure payments."
         />
-
       </Helmet>
 
+      <div className="min-h-screen bg-slate-50">
 
-      {/* ==========================================
-          DASHBOARD
-      ========================================== */}
+        {/* =====================================================
+            TOP NAVBAR
+        ===================================================== */}
 
-      <div className="min-h-screen bg-gray-100 p-10">
+        <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+
+          <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div className="h-20 flex items-center justify-between">
+
+              {/* LOGO */}
+
+              <Link
+                to="/"
+                className="flex items-center gap-3"
+              >
+                <div className="w-11 h-11 rounded-xl bg-blue-900 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                  SC
+                </div>
+
+                <div className="hidden sm:block">
+                  <h1 className="text-xl font-extrabold text-blue-900 leading-none">
+                    ServoraCare
+                  </h1>
+
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Trusted Home Services
+                  </p>
+                </div>
+              </Link>
+
+              {/* NAV */}
+
+              <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+
+                <Link
+                  to="/"
+                  className="hover:text-blue-900 transition"
+                >
+                  Home
+                </Link>
+
+                <Link
+                  to="/services"
+                  className="hover:text-blue-900 transition"
+                >
+                  Services
+                </Link>
+
+                <Link
+                  to="/about"
+                  className="hover:text-blue-900 transition"
+                >
+                  About Us
+                </Link>
+
+                <Link
+                  to="/contact"
+                  className="hover:text-blue-900 transition"
+                >
+                  Contact
+                </Link>
+
+              </nav>
+
+              {/* USER */}
+
+              <div className="flex items-center gap-3">
+
+                <div className="hidden sm:flex items-center gap-3">
+
+                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-900 flex items-center justify-center font-bold">
+                    {user?.name
+                      ? user.name.charAt(0).toUpperCase()
+                      : "U"}
+                  </div>
+
+                  <div className="hidden lg:block">
+                    <p className="text-sm font-semibold text-slate-800">
+                      {user?.name || "Customer"}
+                    </p>
+
+                    <p className="text-xs text-slate-500">
+                      Customer
+                    </p>
+                  </div>
+
+                </div>
+
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    window.location.href = "/login";
+                  }}
+                  className="hidden sm:block border border-red-200 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg text-sm font-semibold transition"
+                >
+                  Logout
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </header>
 
 
-        {/* ==========================================
-            HEADER
-        ========================================== */}
+        {/* =====================================================
+            MAIN
+        ===================================================== */}
 
-        <div className="mb-10">
+        <main className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-          <h1 className="text-5xl font-bold text-blue-900">
+          {/* =================================================
+              WELCOME SECTION
+          ================================================= */}
 
-            Welcome, {user?.name}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
 
-          </h1>
+            <div>
 
-          <p className="text-gray-600 mt-2">
+              <p className="text-sm font-semibold text-blue-700 mb-1">
+                CUSTOMER PORTAL
+              </p>
 
-            Customer Dashboard
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                Welcome back, {user?.name || "Customer"} 👋
+              </h1>
 
-          </p>
+              <p className="text-slate-500 mt-2">
+                Manage your home services and track your bookings.
+              </p>
 
-        </div>
+            </div>
 
+            <Link
+              to="/services"
+              className="inline-flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-blue-900/10 transition"
+            >
+              <span className="text-lg">+</span>
+              Book New Service
+            </Link>
 
-        {/* ==========================================
-            BOOKINGS
-        ========================================== */}
-
-        <div className="bg-white rounded-3xl shadow-lg p-8">
-
-          <h2 className="text-3xl font-bold text-blue-900 mb-8">
-
-            My Bookings
-
-          </h2>
-
-
-          <div className="overflow-x-auto">
-
-            <table className="w-full">
-
-
-              {/* ======================================
-                  TABLE HEADER
-              ====================================== */}
-
-              <thead className="bg-blue-900 text-white">
-
-                <tr>
-
-                  <th className="p-4">
-                    Booking ID
-                  </th>
-
-                  <th className="p-4">
-                    Service
-                  </th>
-
-                  <th className="p-4">
-                    Address
-                  </th>
-
-                  <th className="p-4">
-                    Status
-                  </th>
-
-                  <th className="p-4">
-                    Technician
-                  </th>
-
-                  <th className="p-4">
-                    Technician Phone
-                  </th>
-
-                  <th className="p-4">
-                    Accepted At
-                  </th>
-
-                  <th className="p-4">
-                    Visit Date
-                  </th>
-
-                  <th className="p-4">
-                    Visit Time
-                  </th>
-
-                  <th className="p-4">
-                    Payment
-                  </th>
-
-                  <th className="p-4">
-                    Technician Report
-                  </th>
-
-                </tr>
-
-              </thead>
+          </div>
 
 
-              {/* ======================================
-                  TABLE BODY
-              ====================================== */}
+          {/* =================================================
+              STAT CARDS
+          ================================================= */}
 
-              <tbody>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
 
-                {bookings.length === 0 ? (
+            {/* TOTAL */}
 
-                  <tr>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
 
-                    <td
-                      colSpan="11"
-                      className="p-8 text-center text-gray-500"
+              <div className="flex items-center justify-between">
+
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    Total Bookings
+                  </p>
+
+                  <h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+                    {totalBookings}
+                  </h2>
+
+                  <p className="text-xs text-slate-400 mt-2">
+                    All your service requests
+                  </p>
+                </div>
+
+                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl">
+                  📋
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* PENDING */}
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
+
+              <div className="flex items-center justify-between">
+
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    Pending
+                  </p>
+
+                  <h2 className="text-3xl font-extrabold text-amber-600 mt-2">
+                    {pendingBookings}
+                  </h2>
+
+                  <p className="text-xs text-slate-400 mt-2">
+                    Awaiting confirmation
+                  </p>
+                </div>
+
+                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                  ⏳
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* ACTIVE */}
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
+
+              <div className="flex items-center justify-between">
+
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    Active
+                  </p>
+
+                  <h2 className="text-3xl font-extrabold text-blue-600 mt-2">
+                    {activeBookings}
+                  </h2>
+
+                  <p className="text-xs text-slate-400 mt-2">
+                    Technician assigned
+                  </p>
+                </div>
+
+                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                  👨‍🔧
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* COMPLETED */}
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
+
+              <div className="flex items-center justify-between">
+
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    Completed
+                  </p>
+
+                  <h2 className="text-3xl font-extrabold text-emerald-600 mt-2">
+                    {completedBookings}
+                  </h2>
+
+                  <p className="text-xs text-slate-400 mt-2">
+                    Successfully completed
+                  </p>
+                </div>
+
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                  ✓
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+              BOOKINGS CARD
+          ================================================= */}
+
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+            {/* HEADER */}
+
+            <div className="px-6 py-5 border-b border-slate-200">
+
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">
+                    My Bookings
+                  </h2>
+
+                  <p className="text-sm text-slate-500 mt-1">
+                    Track all your ServoraCare service requests.
+                  </p>
+                </div>
+
+
+                {/* FILTER */}
+
+                <div className="flex items-center gap-2 flex-wrap">
+
+                  {[
+                    "All",
+                    "Pending",
+                    "Accepted",
+                    "Completed",
+                    "Rejected",
+                  ].map((status) => (
+
+                    <button
+                      key={status}
+                      onClick={() => setFilter(status)}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
+                        filter === status
+                          ? "bg-blue-900 text-white"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
                     >
+                      {status}
+                    </button>
 
-                      No bookings found.
+                  ))}
 
-                    </td>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* =================================================
+                DESKTOP TABLE
+            ================================================= */}
+
+            <div className="hidden lg:block overflow-x-auto">
+
+              <table className="w-full">
+
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Booking
+                    </th>
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Service
+                    </th>
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Status
+                    </th>
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Technician
+                    </th>
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Visit
+                    </th>
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Payment
+                    </th>
+
+                    <th className="text-left px-5 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Report
+                    </th>
 
                   </tr>
-
-                ) : (
-
-                  bookings.map((booking) => (
-
-                    <tr
-                      key={booking._id}
-                      className="border-b text-center hover:bg-gray-50"
-                    >
+                </thead>
 
 
-                      {/* ==================================
-                          6 DIGIT BOOKING ID
-                      ================================== */}
+                <tbody>
 
-                      <td className="p-4">
+                  {filteredBookings.length === 0 ? (
 
-                        <span className="font-bold text-blue-900">
+                    <tr>
 
-                          {booking.booking_id || "-"}
+                      <td
+                        colSpan="7"
+                        className="py-16 text-center"
+                      >
 
-                        </span>
+                        <div className="text-4xl mb-3">
+                          📋
+                        </div>
 
-                      </td>
+                        <p className="font-semibold text-slate-700">
+                          No bookings found
+                        </p>
 
-
-                      {/* SERVICE */}
-
-                      <td className="p-4 font-medium">
-
-                        {booking.service_type}
+                        <p className="text-sm text-slate-500 mt-1">
+                          Your service bookings will appear here.
+                        </p>
 
                       </td>
 
+                    </tr>
 
-                      {/* ADDRESS */}
+                  ) : (
 
-                      <td className="p-4">
+                    filteredBookings.map((booking) => (
 
-                        {booking.address}
+                      <tr
+                        key={booking._id}
+                        className="border-b border-slate-100 hover:bg-slate-50/70 transition"
+                      >
 
-                      </td>
+                        {/* BOOKING */}
 
+                        <td className="px-5 py-5">
 
-                      {/* STATUS */}
+                          <p className="font-bold text-blue-900">
+                            #{booking.booking_id || "-"}
+                          </p>
 
-                      <td className="p-4">
+                          <p className="text-xs text-slate-400 mt-1">
+                            Booking ID
+                          </p>
 
-                        <span
-                          className={`px-4 py-2 rounded-full text-white text-sm
-
-                          ${
-                            booking.status === "Pending"
-
-                              ? "bg-yellow-500"
-
-                              : booking.status === "Accepted"
-
-                              ? "bg-blue-600"
-
-                              : booking.status === "Completed"
-
-                              ? "bg-green-600"
-
-                              : "bg-red-500"
-                          }
-
-                          `}
-                        >
-
-                          {booking.status}
-
-                        </span>
-
-                      </td>
+                        </td>
 
 
-                      {/* TECHNICIAN */}
+                        {/* SERVICE */}
 
-                      <td className="p-4">
+                        <td className="px-5 py-5">
 
-                        {booking.technician_name ? (
+                          <div className="flex items-center gap-3">
 
-                          <div>
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                              {getServiceIcon(
+                                booking.service_type
+                              )}
+                            </div>
 
-                            <div className="font-semibold">
+                            <div>
 
-                              {booking.technician_name}
+                              <p className="font-semibold text-slate-800">
+                                {booking.service_type || "-"}
+                              </p>
+
+                              <p className="text-xs text-slate-500 max-w-[180px] truncate">
+                                {booking.address || "-"}
+                              </p>
 
                             </div>
 
                           </div>
 
-                        ) : (
+                        </td>
 
-                          <span className="text-gray-500">
 
-                            Not Assigned
+                        {/* STATUS */}
 
+                        <td className="px-5 py-5">
+
+                          <span
+                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${getStatusStyle(
+                              booking.status
+                            )}`}
+                          >
+
+                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+
+                            {booking.status || "-"}
                           </span>
 
+                        </td>
+
+
+                        {/* TECHNICIAN */}
+
+                        <td className="px-5 py-5">
+
+                          {booking.technician_name ? (
+
+                            <div>
+
+                              <p className="font-semibold text-slate-800">
+                                {booking.technician_name}
+                              </p>
+
+                              {booking.technician_phone && (
+                                <a
+                                  href={`tel:${booking.technician_phone}`}
+                                  className="text-xs text-blue-600 hover:underline"
+                                >
+                                  📞 {booking.technician_phone}
+                                </a>
+                              )}
+
+                            </div>
+
+                          ) : (
+
+                            <span className="text-sm text-slate-400">
+                              Not assigned
+                            </span>
+
+                          )}
+
+                        </td>
+
+
+                        {/* VISIT */}
+
+                        <td className="px-5 py-5">
+
+                          {booking.visit_date ? (
+
+                            <div>
+
+                              <p className="font-medium text-slate-700">
+                                📅{" "}
+                                {new Date(
+                                  booking.visit_date
+                                ).toLocaleDateString()}
+                              </p>
+
+                              <p className="text-xs text-slate-500 mt-1">
+                                🕐 {booking.visit_time || "-"}
+                              </p>
+
+                            </div>
+
+                          ) : (
+
+                            <span className="text-sm text-slate-400">
+                              Not scheduled
+                            </span>
+
+                          )}
+
+                        </td>
+
+
+                        {/* PAYMENT */}
+
+                        <td className="px-5 py-5">
+
+                          {booking.payment_status === "Paid" ? (
+
+                            <span className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-sm">
+                              ✓ Paid
+                            </span>
+
+                          ) : (
+
+                            <button
+                              onClick={() =>
+                                makePayment(
+                                  booking._id,
+                                  booking.amount
+                                )
+                              }
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm"
+                            >
+                              Pay Now
+                            </button>
+
+                          )}
+
+                        </td>
+
+
+                        {/* REPORT */}
+
+                        <td className="px-5 py-5">
+
+                          {booking.technician_comment ? (
+
+                            <div
+                              title={
+                                booking.technician_comment
+                              }
+                              className="max-w-[180px]"
+                            >
+
+                              <p className="text-sm text-slate-600 truncate">
+                                {booking.technician_comment}
+                              </p>
+
+                              <button
+                                onClick={() =>
+                                  alert(
+                                    booking.technician_comment
+                                  )
+                                }
+                                className="text-xs text-blue-600 font-semibold mt-1 hover:underline"
+                              >
+                                View Report
+                              </button>
+
+                            </div>
+
+                          ) : (
+
+                            <span className="text-sm text-slate-400">
+                              Not available
+                            </span>
+
+                          )}
+
+                        </td>
+
+                      </tr>
+
+                    ))
+
+                  )}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+
+            {/* =================================================
+                MOBILE / TABLET CARDS
+            ================================================= */}
+
+            <div className="lg:hidden p-4 space-y-4">
+
+              {filteredBookings.length === 0 ? (
+
+                <div className="py-12 text-center">
+
+                  <div className="text-4xl mb-3">
+                    📋
+                  </div>
+
+                  <p className="font-semibold text-slate-700">
+                    No bookings found
+                  </p>
+
+                </div>
+
+              ) : (
+
+                filteredBookings.map((booking) => (
+
+                  <div
+                    key={booking._id}
+                    className="border border-slate-200 rounded-2xl p-5 hover:shadow-md transition"
+                  >
+
+                    {/* CARD HEADER */}
+
+                    <div className="flex justify-between items-start gap-3 mb-5">
+
+                      <div>
+
+                        <p className="text-xs text-slate-400 uppercase font-bold">
+                          Booking ID
+                        </p>
+
+                        <p className="font-extrabold text-blue-900 text-lg">
+                          #{booking.booking_id || "-"}
+                        </p>
+
+                      </div>
+
+                      <span
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold ${getStatusStyle(
+                          booking.status
+                        )}`}
+                      >
+                        {booking.status}
+                      </span>
+
+                    </div>
+
+
+                    {/* SERVICE */}
+
+                    <div className="flex items-center gap-3 mb-5">
+
+                      <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
+                        {getServiceIcon(
+                          booking.service_type
                         )}
+                      </div>
 
-                      </td>
+                      <div>
 
+                        <p className="font-bold text-slate-800">
+                          {booking.service_type}
+                        </p>
 
-                      {/* TECHNICIAN PHONE */}
+                        <p className="text-sm text-slate-500">
+                          {booking.address}
+                        </p>
 
-                      <td className="p-4">
+                      </div>
 
-                        {booking.technician_phone || "-"}
-
-                      </td>
-
-
-                      {/* ACCEPTED AT */}
-
-                      <td className="p-4">
-
-                        {booking.accepted_at
-
-                          ? new Date(
-                              booking.accepted_at
-                            ).toLocaleString()
-
-                          : "-"
-
-                        }
-
-                      </td>
+                    </div>
 
 
-                      {/* VISIT DATE */}
+                    {/* INFO */}
 
-                      <td className="p-4">
+                    <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
 
-                        {booking.visit_date
-                          ? new Date(
-                              booking.visit_date
-                            ).toLocaleDateString()
-                          : "-"
-                        }
+                      <div>
 
-                      </td>
+                        <p className="text-xs text-slate-400 font-semibold">
+                          TECHNICIAN
+                        </p>
+
+                        <p className="text-sm font-semibold text-slate-700 mt-1">
+                          {booking.technician_name ||
+                            "Not Assigned"}
+                        </p>
+
+                      </div>
+
+                      <div>
+
+                        <p className="text-xs text-slate-400 font-semibold">
+                          VISIT
+                        </p>
+
+                        <p className="text-sm font-semibold text-slate-700 mt-1">
+                          {booking.visit_date
+                            ? new Date(
+                                booking.visit_date
+                              ).toLocaleDateString()
+                            : "Not scheduled"}
+                        </p>
+
+                      </div>
+
+                    </div>
 
 
-                      {/* VISIT TIME */}
+                    {/* PAYMENT */}
 
-                      <td className="p-4">
+                    <div className="border-t border-slate-100 mt-4 pt-4 flex items-center justify-between">
 
-                        {booking.visit_time || "-"}
+                      <div>
 
-                      </td>
-
-
-                      {/* ==================================
+                        <p className="text-xs text-slate-400 font-semibold">
                           PAYMENT
-                      ================================== */}
-
-                      <td className="p-4">
+                        </p>
 
                         {booking.payment_status === "Paid" ? (
 
-                          <span className="text-green-600 font-semibold">
-
-                            Paid
-
-                          </span>
+                          <p className="text-sm font-bold text-emerald-600 mt-1">
+                            ✓ Paid
+                          </p>
 
                         ) : (
 
-                          <button
-
-                            onClick={() =>
-                              makePayment(
-                                booking._id,
-                                booking.amount
-                              )
-                            }
-
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-
-                          >
-
-                            Pay Now
-
-                          </button>
+                          <p className="text-sm font-bold text-amber-600 mt-1">
+                            Payment Pending
+                          </p>
 
                         )}
 
-                      </td>
+                      </div>
+
+                      {booking.payment_status !== "Paid" && (
+
+                        <button
+                          onClick={() =>
+                            makePayment(
+                              booking._id,
+                              booking.amount
+                            )
+                          }
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold"
+                        >
+                          Pay Now
+                        </button>
+
+                      )}
+
+                    </div>
 
 
-                      {/* TECHNICIAN REPORT */}
+                    {/* REPORT */}
 
-                      <td className="p-4">
+                    {booking.technician_comment && (
 
-                        {booking.technician_comment || "-"}
+                      <div className="border-t border-slate-100 mt-4 pt-4">
 
-                      </td>
+                        <p className="text-xs text-slate-400 font-semibold">
+                          TECHNICIAN REPORT
+                        </p>
+
+                        <p className="text-sm text-slate-600 mt-1">
+                          {booking.technician_comment}
+                        </p>
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                ))
+
+              )}
+
+            </div>
+
+          </section>
 
 
-                    </tr>
+          {/* =================================================
+              HELP SECTION
+          ================================================= */}
 
-                  ))
+          <div className="grid md:grid-cols-2 gap-5 mt-6">
 
-                )}
+            <div className="bg-blue-900 rounded-2xl p-6 text-white">
 
-              </tbody>
+              <div className="flex items-start gap-4">
 
-            </table>
+                <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+                  💬
+                </div>
+
+                <div>
+
+                  <h3 className="font-bold text-lg">
+                    Need help with your booking?
+                  </h3>
+
+                  <p className="text-blue-100 text-sm mt-1">
+                    Our support team is ready to help you.
+                  </p>
+
+                  <Link
+                    to="/contact"
+                    className="inline-block mt-4 bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition"
+                  >
+                    Contact Support
+                  </Link>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+
+              <div className="flex items-start gap-4">
+
+                <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-xl">
+                  🛡️
+                </div>
+
+                <div>
+
+                  <h3 className="font-bold text-slate-800">
+                    Trusted Home Services
+                  </h3>
+
+                  <p className="text-sm text-slate-500 mt-1">
+                    Track your service, technician and payment
+                    information from one place.
+                  </p>
+
+                  <p className="text-xs text-slate-400 mt-3">
+                    ServoraCare • Trusted Home Services
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
 
           </div>
 
-        </div>
+        </main>
 
 
-        {/* ==========================================
+        {/* =====================================================
             PAYMENT QR MODAL
-        ========================================== */}
+        ===================================================== */}
 
         {showQR && (
 
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-            <div className="bg-white rounded-3xl shadow-2xl p-8 w-[420px]">
+            <div className="bg-white rounded-3xl shadow-2xl p-7 sm:p-8 w-full max-w-md">
 
+              {/* MODAL HEADER */}
 
-              <h2 className="text-3xl font-bold text-center text-blue-900">
+              <div className="flex items-center justify-between">
 
-                Scan & Pay
+                <div>
 
-              </h2>
+                  <h2 className="text-2xl font-extrabold text-slate-900">
+                    Scan & Pay
+                  </h2>
 
+                  <p className="text-sm text-slate-500 mt-1">
+                    Pay securely using any UPI app
+                  </p>
 
-              <p className="text-center text-gray-500 mt-2">
+                </div>
 
-                Scan using any UPI App
+                <button
+                  onClick={() => setShowQR(false)}
+                  className="w-9 h-9 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
+                >
+                  ✕
+                </button>
 
-              </p>
+              </div>
 
 
               {/* QR */}
 
-              <div className="flex justify-center my-8">
+              <div className="flex justify-center my-7">
 
-                <QRCode
-                  value={paymentUrl}
-                  size={220}
-                />
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+
+                  <QRCode
+                    value={paymentUrl}
+                    size={220}
+                  />
+
+                </div>
 
               </div>
 
 
               {/* UPI */}
 
-              <div className="bg-gray-100 rounded-xl p-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
 
-                <p className="text-sm text-gray-600">
-
+                <p className="text-xs font-semibold text-slate-500 uppercase">
                   UPI ID
-
                 </p>
 
+                <div className="flex items-center justify-between gap-3 mt-2">
 
-                <div className="flex justify-between items-center">
-
-                  <span className="font-semibold">
-
+                  <span className="font-bold text-slate-800">
                     7828908522@axl
-
                   </span>
 
-
                   <button
-
                     onClick={() => {
-
                       navigator.clipboard.writeText(
                         "7828908522@axl"
                       );
 
-                      alert(
-                        "UPI ID Copied"
-                      );
-
+                      alert("UPI ID Copied");
                     }}
-
-                    className="text-blue-600 font-semibold"
-
+                    className="text-blue-700 font-bold text-sm hover:underline"
                   >
-
                     Copy
-
                   </button>
 
                 </div>
@@ -574,20 +1128,11 @@ function Dashboard() {
               </div>
 
 
-              {/* CLOSE */}
-
               <button
-
-                onClick={() =>
-                  setShowQR(false)
-                }
-
-                className="mt-6 w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-800"
-
+                onClick={() => setShowQR(false)}
+                className="mt-5 w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold transition"
               >
-
-                Close
-
+                Done
               </button>
 
             </div>
@@ -597,11 +1142,8 @@ function Dashboard() {
         )}
 
       </div>
-
     </>
-
   );
-
 }
 
 export default Dashboard;
