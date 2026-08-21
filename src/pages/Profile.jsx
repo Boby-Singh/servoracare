@@ -110,7 +110,7 @@ function Profile() {
       console.log("Updating profile for user:", userId);
 
       const response = await axios.put(
-        `${API}/api/update-profile/${userId}`,
+        `${API}/api/auth/update-profile/${userId}`,
         {
           name,
           phone,
