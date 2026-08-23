@@ -101,7 +101,6 @@ function Login() {
         `${API}/api/auth/login`,
         payload,
         {
-          timeout: 20000,
           headers: {
             "Content-Type": "application/json",
           },
