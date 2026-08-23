@@ -101,7 +101,10 @@ if (!password) {
 
         `${API}/api/auth/login`,
 
-        payload
+        payload,
+        {
+          timeout: 15000,
+        }
 
       )
 
@@ -122,9 +125,6 @@ if (!password) {
         password: "",
       });
       setErrors({});
-
-      setTimeout(() => {
-
           if (response.data.user.role === "admin") {
               navigate("/admin");
           }
@@ -137,8 +137,6 @@ if (!password) {
           else {
               navigate("/");
           }
-
-      }, 1000);
 
     } catch (error) {
 
