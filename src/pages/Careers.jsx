@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   Briefcase,
@@ -13,6 +13,9 @@ import {
   ShieldCheck,
   PaintBucket,
   BrushCleaning,
+  ArrowRight,
+  MapPin,
+  CheckCircle2,
 } from "lucide-react";
 
 function Careers() {
@@ -21,308 +24,576 @@ function Careers() {
   const jobs = [
     {
       title: "Electrician",
-      icon: <Zap size={42} />,
+      icon: <Zap size={32} />,
       experience: "1+ Years",
       location: "Multiple Cities",
     },
     {
       title: "Plumber",
-      icon: <Wrench size={42} />,
+      icon: <Wrench size={32} />,
       experience: "1+ Years",
       location: "Multiple Cities",
     },
     {
       title: "AC Technician",
-      icon: <AirVent size={42} />,
+      icon: <AirVent size={32} />,
       experience: "1+ Years",
       location: "Multiple Cities",
     },
     {
       title: "CCTV Technician",
-      icon: <ShieldCheck size={42} />,
+      icon: <ShieldCheck size={32} />,
       experience: "1+ Years",
       location: "Multiple Cities",
     },
     {
       title: "Painter",
-      icon: <PaintBucket size={42} />,
+      icon: <PaintBucket size={32} />,
       experience: "1+ Years",
       location: "Multiple Cities",
     },
     {
       title: "Cleaning Executive",
-      icon: <BrushCleaning size={42} />,
+      icon: <BrushCleaning size={32} />,
       experience: "Fresher / Experienced",
       location: "Multiple Cities",
     },
   ];
 
+  const benefits = [
+    {
+      icon: <Briefcase size={28} />,
+      title: "Growing Startup",
+      description:
+        "Join a growing home services company and be part of an exciting journey.",
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-700",
+    },
+    {
+      icon: <IndianRupee size={28} />,
+      title: "Attractive Earnings",
+      description:
+        "Earn competitive payouts with performance-based incentives.",
+      iconBg: "bg-green-50",
+      iconColor: "text-green-600",
+    },
+    {
+      icon: <GraduationCap size={28} />,
+      title: "Training & Support",
+      description:
+        "Improve your technical and professional skills through training.",
+      iconBg: "bg-purple-50",
+      iconColor: "text-purple-600",
+    },
+    {
+      icon: <Users size={28} />,
+      title: "Professional Team",
+      description:
+        "Work alongside skilled professionals in a supportive environment.",
+      iconBg: "bg-orange-50",
+      iconColor: "text-orange-500",
+    },
+    {
+      icon: <Trophy size={28} />,
+      title: "Career Growth",
+      description:
+        "Build your career with opportunities for advancement and leadership.",
+      iconBg: "bg-yellow-50",
+      iconColor: "text-yellow-600",
+    },
+    {
+      icon: <Clock size={28} />,
+      title: "Flexible Opportunities",
+      description:
+        "Choose suitable opportunities and grow with your performance.",
+      iconBg: "bg-red-50",
+      iconColor: "text-red-500",
+    },
+  ];
+
+  const scrollToJobs = () => {
+    document.getElementById("jobs")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
   return (
     <>
-    <Helmet>
+      {/* ==========================================
+          SEO
+      ========================================== */}
 
-      <title>
-        Careers at ServoraCare | Join Our Professional Team
-      </title>
+      <Helmet>
+        <title>
+          Careers at ServoraCare | Join Our Professional Team
+        </title>
 
-      <meta
-        name="description"
-        content="Join ServoraCare as an electrician, plumber, AC technician, CCTV technician, painter or cleaning executive. Build your career with India's growing home service platform."
-      />
+        <meta
+          name="description"
+          content="Join ServoraCare as an electrician, plumber, AC technician, CCTV technician, painter or cleaning executive. Build your career with a growing home service platform."
+        />
 
-      <meta
-        name="keywords"
-        content="ServoraCare careers, electrician jobs, plumber jobs, AC technician jobs, home service jobs, technician jobs India"
-      />
+        <meta
+          name="keywords"
+          content="ServoraCare careers, electrician jobs, plumber jobs, AC technician jobs, CCTV technician jobs, painter jobs, cleaning jobs, technician jobs India"
+        />
 
-      <link
-        rel="canonical"
-        href="https://www.servoracare.in/careers"
-      />
+        <link
+          rel="canonical"
+          href="https://www.servoracare.in/careers"
+        />
 
+        {/* Open Graph */}
 
-      {/* Open Graph */}
-      <meta
-        property="og:title"
-        content="Careers at ServoraCare"
-      />
+        <meta
+          property="og:title"
+          content="Careers at ServoraCare"
+        />
 
-      <meta
-        property="og:description"
-        content="Become part of ServoraCare's professional home service network."
-      />
+        <meta
+          property="og:description"
+          content="Become part of ServoraCare's professional home service network."
+        />
 
-      <meta
-        property="og:url"
-        content="https://www.servoracare.in/careers"
-      />
+        <meta
+          property="og:url"
+          content="https://www.servoracare.in/careers"
+        />
 
-      <meta
-        property="og:type"
-        content="website"
-      />
+        <meta
+          property="og:type"
+          content="website"
+        />
 
+        {/* Organization Schema */}
 
-      {/* Job Organization Schema */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "ServoraCare",
-          "url": "https://www.servoracare.in",
-          "description":
-            "Technology-driven home service platform connecting customers with skilled professionals.",
-          "department": "Careers"
-        })}
-      </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "ServoraCare",
+            url: "https://www.servoracare.in",
+            description:
+              "Technology-driven home service platform connecting customers with skilled professionals.",
+            sameAs: [
+              "https://www.facebook.com/Boby.Singh.saini.908/",
+              "https://www.instagram.com/themanager.bs/",
+              "https://www.linkedin.com/in/bobysingh1/",
+            ],
+          })}
+        </script>
+      </Helmet>
 
-    </Helmet>
+      <div className="min-h-screen bg-slate-50">
 
-    <div className="bg-gray-100 min-h-screen">
+        {/* ==========================================
+            HERO
+        ========================================== */}
 
-      {/* Hero */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white">
 
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-24">
+          {/* Background decoration */}
 
-        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="absolute inset-0 pointer-events-none">
 
-          <h1 className="text-6xl font-bold mb-6">
-            Build Your Career with
-            <span className="text-orange-400">
-              {" "}ServoraCare
-            </span>
-          </h1>
+            <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-400/20 blur-3xl" />
 
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-
-            Join India's growing home service platform and become part of a
-            professional team delivering trusted services across the country.
-
-          </p>
-
-          <button
-            onClick={() =>
-              document
-                .getElementById("jobs")
-                .scrollIntoView({ behavior: "smooth" })
-            }
-            className="mt-10 bg-orange-500 hover:bg-orange-600 px-8 py-4 rounded-xl text-lg font-semibold transition"
-          >
-            View Open Positions
-          </button>
-
-        </div>
-
-      </section>
-
-      {/* Why Join */}
-
-      <section className="max-w-7xl mx-auto py-20 px-6">
-
-        <h2 className="text-4xl font-bold text-center text-blue-900 mb-14">
-          Why Join ServoraCare?
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-8">
-
-          <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-
-            <Briefcase
-              className="mx-auto text-orange-500 mb-5"
-              size={48}
-            />
-
-            <h3 className="text-2xl font-bold mb-3">
-              Growing Startup
-            </h3>
-
-            <p className="text-gray-600">
-              Be part of a fast-growing company transforming the home services industry.
-            </p>
+            <div className="absolute -bottom-32 -left-20 w-96 h-96 rounded-full bg-orange-400/10 blur-3xl" />
 
           </div>
 
-          <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
+          <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-28">
 
-            <IndianRupee
-              className="mx-auto text-green-500 mb-5"
-              size={48}
-            />
+            <div className="max-w-4xl mx-auto text-center">
 
-            <h3 className="text-2xl font-bold mb-3">
-              Attractive Earnings
-            </h3>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-sm font-medium mb-7">
 
-            <p className="text-gray-600">
-              Competitive payouts with incentives based on your performance.
-            </p>
+                <Briefcase size={16} />
 
-          </div>
+                Career Opportunities at ServoraCare
 
-          <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-
-            <GraduationCap
-              className="mx-auto text-blue-600 mb-5"
-              size={48}
-            />
-
-            <h3 className="text-2xl font-bold mb-3">
-              Training Programs
-            </h3>
-
-            <p className="text-gray-600">
-              Improve your skills with professional training and support.
-            </p>
-
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-
-            <Users
-              className="mx-auto text-purple-600 mb-5"
-              size={48}
-            />
-
-            <h3 className="text-2xl font-bold mb-3">
-              Friendly Team
-            </h3>
-
-            <p className="text-gray-600">
-              Work with experienced professionals in a supportive environment.
-            </p>
-
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-
-            <Trophy
-              className="mx-auto text-yellow-500 mb-5"
-              size={48}
-            />
-
-            <h3 className="text-2xl font-bold mb-3">
-              Career Growth
-            </h3>
-
-            <p className="text-gray-600">
-              Opportunities to become senior technicians and team leaders.
-            </p>
-
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-
-            <Clock
-              className="mx-auto text-red-500 mb-5"
-              size={48}
-            />
-
-            <h3 className="text-2xl font-bold mb-3">
-              Flexible Work
-            </h3>
-
-            <p className="text-gray-600">
-              Choose your working hours and grow at your own pace.
-            </p>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* Open Positions */}
-
-      <section
-        id="jobs"
-        className="max-w-7xl mx-auto pb-24 px-6"
-      >
-
-        <h2 className="text-4xl font-bold text-center text-blue-900 mb-14">
-          Current Open Positions
-        </h2>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-          {jobs.map((job, index) => (
-
-            <div
-              key={index}
-              className="bg-white rounded-3xl shadow-lg p-8 hover:-translate-y-2 hover:shadow-2xl transition"
-            >
-
-              <div className="text-orange-500 mb-6">
-                {job.icon}
               </div>
 
-              <h3 className="text-2xl font-bold text-blue-900 mb-4">
-                {job.title}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+
+                Build Your Career With
+
+                <span className="text-orange-400">
+                  {" "}ServoraCare
+                </span>
+
+              </h1>
+
+              <p className="mt-6 text-lg sm:text-xl text-blue-100 leading-relaxed max-w-3xl mx-auto">
+
+                Join our growing professional network and help us deliver
+                reliable home services to customers across India.
+
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-9">
+
+                <button
+                  onClick={scrollToJobs}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-7 py-3.5 rounded-xl font-semibold transition shadow-lg shadow-orange-900/20"
+                >
+                  Explore Open Positions
+                  <ArrowRight size={19} />
+                </button>
+
+                <button
+                  onClick={() => navigate("/apply-job")}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-7 py-3.5 rounded-xl font-semibold transition backdrop-blur-sm"
+                >
+                  Apply Now
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* ==========================================
+            STATS
+        ========================================== */}
+
+        <section className="max-w-6xl mx-auto px-6 -mt-8 relative z-10">
+
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 grid grid-cols-2 md:grid-cols-4 overflow-hidden">
+
+            <div className="p-6 text-center border-b md:border-b-0 md:border-r border-slate-200">
+
+              <p className="text-2xl sm:text-3xl font-bold text-blue-900">
+                6+
+              </p>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Career Roles
+              </p>
+
+            </div>
+
+            <div className="p-6 text-center border-b md:border-b-0 md:border-r border-slate-200">
+
+              <p className="text-2xl sm:text-3xl font-bold text-blue-900">
+                1+
+              </p>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Years Experience
+              </p>
+
+            </div>
+
+            <div className="p-6 text-center border-r border-slate-200">
+
+              <p className="text-2xl sm:text-3xl font-bold text-blue-900">
+                Multiple
+              </p>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Cities
+              </p>
+
+            </div>
+
+            <div className="p-6 text-center">
+
+              <p className="text-2xl sm:text-3xl font-bold text-green-600">
+                Growing
+              </p>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Team
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* ==========================================
+            WHY JOIN
+        ========================================== */}
+
+        <section className="max-w-7xl mx-auto px-6 py-20 lg:py-24">
+
+          <div className="text-center max-w-3xl mx-auto mb-14">
+
+            <span className="text-sm font-semibold text-orange-500 uppercase tracking-wider">
+              Why ServoraCare
+            </span>
+
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
+              Grow With Us
+            </h2>
+
+            <p className="text-slate-500 mt-4 leading-relaxed">
+              We believe skilled professionals are the foundation of
+              great home services. That's why we focus on growth,
+              training and meaningful opportunities.
+            </p>
+
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {benefits.map((benefit, index) => (
+
+              <div
+                key={index}
+                className="group bg-white border border-slate-200 rounded-2xl p-7 hover:-translate-y-1 hover:shadow-xl transition duration-300"
+              >
+
+                <div
+                  className={`w-14 h-14 rounded-2xl ${benefit.iconBg} ${benefit.iconColor} flex items-center justify-center mb-5 group-hover:scale-105 transition`}
+                >
+                  {benefit.icon}
+                </div>
+
+                <h3 className="text-xl font-bold text-slate-900">
+                  {benefit.title}
+                </h3>
+
+                <p className="text-slate-500 mt-3 leading-relaxed">
+                  {benefit.description}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* ==========================================
+            OPEN POSITIONS
+        ========================================== */}
+
+        <section
+          id="jobs"
+          className="bg-white border-y border-slate-200"
+        >
+
+          <div className="max-w-7xl mx-auto px-6 py-20 lg:py-24">
+
+            <div className="text-center max-w-3xl mx-auto mb-14">
+
+              <span className="text-sm font-semibold text-orange-500 uppercase tracking-wider">
+                Join Our Team
+              </span>
+
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
+                Current Open Positions
+              </h2>
+
+              <p className="text-slate-500 mt-4">
+                Find an opportunity that matches your skills and
+                experience.
+              </p>
+
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              {jobs.map((job, index) => (
+
+                <div
+                  key={index}
+                  className="group border border-slate-200 rounded-2xl p-6 hover:border-blue-200 hover:shadow-xl transition duration-300 bg-slate-50/50"
+                >
+
+                  {/* Icon */}
+
+                  <div className="flex items-start justify-between">
+
+                    <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white transition">
+
+                      {job.icon}
+
+                    </div>
+
+                    <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-green-50 text-green-700">
+                      Open
+                    </span>
+
+                  </div>
+
+                  {/* Title */}
+
+                  <h3 className="text-xl font-bold text-slate-900 mt-6">
+                    {job.title}
+                  </h3>
+
+                  {/* Details */}
+
+                  <div className="space-y-3 mt-4">
+
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+
+                      <CheckCircle2
+                        size={17}
+                        className="text-green-500"
+                      />
+
+                      <span>
+                        {job.experience} experience
+                      </span>
+
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+
+                      <MapPin
+                        size={17}
+                        className="text-blue-600"
+                      />
+
+                      <span>
+                        {job.location}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  {/* Apply */}
+
+                  <button
+                    onClick={() => navigate("/apply-job")}
+                    className="w-full mt-7 flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-semibold transition"
+                  >
+
+                    Apply for this Position
+
+                    <ArrowRight size={17} />
+
+                  </button>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* ==========================================
+            APPLICATION PROCESS
+        ========================================== */}
+
+        <section className="max-w-7xl mx-auto px-6 py-20 lg:py-24">
+
+          <div className="text-center max-w-3xl mx-auto mb-14">
+
+            <span className="text-sm font-semibold text-orange-500 uppercase tracking-wider">
+              Simple Process
+            </span>
+
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
+              How to Join ServoraCare
+            </h2>
+
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+
+            <div className="relative text-center">
+
+              <div className="w-14 h-14 mx-auto rounded-full bg-blue-900 text-white flex items-center justify-center text-xl font-bold">
+                1
+              </div>
+
+              <h3 className="font-bold text-xl mt-5">
+                Choose a Position
               </h3>
 
-              <p className="text-gray-600 mb-2">
-                Experience: {job.experience}
+              <p className="text-slate-500 mt-2">
+                Find a job role that matches your skills and experience.
               </p>
 
-              <p className="text-gray-600 mb-8">
-                Location: {job.location}
+            </div>
+
+            <div className="relative text-center">
+
+              <div className="w-14 h-14 mx-auto rounded-full bg-blue-900 text-white flex items-center justify-center text-xl font-bold">
+                2
+              </div>
+
+              <h3 className="font-bold text-xl mt-5">
+                Submit Application
+              </h3>
+
+              <p className="text-slate-500 mt-2">
+                Fill in your details and upload the required documents.
               </p>
+
+            </div>
+
+            <div className="relative text-center">
+
+              <div className="w-14 h-14 mx-auto rounded-full bg-blue-900 text-white flex items-center justify-center text-xl font-bold">
+                3
+              </div>
+
+              <h3 className="font-bold text-xl mt-5">
+                Get Connected
+              </h3>
+
+              <p className="text-slate-500 mt-2">
+                Our team will review your application and contact you.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* ==========================================
+            FINAL CTA
+        ========================================== */}
+
+        <section className="bg-blue-950 text-white">
+
+          <div className="max-w-7xl mx-auto px-6 py-14">
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-7">
+
+              <div>
+
+                <h2 className="text-2xl sm:text-3xl font-bold">
+                  Ready to start your journey?
+                </h2>
+
+                <p className="text-blue-200 mt-2">
+                  Apply today and become part of ServoraCare.
+                </p>
+
+              </div>
 
               <button
                 onClick={() => navigate("/apply-job")}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition"
+                className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 px-7 py-3.5 rounded-xl font-semibold transition shrink-0"
               >
                 Apply Now
+                <ArrowRight size={18} />
               </button>
 
             </div>
 
-          ))}
+          </div>
 
-        </div>
+        </section>
 
-      </section>
-
-    </div>
+      </div>
     </>
   );
 }
