@@ -54,7 +54,7 @@ function AdminSidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-slate-950 text-white shadow-2xl">
+    <aside className="fixed left-0 top-20 z-40 flex h-[calc(100vh-5rem)] w-64 flex-col bg-slate-950 text-white shadow-2xl">
 
       {/* =========================================
           BRAND
