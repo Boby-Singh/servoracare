@@ -1,7 +1,7 @@
 import profilePhoto from "../assets/profile.jpg";
 import heroImage from "../assets/page.png";
 import StoryImage from "../assets/Story.jfif";
-import aboutBanner from "../assets/about-banner.jpg";
+// import aboutBanner from "../assets/about-banner.jpg";
 
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -86,7 +86,7 @@ function About() {
 
         {/* Organization Schema */}
 
-        <script type="application/ld+json">
+        <script type="application/ld+json"> 
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
@@ -116,16 +116,17 @@ function About() {
         <section
           className="
             relative
-            min-h-[620px]
-            sm:min-h-[650px]
+            min-h-[560px]
+            sm:min-h-[600px]
             md:h-[620px]
             lg:h-[680px]
             bg-cover
             bg-center
+            overflow-hidden
           "
-          style={{
-            backgroundImage: `url(${aboutBanner})`,
-          }}
+          // style={{
+          //   backgroundImage: `url(${aboutBanner})`,
+          // }}
         >
           {/* Dark Overlay */}
 
