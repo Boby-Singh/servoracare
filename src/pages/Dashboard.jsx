@@ -611,26 +611,26 @@ function Dashboard() {
                         <td className="px-5 py-5">
 
                           {booking.payment_status === "Paid" ? (
-
-                            <span className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-sm">
-                              ✓ Paid
-                            </span>
-
-                          ) : (
-
-                            <button
-                              onClick={() =>
-                                makePayment(
-                                  booking._id,
-                                  booking.amount
-                                )
-                              }
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm"
-                            >
-                              Pay Now
-                            </button>
-
-                          )}
+                          <span className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-sm">
+                            ✓ Paid
+                          </span>
+                        ) : booking.status === "Accepted" ? (
+                          <button
+                            onClick={() =>
+                              makePayment(
+                                booking._id,
+                                booking.amount
+                              )
+                            }
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm"
+                          >
+                            Pay Now
+                          </button>
+                        ) : (
+                          <span className="text-sm text-slate-400">
+                            Payment unavailable
+                          </span>
+                        )}
 
                         </td>
 
@@ -848,8 +848,8 @@ function Dashboard() {
                       </div>
 
 
-                      {booking.payment_status !== "Paid" && (
-
+                      {booking.status === "Accepted" &&
+                      booking.payment_status !== "Paid" && (
                         <button
                           onClick={() =>
                             makePayment(
@@ -861,9 +861,7 @@ function Dashboard() {
                         >
                           Pay Now
                         </button>
-
                       )}
-
                     </div>
 
 
