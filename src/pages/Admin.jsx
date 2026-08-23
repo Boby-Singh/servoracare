@@ -808,8 +808,8 @@ return (
                                                                     (tech) => (
 
                                                                         <option
-                                                                            key={tech._id}
-                                                                            value={tech._id}
+                                                                            key={tech.id}
+                                                                            value={tech.id}
                                                                         >
                                                                             {tech.name}
                                                                         </option>
