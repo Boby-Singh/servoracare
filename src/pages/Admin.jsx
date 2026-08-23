@@ -22,7 +22,63 @@ function Admin() {
 
     const [rejectionReason, setRejectionReason] = useState("");
     const [rejecting, setRejecting] = useState(false);
-    
+    const [completeModal, setCompleteModal] = useState({
+        open: false,
+        bookingId: null,
+        bookingNumber: null
+    });
+
+    const [completionComment, setCompletionComment] = useState("");
+
+    const [completing, setCompleting] = useState(false);
+
+    const completeBooking = async () => {
+
+    if (!completionComment.trim()) {
+        alert("Please enter a completion comment");
+        return;
+    }
+
+    try {
+
+        setCompleting(true);
+
+        await axios.put(
+            `${API}/api/update-status/${completeModal.bookingId}`,
+            {
+                status: "Completed",
+                completion_comment:
+                    completionComment.trim()
+            }
+        );
+
+        setCompleteModal({
+            open: false,
+            bookingId: null,
+            bookingNumber: null
+        });
+
+        setCompletionComment("");
+
+        await fetchBookings();
+
+    } catch (error) {
+
+        console.error(
+            "Complete Booking Error:",
+            error
+        );
+
+        alert(
+            error.response?.data?.message ||
+            "Failed to complete booking"
+        );
+
+    } finally {
+
+        setCompleting(false);
+    }
+};
 
 
     const rejectBooking = async () => {
@@ -982,14 +1038,16 @@ return (
 
 
                                                     {booking.status === "Accepted" && (
-
                                                         <button
-                                                            onClick={() =>
-                                                                updateStatus(
-                                                                    mongoBookingId,
-                                                                    "Completed"
-                                                                )
-                                                            }
+                                                            onClick={() => {
+                                                                setCompleteModal({
+                                                                    open: true,
+                                                                    bookingId: mongoBookingId,
+                                                                    bookingNumber: bookingNumber
+                                                                });
+
+                                                                setCompletionComment("");
+                                                            }}
                                                             className="
                                                                 bg-green-600
                                                                 hover:bg-green-700
@@ -1004,7 +1062,6 @@ return (
                                                         >
                                                             Mark Completed
                                                         </button>
-
                                                     )}
 
 
@@ -1304,6 +1361,290 @@ return (
 
     </div>
 
+)}
+
+{completeModal.open && (
+    <div className="
+        fixed
+        inset-0
+        z-50
+        flex
+        items-center
+        justify-center
+        bg-black/50
+        backdrop-blur-sm
+        px-4
+    ">
+
+        <div className="
+            bg-white
+            w-full
+            max-w-lg
+            rounded-2xl
+            shadow-2xl
+            overflow-hidden
+        ">
+
+            {/* HEADER */}
+
+            <div className="
+                px-6
+                py-5
+                border-b
+                border-slate-200
+                flex
+                items-center
+                justify-between
+            ">
+
+                <div>
+
+                    <h2 className="
+                        text-xl
+                        font-bold
+                        text-slate-900
+                    ">
+                        Complete Booking
+                    </h2>
+
+                    <p className="
+                        text-sm
+                        text-slate-500
+                        mt-1
+                    ">
+                        Booking #{completeModal.bookingNumber}
+                    </p>
+
+                </div>
+
+                <button
+                    onClick={() => {
+                        setCompleteModal({
+                            open: false,
+                            bookingId: null,
+                            bookingNumber: null
+                        });
+
+                        setCompletionComment("");
+                    }}
+                    className="
+                        w-9
+                        h-9
+                        rounded-lg
+                        hover:bg-slate-100
+                        text-slate-500
+                        text-xl
+                    "
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            {/* BODY */}
+
+            <div className="p-6">
+
+                <div className="
+                    p-4
+                    rounded-xl
+                    bg-green-50
+                    border
+                    border-green-100
+                    mb-5
+                ">
+
+                    <p className="
+                        text-sm
+                        font-semibold
+                        text-green-800
+                    ">
+                        Service completion note
+                    </p>
+
+                    <p className="
+                        text-xs
+                        text-green-700
+                        mt-1
+                    ">
+                        Add a brief comment about the completed service.
+                    </p>
+
+                </div>
+
+
+                <label className="
+                    block
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                    mb-2
+                ">
+                    Completion Comment
+                </label>
+
+
+                <textarea
+                    value={completionComment}
+                    onChange={(e) =>
+                        setCompletionComment(e.target.value)
+                    }
+                    rows={5}
+                    placeholder="Example: Electrical repair completed successfully. Faulty MCB was replaced and the system was tested."
+                    className="
+                        w-full
+                        border
+                        border-slate-200
+                        rounded-xl
+                        px-4
+                        py-3
+                        text-sm
+                        resize-none
+                        outline-none
+                        focus:ring-2
+                        focus:ring-green-500/20
+                        focus:border-green-500
+                    "
+                />
+
+
+                <p className="
+                    text-xs
+                    text-slate-400
+                    mt-2
+                ">
+                    This comment will be saved with the booking.
+                </p>
+
+
+                {/* QUICK COMMENTS */}
+
+                <div className="mt-4">
+
+                    <p className="
+                        text-xs
+                        font-semibold
+                        text-slate-500
+                        mb-2
+                    ">
+                        Quick comments
+                    </p>
+
+                    <div className="
+                        flex
+                        flex-wrap
+                        gap-2
+                    ">
+
+                        {[
+                            "Service completed successfully",
+                            "Issue resolved and tested",
+                            "Repair completed successfully",
+                            "Installation completed and tested",
+                            "Customer service completed"
+                        ].map((comment) => (
+
+                            <button
+                                key={comment}
+                                type="button"
+                                onClick={() =>
+                                    setCompletionComment(comment)
+                                }
+                                className="
+                                    px-3
+                                    py-1.5
+                                    rounded-lg
+                                    bg-slate-100
+                                    hover:bg-slate-200
+                                    text-xs
+                                    text-slate-600
+                                    transition
+                                "
+                            >
+                                {comment}
+                            </button>
+
+                        ))}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {/* FOOTER */}
+
+            <div className="
+                px-6
+                py-4
+                bg-slate-50
+                border-t
+                border-slate-200
+                flex
+                justify-end
+                gap-3
+            ">
+
+                <button
+                    onClick={() => {
+
+                        setCompleteModal({
+                            open: false,
+                            bookingId: null,
+                            bookingNumber: null
+                        });
+
+                        setCompletionComment("");
+
+                    }}
+                    className="
+                        px-5
+                        py-2.5
+                        rounded-lg
+                        border
+                        border-slate-200
+                        bg-white
+                        text-slate-600
+                        text-sm
+                        font-semibold
+                        hover:bg-slate-100
+                    "
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    onClick={completeBooking}
+                    disabled={
+                        completing ||
+                        !completionComment.trim()
+                    }
+                    className="
+                        px-5
+                        py-2.5
+                        rounded-lg
+                        bg-green-600
+                        hover:bg-green-700
+                        disabled:bg-green-300
+                        text-white
+                        text-sm
+                        font-semibold
+                    "
+                >
+                    {completing
+                        ? "Completing..."
+                        : "Confirm Completion"
+                    }
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 )}
 
     </AdminLayout>
