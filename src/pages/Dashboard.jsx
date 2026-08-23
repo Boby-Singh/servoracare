@@ -13,9 +13,7 @@ function Dashboard() {
   const [filter, setFilter] = useState("All");
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  const user = JSON.parse(
-    localStorage.getItem("user") || "null"
-  );
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   // ==========================================
   // FETCH BOOKINGS
@@ -497,9 +495,11 @@ function Dashboard() {
                           <div className="flex items-center gap-3">
 
                             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+
                               {getServiceIcon(
                                 booking.service_type
                               )}
+
                             </div>
 
                             <div>
@@ -886,6 +886,25 @@ function Dashboard() {
                     )}
 
 
+                    {/* REJECTION REASON PREVIEW */}
+
+                    {booking.status === "Rejected" && (
+                      <div className="border-t border-red-100 mt-4 pt-4">
+
+                        <p className="text-xs text-red-500 font-bold">
+                          REJECTION REASON
+                        </p>
+
+                        <p className="text-sm text-red-600 mt-1 line-clamp-2">
+                          {booking.rejection_reason?.trim()
+                            ? booking.rejection_reason
+                            : "No rejection reason provided."}
+                        </p>
+
+                      </div>
+                    )}
+
+
                     {/* VIEW DETAILS */}
 
                     <button
@@ -1024,7 +1043,9 @@ function Dashboard() {
 
               <div className="p-6 space-y-6">
 
-                {/* STATUS */}
+                {/* =================================================
+                    STATUS
+                ================================================= */}
 
                 <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
 
@@ -1059,7 +1080,52 @@ function Dashboard() {
                 </div>
 
 
-                {/* SERVICE INFORMATION */}
+                {/* =================================================
+                    REJECTION REASON
+                ================================================= */}
+
+                {selectedBooking.status === "Rejected" && (
+
+                  <div>
+
+                    <h3 className="text-sm font-bold text-slate-900 mb-3">
+                      Rejection Reason
+                    </h3>
+
+                    <div className="bg-red-50 border border-red-200 rounded-2xl p-5">
+
+                      <div className="flex items-start gap-3">
+
+                        <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-lg shrink-0">
+                          ⚠️
+                        </div>
+
+                        <div className="flex-1">
+
+                          <p className="text-xs font-bold uppercase text-red-500">
+                            Reason for Rejection
+                          </p>
+
+                          <p className="text-sm leading-6 text-red-700 mt-1 whitespace-pre-wrap">
+                            {selectedBooking.rejection_reason?.trim()
+                              ? selectedBooking.rejection_reason
+                              : "No rejection reason was provided."}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                )}
+
+
+                {/* =================================================
+                    SERVICE INFORMATION
+                ================================================= */}
 
                 <div>
 
@@ -1078,9 +1144,11 @@ function Dashboard() {
                       <div className="flex items-center gap-3 mt-2">
 
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
+
                           {getServiceIcon(
                             selectedBooking.service_type
                           )}
+
                         </div>
 
                         <p className="font-bold text-slate-800">
@@ -1109,7 +1177,9 @@ function Dashboard() {
                 </div>
 
 
-                {/* CUSTOMER INFORMATION */}
+                {/* =================================================
+                    CUSTOMER INFORMATION
+                ================================================= */}
 
                 <div>
 
@@ -1164,7 +1234,9 @@ function Dashboard() {
                 </div>
 
 
-                {/* TECHNICIAN */}
+                {/* =================================================
+                    TECHNICIAN
+                ================================================= */}
 
                 <div>
 
@@ -1237,7 +1309,9 @@ function Dashboard() {
                 </div>
 
 
-                {/* VISIT */}
+                {/* =================================================
+                    VISIT
+                ================================================= */}
 
                 <div>
 
@@ -1284,7 +1358,9 @@ function Dashboard() {
                 </div>
 
 
-                {/* PAYMENT */}
+                {/* =================================================
+                    PAYMENT
+                ================================================= */}
 
                 <div>
 
@@ -1348,7 +1424,9 @@ function Dashboard() {
                 </div>
 
 
-                {/* TECHNICIAN REPORT */}
+                {/* =================================================
+                    TECHNICIAN REPORT
+                ================================================= */}
 
                 {selectedBooking.technician_comment && (
 
