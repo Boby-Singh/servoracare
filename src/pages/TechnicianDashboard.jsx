@@ -18,6 +18,7 @@ import {
   Loader2,
   AlertCircle,
   Check,
+  ShieldCheck,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL;
@@ -25,17 +26,31 @@ const API = import.meta.env.VITE_API_URL;
 function TechnicianDashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
+  // ==========================================
+  // STATES
+  // ==========================================
+
   const [jobs, setJobs] = useState([]);
+
   const [search, setSearch] = useState("");
 
   const [showModal, setShowModal] = useState(false);
+
+  const [showOTPModal, setShowOTPModal] = useState(false);
+
   const [selectedJob, setSelectedJob] = useState(null);
 
   const [workReport, setWorkReport] = useState("");
 
+  const [otp, setOtp] = useState("");
+
   const [loading, setLoading] = useState(true);
-  const [completing, setCompleting] = useState(false);
+
+  const [otpLoading, setOtpLoading] = useState(false);
+
   const [error, setError] = useState("");
+
+  const [otpError, setOtpError] = useState("");
 
   // ==========================================
   // CHECK TECHNICIAN
@@ -82,44 +97,141 @@ function TechnicianDashboard() {
   }, []);
 
   // ==========================================
-  // COMPLETE JOB
+  // OPEN COMPLETE MODAL
   // ==========================================
 
-  const completeJob = async () => {
-    if (!workReport.trim()) {
-      return;
-    }
+  const openCompleteModal = (job) => {
+    setSelectedJob(job);
+    setWorkReport("");
+    setShowModal(true);
+  };
 
+  // ==========================================
+  // CLOSE COMPLETE MODAL
+  // ==========================================
+
+  const closeCompleteModal = () => {
+    setShowModal(false);
+    setWorkReport("");
+    setSelectedJob(null);
+  };
+
+  // ==========================================
+  // REQUEST CUSTOMER OTP
+  // ==========================================
+
+  const requestCompletionOTP = async () => {
     if (!selectedJob) {
       return;
     }
 
-    try {
-      setCompleting(true);
+    if (!workReport.trim()) {
+      alert("Please enter the work completion report.");
+      return;
+    }
 
-      await axios.put(
-        `${API}/api/update-status/${selectedJob._id}`,
+    try {
+      setOtpLoading(true);
+      setOtpError("");
+
+      const response = await axios.post(
+        `${API}/api/bookings/${selectedJob._id}/request-completion-otp`
+      );
+
+      if (response.data.success) {
+        // Close work report modal
+        setShowModal(false);
+
+        // Reset OTP
+        setOtp("");
+        setOtpError("");
+
+        // Open OTP modal
+        setShowOTPModal(true);
+      }
+    } catch (error) {
+      console.error(
+        "Request Completion OTP Error:",
+        error
+      );
+
+      alert(
+        error.response?.data?.message ||
+          "Unable to send customer OTP."
+      );
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // ==========================================
+  // VERIFY CUSTOMER OTP
+  // ==========================================
+
+  const verifyCompletionOTP = async () => {
+    if (!selectedJob) {
+      return;
+    }
+
+    if (otp.length !== 6) {
+      setOtpError("Please enter the 6-digit OTP.");
+      return;
+    }
+
+    try {
+      setOtpLoading(true);
+      setOtpError("");
+
+      const response = await axios.post(
+        `${API}/api/bookings/${selectedJob._id}/verify-completion-otp`,
         {
-          status: "Completed",
+          otp: otp,
           technician_comment: workReport.trim(),
         }
       );
 
-      setShowModal(false);
-      setWorkReport("");
-      setSelectedJob(null);
+      if (response.data.success) {
+        // Close OTP modal
+        setShowOTPModal(false);
 
-      await fetchJobs();
+        // Reset states
+        setOtp("");
+        setWorkReport("");
+        setSelectedJob(null);
+        setOtpError("");
+
+        // Refresh jobs
+        await fetchJobs();
+
+        alert("Service completed successfully!");
+      }
     } catch (error) {
-      console.error("Complete Job Error:", error);
+      console.error(
+        "Verify Completion OTP Error:",
+        error
+      );
 
-      alert(
+      setOtpError(
         error.response?.data?.message ||
-          "Failed to complete job."
+          "Invalid OTP. Please try again."
       );
     } finally {
-      setCompleting(false);
+      setOtpLoading(false);
     }
+  };
+
+  // ==========================================
+  // CLOSE OTP MODAL
+  // ==========================================
+
+  const closeOTPModal = () => {
+    if (otpLoading) {
+      return;
+    }
+
+    setShowOTPModal(false);
+    setOtp("");
+    setOtpError("");
   };
 
   // ==========================================
@@ -134,19 +246,15 @@ function TechnicianDashboard() {
         ?.toString()
         .toLowerCase()
         .includes(searchValue) ||
-
       job.full_name
         ?.toLowerCase()
         .includes(searchValue) ||
-
       job.phone
         ?.toString()
         .includes(searchValue) ||
-
       job.service_type
         ?.toLowerCase()
         .includes(searchValue) ||
-
       job.address
         ?.toLowerCase()
         .includes(searchValue)
@@ -246,9 +354,7 @@ function TechnicianDashboard() {
                   </p>
 
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-
                     Welcome, {user?.name || "Technician"}
-
                   </h1>
 
                 </div>
@@ -502,9 +608,7 @@ function TechnicianDashboard() {
 
             </div>
 
-            {/* ==========================================
-                ERROR
-            ========================================== */}
+            {/* ERROR */}
 
             {error && !loading && (
 
@@ -535,9 +639,7 @@ function TechnicianDashboard() {
 
             )}
 
-            {/* ==========================================
-                LOADING
-            ========================================== */}
+            {/* LOADING */}
 
             {loading ? (
 
@@ -556,9 +658,7 @@ function TechnicianDashboard() {
 
             ) : filteredJobs.length === 0 ? (
 
-              /* ==========================================
-                 EMPTY
-              ========================================== */
+              /* EMPTY */
 
               <div className="text-center py-24 px-6">
 
@@ -576,18 +676,18 @@ function TechnicianDashboard() {
                 </h3>
 
                 <p className="text-sm text-slate-500 mt-2">
+
                   {search
                     ? "Try changing your search."
                     : "You don't have any assigned jobs yet."}
+
                 </p>
 
               </div>
 
             ) : (
 
-              /* ==========================================
-                 TABLE
-              ========================================== */
+              /* TABLE */
 
               <div className="overflow-x-auto">
 
@@ -643,9 +743,7 @@ function TechnicianDashboard() {
                         <td className="px-5 py-5">
 
                           <span className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-sm">
-
                             #{job.booking_id || "-"}
-
                           </span>
 
                         </td>
@@ -749,9 +847,8 @@ function TechnicianDashboard() {
                             </div>
 
                             <div className="text-xs text-slate-500 ml-5">
-
-                              {job.visit_time || "Time not specified"}
-
+                              {job.visit_time ||
+                                "Time not specified"}
                             </div>
 
                           </div>
@@ -792,10 +889,9 @@ function TechnicianDashboard() {
                           {job.status === "Accepted" ? (
 
                             <button
-                              onClick={() => {
-                                setSelectedJob(job);
-                                setShowModal(true);
-                              }}
+                              onClick={() =>
+                                openCompleteModal(job)
+                              }
                               className="
                                 inline-flex
                                 items-center
@@ -851,9 +947,7 @@ function TechnicianDashboard() {
 
             )}
 
-            {/* ==========================================
-                FOOTER
-            ========================================== */}
+            {/* FOOTER */}
 
             {!loading && filteredJobs.length > 0 && (
 
@@ -897,20 +991,14 @@ function TechnicianDashboard() {
 
             <div
               className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
-              onClick={() => {
-                if (!completing) {
-                  setShowModal(false);
-                  setWorkReport("");
-                  setSelectedJob(null);
-                }
-              }}
+              onClick={closeCompleteModal}
             />
 
             {/* MODAL */}
 
             <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
 
-              {/* MODAL HEADER */}
+              {/* HEADER */}
 
               <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
 
@@ -940,22 +1028,15 @@ function TechnicianDashboard() {
                 </div>
 
                 <button
-                  disabled={completing}
-                  onClick={() => {
-                    setShowModal(false);
-                    setWorkReport("");
-                    setSelectedJob(null);
-                  }}
+                  onClick={closeCompleteModal}
                   className="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 transition"
                 >
-
                   <X size={20} />
-
                 </button>
 
               </div>
 
-              {/* MODAL BODY */}
+              {/* BODY */}
 
               <div className="p-6">
 
@@ -993,6 +1074,8 @@ function TechnicianDashboard() {
 
                 </div>
 
+                {/* REPORT */}
+
                 <label className="block text-sm font-semibold text-slate-800 mb-2">
 
                   Work Completion Report
@@ -1009,7 +1092,7 @@ function TechnicianDashboard() {
                     setWorkReport(e.target.value)
                   }
                   rows="7"
-                  disabled={completing}
+                  disabled={otpLoading}
                   placeholder={`Example:
 
 • Equipment inspected
@@ -1040,17 +1123,13 @@ function TechnicianDashboard() {
 
               </div>
 
-              {/* MODAL FOOTER */}
+              {/* FOOTER */}
 
               <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
 
                 <button
-                  disabled={completing}
-                  onClick={() => {
-                    setShowModal(false);
-                    setWorkReport("");
-                    setSelectedJob(null);
-                  }}
+                  disabled={otpLoading}
+                  onClick={closeCompleteModal}
                   className="
                     px-5
                     py-2.5
@@ -1070,10 +1149,10 @@ function TechnicianDashboard() {
 
                 <button
                   disabled={
-                    completing ||
+                    otpLoading ||
                     !workReport.trim()
                   }
-                  onClick={completeJob}
+                  onClick={requestCompletionOTP}
                   className="
                     inline-flex
                     items-center
@@ -1092,7 +1171,7 @@ function TechnicianDashboard() {
                   "
                 >
 
-                  {completing ? (
+                  {otpLoading ? (
 
                     <>
                       <Loader2
@@ -1100,16 +1179,265 @@ function TechnicianDashboard() {
                         className="animate-spin"
                       />
 
-                      Completing...
+                      Sending OTP...
 
                     </>
 
                   ) : (
 
                     <>
-                      <CheckCircle size={17} />
+                      <ShieldCheck size={17} />
 
-                      Submit & Complete
+                      Request Customer OTP
+
+                    </>
+
+                  )}
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+        {/* ==========================================
+            CUSTOMER OTP MODAL
+        ========================================== */}
+
+        {showOTPModal && selectedJob && (
+
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+
+            {/* BACKDROP */}
+
+            <div
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+              onClick={closeOTPModal}
+            />
+
+            {/* MODAL */}
+
+            <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+              {/* HEADER */}
+
+              <div className="px-6 py-5 border-b border-slate-200">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+
+                    <ShieldCheck
+                      size={22}
+                      className="text-blue-600"
+                    />
+
+                  </div>
+
+                  <div>
+
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Customer Verification
+                    </h2>
+
+                    <p className="text-xs text-slate-500 mt-1">
+                      Booking #{selectedJob.booking_id}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* BODY */}
+
+              <div className="p-6">
+
+                {/* INFORMATION */}
+
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-5">
+
+                  <p className="text-sm text-blue-800 leading-relaxed">
+
+                    Ask the customer for the{" "}
+
+                    <strong>6-digit OTP</strong>{" "}
+
+                    sent to their registered contact.
+
+                  </p>
+
+                </div>
+
+                {/* CUSTOMER */}
+
+                <div className="flex items-center gap-3 mb-5">
+
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+
+                    <UserRound
+                      size={18}
+                      className="text-slate-500"
+                    />
+
+                  </div>
+
+                  <div>
+
+                    <p className="text-xs text-slate-500">
+                      Customer
+                    </p>
+
+                    <p className="font-semibold text-slate-900">
+                      {selectedJob.full_name}
+                    </p>
+
+                  </div>
+
+                </div>
+
+                {/* OTP */}
+
+                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                  Customer OTP
+                </label>
+
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={otp}
+                  disabled={otpLoading}
+                  autoFocus
+                  onChange={(e) => {
+
+                    const value =
+                      e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 6);
+
+                    setOtp(value);
+                    setOtpError("");
+
+                  }}
+                  placeholder="Enter 6-digit OTP"
+                  className="
+                    w-full
+                    border
+                    border-slate-200
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-center
+                    text-2xl
+                    font-bold
+                    tracking-[0.5em]
+                    outline-none
+                    focus:border-blue-500
+                    focus:ring-2
+                    focus:ring-blue-500/20
+                    transition
+                  "
+                />
+
+                {/* ERROR */}
+
+                {otpError && (
+
+                  <div className="flex items-center gap-2 mt-3 text-red-600">
+
+                    <AlertCircle size={16} />
+
+                    <p className="text-sm">
+                      {otpError}
+                    </p>
+
+                  </div>
+
+                )}
+
+                <p className="text-xs text-slate-400 mt-3 text-center">
+                  OTP is valid for 5 minutes.
+                </p>
+
+              </div>
+
+              {/* FOOTER */}
+
+              <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+
+                <button
+                  disabled={otpLoading}
+                  onClick={closeOTPModal}
+                  className="
+                    flex-1
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-white
+                    text-slate-700
+                    text-sm
+                    font-semibold
+                    hover:bg-slate-100
+                    transition
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button
+                  disabled={
+                    otpLoading ||
+                    otp.length !== 6
+                  }
+                  onClick={verifyCompletionOTP}
+                  className="
+                    flex-1
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    bg-green-600
+                    text-white
+                    text-sm
+                    font-semibold
+                    hover:bg-green-700
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                    transition
+                  "
+                >
+
+                  {otpLoading ? (
+
+                    <>
+                      <Loader2
+                        size={17}
+                        className="animate-spin"
+                      />
+
+                      Verifying...
+
+                    </>
+
+                  ) : (
+
+                    <>
+                      <Check size={17} />
+
+                      Verify & Complete
+
                     </>
 
                   )}
