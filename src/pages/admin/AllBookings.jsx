@@ -10,6 +10,7 @@ function AllBookings() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -829,16 +830,38 @@ function AllBookings() {
 
                           {/* AMOUNT */}
                           <td className="px-6 py-5">
-
-                            <span className="text-sm font-bold text-orange-600 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedBooking(booking)}
+                              className="
+                                inline-flex
+                                items-center
+                                gap-2
+                                px-3
+                                py-2
+                                rounded-xl
+                                bg-orange-50
+                                border
+                                border-orange-200
+                                text-orange-700
+                                text-sm
+                                font-bold
+                                hover:bg-orange-100
+                                hover:border-orange-300
+                                transition
+                                cursor-pointer
+                              "
+                            >
                               ₹
                               {Number(
                                 booking.amount || 0
                               ).toLocaleString("en-IN")}
-                            </span>
 
+                              <span className="text-xs">
+                                ↗
+                              </span>
+                            </button>
                           </td>
-
                           {/* STATUS */}
                           <td className="px-6 py-5 text-center">
 
@@ -953,6 +976,413 @@ function AllBookings() {
         </main>
 
       </div>
+
+{/* ==========================================
+    BOOKING EARNINGS MODAL
+========================================== */}
+
+{selectedBooking && (
+  <div
+    className="
+      fixed
+      inset-0
+      z-50
+      bg-black/50
+      backdrop-blur-sm
+      flex
+      items-center
+      justify-center
+      p-4
+    "
+    onClick={() => setSelectedBooking(null)}
+  >
+    <div
+      className="
+        w-full
+        max-w-2xl
+        bg-white
+        rounded-3xl
+        shadow-2xl
+        overflow-hidden
+        max-h-[90vh]
+        overflow-y-auto
+      "
+      onClick={(e) => e.stopPropagation()}
+    >
+
+      {/* HEADER */}
+      <div className="bg-blue-900 px-6 py-6 text-white">
+
+        <div className="flex items-start justify-between gap-4">
+
+          <div>
+            <p className="text-blue-200 text-sm font-medium">
+              Booking Earnings
+            </p>
+
+            <h2 className="text-2xl font-bold mt-1">
+              #{selectedBooking.booking_id}
+            </h2>
+
+            <p className="text-blue-200 text-sm mt-1">
+              {selectedBooking.service_type}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setSelectedBooking(null)}
+            className="
+              w-9
+              h-9
+              rounded-xl
+              bg-white/10
+              hover:bg-white/20
+              flex
+              items-center
+              justify-center
+              text-xl
+              transition
+            "
+          >
+            ×
+          </button>
+
+        </div>
+      </div>
+
+
+      {/* BODY */}
+      <div className="p-6">
+
+        {/* BOOKING INFORMATION */}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+          <div className="bg-slate-50 rounded-2xl p-4">
+            <p className="text-xs text-slate-500">
+              Customer
+            </p>
+
+            <p className="font-semibold text-slate-900 mt-1">
+              {selectedBooking.full_name || "Unknown"}
+            </p>
+          </div>
+
+
+          <div className="bg-slate-50 rounded-2xl p-4">
+            <p className="text-xs text-slate-500">
+              Service
+            </p>
+
+            <p className="font-semibold text-slate-900 mt-1">
+              {selectedBooking.service_type || "-"}
+            </p>
+          </div>
+
+
+          <div className="bg-slate-50 rounded-2xl p-4">
+            <p className="text-xs text-slate-500">
+              Technician
+            </p>
+
+            <p className="font-semibold text-slate-900 mt-1">
+              {selectedBooking.technician_name ||
+                "Not Assigned"}
+            </p>
+
+            {selectedBooking.employee_code && (
+              <p className="text-xs text-slate-500 mt-1">
+                Employee Code:{" "}
+                {selectedBooking.employee_code}
+              </p>
+            )}
+          </div>
+
+
+          <div className="bg-slate-50 rounded-2xl p-4">
+            <p className="text-xs text-slate-500">
+              Booking Status
+            </p>
+
+            <p
+              className={`
+                inline-flex
+                mt-2
+                px-3
+                py-1
+                rounded-full
+                text-xs
+                font-bold
+
+                ${
+                  selectedBooking.status === "Completed"
+                    ? "bg-green-100 text-green-700"
+                    : selectedBooking.status === "Accepted"
+                    ? "bg-blue-100 text-blue-700"
+                    : selectedBooking.status === "Rejected"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-amber-100 text-amber-700"
+                }
+              `}
+            >
+              {selectedBooking.status || "Pending"}
+            </p>
+          </div>
+
+        </div>
+
+
+        {/* TOTAL BOOKING VALUE */}
+
+        <div
+          className="
+            rounded-2xl
+            bg-slate-900
+            text-white
+            p-6
+            mb-5
+          "
+        >
+
+          <p className="text-sm text-slate-300">
+            Total Booking Value
+          </p>
+
+          <p className="text-4xl font-bold mt-2">
+            ₹
+            {Number(
+              selectedBooking.amount || 0
+            ).toLocaleString("en-IN")}
+          </p>
+
+        </div>
+
+
+        {/* EARNINGS BREAKDOWN */}
+
+        <div className="mb-3">
+
+          <h3 className="text-lg font-bold text-slate-900">
+            Earnings Breakdown
+          </h3>
+
+          <p className="text-sm text-slate-500 mt-1">
+            Booking value distribution
+          </p>
+
+        </div>
+
+
+        {/* CALCULATE EARNINGS */}
+
+        {(() => {
+
+          const amount =
+            Number(selectedBooking.amount || 0);
+
+          const servoraEarning =
+            amount * 0.20;
+
+          const technicianEarning =
+            amount * 0.80;
+
+          return (
+            <div className="space-y-4">
+
+              {/* SERVORACARE */}
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-blue-200
+                  bg-blue-50
+                  p-5
+                "
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <div>
+
+                    <p className="text-sm font-medium text-blue-700">
+                      ServoraCare Earnings
+                    </p>
+
+                    <p className="text-xs text-blue-500 mt-1">
+                      Platform share • 20%
+                    </p>
+
+                  </div>
+
+                  <p className="text-2xl font-bold text-blue-700">
+                    ₹
+                    {servoraEarning.toLocaleString(
+                      "en-IN",
+                      {
+                        maximumFractionDigits: 2
+                      }
+                    )}
+                  </p>
+
+                </div>
+
+                <div className="mt-4 h-2 bg-blue-100 rounded-full overflow-hidden">
+
+                  <div
+                    className="h-full bg-blue-600 rounded-full"
+                    style={{
+                      width: "20%"
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+
+              {/* TECHNICIAN */}
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-green-200
+                  bg-green-50
+                  p-5
+                "
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <div>
+
+                    <p className="text-sm font-medium text-green-700">
+                      Technician Earnings
+                    </p>
+
+                    <p className="text-xs text-green-600 mt-1">
+                      Technician share • 80%
+                    </p>
+
+                  </div>
+
+                  <p className="text-2xl font-bold text-green-700">
+                    ₹
+                    {technicianEarning.toLocaleString(
+                      "en-IN",
+                      {
+                        maximumFractionDigits: 2
+                      }
+                    )}
+                  </p>
+
+                </div>
+
+                <div className="mt-4 h-2 bg-green-100 rounded-full overflow-hidden">
+
+                  <div
+                    className="h-full bg-green-600 rounded-full"
+                    style={{
+                      width: "80%"
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+
+              {/* SUMMARY */}
+
+              <div
+                className="
+                  border-t
+                  border-slate-200
+                  pt-5
+                  mt-5
+                "
+              >
+
+                <div className="flex justify-between text-sm">
+
+                  <span className="text-slate-500">
+                    ServoraCare
+                  </span>
+
+                  <span className="font-semibold text-slate-900">
+                    20%
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between text-sm mt-3">
+
+                  <span className="text-slate-500">
+                    Technician
+                  </span>
+
+                  <span className="font-semibold text-slate-900">
+                    80%
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between text-base mt-4 pt-4 border-t">
+
+                  <span className="font-bold text-slate-900">
+                    Total
+                  </span>
+
+                  <span className="font-bold text-slate-900">
+                    ₹
+                    {(
+                      servoraEarning +
+                      technicianEarning
+                    ).toLocaleString(
+                      "en-IN",
+                      {
+                        maximumFractionDigits: 2
+                      }
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+          );
+
+        })()}
+
+
+        {/* CLOSE BUTTON */}
+
+        <button
+          type="button"
+          onClick={() => setSelectedBooking(null)}
+          className="
+            w-full
+            mt-6
+            py-3
+            rounded-xl
+            bg-slate-100
+            hover:bg-slate-200
+            text-slate-700
+            font-semibold
+            transition
+          "
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
     </AdminLayout>
   );
 }
