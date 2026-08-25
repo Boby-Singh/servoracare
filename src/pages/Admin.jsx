@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../layouts/AdminLayout";
+import AdminDashboard from "./admin/AdminDashboard";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -389,7 +390,7 @@ return (
 
             <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
-
+                <AdminDashboard bookings={bookings} />
                 {/* ==========================================
                     STATISTICS
                 ========================================== */}
