@@ -353,40 +353,36 @@ function Technicians() {
               /* ==========================================
                  TABLE
               ========================================== */
-              <div className="overflow-x-auto">
+              <div className="w-full overflow-hidden">
 
-                <table className="w-full min-w-[950px]">
+                <table className="w-full table-fixed">
 
                   <thead className="bg-slate-50 border-b border-slate-200">
-
                     <tr>
-
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="w-[20%] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                         Technician
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="w-[12%] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                         User ID
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="w-[24%] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                         Email
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="w-[16%] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                         Employee Code
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="w-[16%] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                         Phone
                       </th>
 
-                      <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <th className="w-[12%] px-4 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
                         Status
                       </th>
-
                     </tr>
-
                   </thead>
 
                   <tbody className="divide-y divide-slate-100">
