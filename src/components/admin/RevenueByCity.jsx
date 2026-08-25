@@ -1,315 +1,280 @@
-import React, { useMemo } from "react";
-
 import {
+    ResponsiveContainer,
     BarChart,
     Bar,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
-    ResponsiveContainer,
-    Cell
 } from "recharts";
 
 function RevenueByCity({ bookings = [] }) {
 
-    // ==========================================
-    // PROCESS CITY REVENUE
-    // ==========================================
+    /* ==========================================
+       GET CITY FROM BOOKING
+    ========================================== */
 
-    const cityData = useMemo(() => {
+    const getCity = (booking) => {
 
-        const cityMap = {};
+        // Preferred: separate city field
+        if (booking.city?.trim()) {
+            return booking.city.trim();
+        }
 
-        bookings
-            .filter(
-                (booking) =>
-                    booking.status === "Completed"
-            )
-            .forEach((booking) => {
+        // Fallback: try to extract city from address
+        if (booking.address?.trim()) {
 
-                let city = "Unknown";
+            const parts = booking.address
+                .split(",")
+                .map((part) => part.trim())
+                .filter(Boolean);
 
-                if (booking.address) {
+            if (parts.length >= 2) {
+                return parts[parts.length - 2];
+            }
 
-                    const parts = booking.address
-                        .split(",")
-                        .map((part) => part.trim())
-                        .filter(Boolean);
+            if (parts.length === 1) {
+                return parts[0];
+            }
+        }
 
-                    /*
-                     * Assumption:
-                     *
-                     * Customer address:
-                     *
-                     * House, Area, City, State, PIN
-                     *
-                     * City is normally third-last/second-last
-                     * depending on the address format.
-                     */
+        return "Unknown";
+    };
 
-                    if (parts.length >= 3) {
-                        city = parts[parts.length - 3];
-                    } else if (parts.length >= 2) {
-                        city = parts[parts.length - 2];
-                    } else if (parts.length === 1) {
-                        city = parts[0];
-                    }
+    /* ==========================================
+       CALCULATE REVENUE
+       ONLY COMPLETED BOOKINGS
+    ========================================== */
 
-                }
+    const cityRevenue = {};
 
-                city = city || "Unknown";
+    bookings
+        .filter((booking) => booking.status === "Completed")
+        .forEach((booking) => {
 
-                if (!cityMap[city]) {
+            const city = getCity(booking);
 
-                    cityMap[city] = {
-                        city,
-                        revenue: 0,
-                        bookings: 0
-                    };
+            const amount = Number(booking.amount) || 0;
 
-                }
+            if (!cityRevenue[city]) {
+                cityRevenue[city] = 0;
+            }
 
-                cityMap[city].revenue += Number(
-                    booking.amount || 0
-                );
+            cityRevenue[city] += amount;
+        });
 
-                cityMap[city].bookings += 1;
+    /* ==========================================
+       CHART DATA
+    ========================================== */
 
-            });
+    const chartData = Object.entries(cityRevenue)
+        .map(([city, revenue]) => ({
+            city,
+            revenue,
+        }))
+        .sort((a, b) => b.revenue - a.revenue);
 
-        return Object.values(cityMap)
-            .sort(
-                (a, b) =>
-                    b.revenue - a.revenue
-            )
-            .slice(0, 10);
-
-    }, [bookings]);
-
-
-    // ==========================================
-    // FORMAT CURRENCY
-    // ==========================================
+    /* ==========================================
+       FORMATTERS
+    ========================================== */
 
     const formatCurrency = (value) => {
 
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
             currency: "INR",
-            maximumFractionDigits: 0
+            maximumFractionDigits: 0,
         }).format(value);
-
     };
 
+    const formatYAxis = (value) => {
 
-    // ==========================================
-    // EMPTY STATE
-    // ==========================================
+        if (value >= 10000000) {
+            return `₹${(value / 10000000).toFixed(1)}Cr`;
+        }
 
-    if (cityData.length === 0) {
+        if (value >= 100000) {
+            return `₹${(value / 100000).toFixed(1)}L`;
+        }
+
+        if (value >= 1000) {
+            return `₹${(value / 1000).toFixed(1)}K`;
+        }
+
+        return `₹${value}`;
+    };
+
+    /* ==========================================
+       EMPTY STATE
+    ========================================== */
+
+    if (chartData.length === 0) {
 
         return (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
-                <div className="mb-6">
+                <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
 
                     <h3 className="text-lg font-bold text-slate-900">
                         Revenue by City
                     </h3>
 
                     <p className="text-sm text-slate-500 mt-1">
-                        Revenue generated from completed services
+                        Completed service revenue across cities
                     </p>
 
                 </div>
 
-                <div className="h-72 flex items-center justify-center">
+                <div className="h-[350px] flex flex-col items-center justify-center px-6">
 
-                    <div className="text-center">
-
-                        <div className="text-4xl mb-3">
-                            📊
-                        </div>
-
-                        <p className="text-sm font-medium text-slate-600">
-                            No completed bookings yet
-                        </p>
-
-                        <p className="text-xs text-slate-400 mt-1">
-                            City revenue will appear here
-                        </p>
-
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-2xl">
+                        📊
                     </div>
+
+                    <h4 className="text-sm font-semibold text-slate-700 mt-4">
+                        No revenue data yet
+                    </h4>
+
+                    <p className="text-xs text-slate-400 text-center mt-1 max-w-sm">
+                        Revenue will appear here after completed bookings
+                        are recorded.
+                    </p>
 
                 </div>
 
             </div>
         );
-
     }
 
-
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
             {/* ==========================================
                 HEADER
             ========================================== */}
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
 
-                <div>
+                <div className="flex items-start justify-between gap-4">
 
-                    <h3 className="text-lg font-bold text-slate-900">
-                        Revenue by City
-                    </h3>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900">
+                            Revenue by City
+                        </h3>
 
-                    <p className="text-sm text-slate-500 mt-1">
-                        Top cities by completed service revenue
-                    </p>
+                        <p className="text-sm text-slate-500 mt-1">
+                            Completed service revenue across cities
+                        </p>
+                    </div>
 
-                </div>
+                    <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500">
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        Revenue
+                    </div>
 
-                <div className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold">
-                    Top {cityData.length} Cities
                 </div>
 
             </div>
-
 
             {/* ==========================================
                 CHART
             ========================================== */}
 
-            <div className="w-full h-[360px]">
+            <div className="p-4 sm:p-6">
 
-                <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                >
+                <div className="w-full h-[350px]">
 
-                    <BarChart
-                        data={cityData}
-                        margin={{
-                            top: 10,
-                            right: 20,
-                            left: 10,
-                            bottom: 10
-                        }}
-                    >
+                    <ResponsiveContainer width="100%" height="100%">
 
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            vertical={false}
-                        />
-
-                        <XAxis
-                            dataKey="city"
-                            tick={{
-                                fontSize: 12
+                        <BarChart
+                            data={chartData}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 55,
                             }}
-                            axisLine={false}
-                            tickLine={false}
-                        />
-
-                        <YAxis
-                            tick={{
-                                fontSize: 12
-                            }}
-                            axisLine={false}
-                            tickLine={false}
-                            tickFormatter={(value) =>
-                                `₹${value}`
-                            }
-                        />
-
-                        <Tooltip
-                            cursor={{
-                                fill: "rgba(15, 23, 42, 0.04)"
-                            }}
-                            formatter={(value, name) => {
-
-                                if (name === "revenue") {
-                                    return [
-                                        formatCurrency(value),
-                                        "Revenue"
-                                    ];
-                                }
-
-                                return [
-                                    value,
-                                    "Bookings"
-                                ];
-
-                            }}
-                            labelFormatter={(label) =>
-                                `City: ${label}`
-                            }
-                        />
-
-                        <Bar
-                            dataKey="revenue"
-                            name="Revenue"
-                            radius={[
-                                8,
-                                8,
-                                0,
-                                0
-                            ]}
-                            maxBarSize={55}
+                            barCategoryGap="25%"
                         >
 
-                            {cityData.map(
-                                (entry, index) => (
-                                    <Cell
-                                        key={`city-${index}`}
-                                    />
-                                )
-                            )}
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                vertical={false}
+                                stroke="#e2e8f0"
+                            />
 
-                        </Bar>
+                            <XAxis
+                                dataKey="city"
+                                tick={{
+                                    fontSize: 11,
+                                    fill: "#64748b",
+                                }}
+                                axisLine={{
+                                    stroke: "#cbd5e1",
+                                }}
+                                tickLine={false}
+                                interval={0}
+                                angle={
+                                    chartData.length > 4
+                                        ? -35
+                                        : 0
+                                }
+                                textAnchor={
+                                    chartData.length > 4
+                                        ? "end"
+                                        : "middle"
+                                }
+                            />
 
-                    </BarChart>
+                            <YAxis
+                                tick={{
+                                    fontSize: 11,
+                                    fill: "#64748b",
+                                }}
+                                axisLine={false}
+                                tickLine={false}
+                                tickFormatter={formatYAxis}
+                                width={65}
+                            />
 
-                </ResponsiveContainer>
+                            <Tooltip
+                                cursor={{
+                                    fill: "rgba(59, 130, 246, 0.05)",
+                                }}
+                                formatter={(value) => [
+                                    formatCurrency(value),
+                                    "Revenue",
+                                ]}
+                                labelFormatter={(label) =>
+                                    `City: ${label}`
+                                }
+                                contentStyle={{
+                                    borderRadius: "12px",
+                                    border: "1px solid #e2e8f0",
+                                    boxShadow:
+                                        "0 10px 25px rgba(15, 23, 42, 0.08)",
+                                    padding: "10px 12px",
+                                }}
+                            />
 
-            </div>
+                            <Bar
+                                dataKey="revenue"
+                                name="Revenue"
+                                fill="#2563eb"
+                                radius={[
+                                    6,
+                                    6,
+                                    0,
+                                    0,
+                                ]}
+                                maxBarSize={55}
+                            />
 
+                        </BarChart>
 
-            {/* ==========================================
-                CITY SUMMARY
-            ========================================== */}
+                    </ResponsiveContainer>
 
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-
-                {cityData.slice(0, 6).map((city) => (
-
-                    <div
-                        key={city.city}
-                        className="border border-slate-100 rounded-xl p-3 bg-slate-50"
-                    >
-
-                        <div className="flex items-center justify-between">
-
-                            <span className="text-sm font-semibold text-slate-700 truncate">
-                                {city.city}
-                            </span>
-
-                            <span className="text-xs text-slate-400">
-                                {city.bookings} job
-                                {city.bookings !== 1 ? "s" : ""}
-                            </span>
-
-                        </div>
-
-                        <p className="text-sm font-bold text-slate-900 mt-1">
-                            {formatCurrency(city.revenue)}
-                        </p>
-
-                    </div>
-
-                ))}
+                </div>
 
             </div>
 

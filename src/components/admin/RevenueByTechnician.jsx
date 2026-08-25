@@ -1,325 +1,287 @@
-import React, { useMemo } from "react";
-
 import {
+    ResponsiveContainer,
     BarChart,
     Bar,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
-    ResponsiveContainer,
-    Cell
 } from "recharts";
 
 function RevenueByTechnician({ bookings = [] }) {
 
-    // ==========================================
-    // PROCESS TECHNICIAN REVENUE
-    // ==========================================
+    /* ==========================================
+       CALCULATE TECHNICIAN REVENUE
+       ONLY COMPLETED BOOKINGS
+    ========================================== */
 
-    const technicianData = useMemo(() => {
+    const technicianRevenue = {};
 
-        const technicianMap = {};
+    bookings
+        .filter((booking) => booking.status === "Completed")
+        .forEach((booking) => {
 
-        bookings
-            .filter(
-                (booking) =>
-                    booking.status === "Completed"
-            )
-            .forEach((booking) => {
+            const technician =
+                booking.technician_name?.trim() ||
+                "Unassigned";
 
-                const technician =
-                    booking.technician_name?.trim() ||
-                    "Unassigned";
+            const amount =
+                Number(booking.amount) || 0;
 
-                if (!technicianMap[technician]) {
+            if (!technicianRevenue[technician]) {
+                technicianRevenue[technician] = 0;
+            }
 
-                    technicianMap[technician] = {
-                        technician,
-                        revenue: 0,
-                        bookings: 0
-                    };
+            technicianRevenue[technician] += amount;
+        });
 
-                }
+    /* ==========================================
+       CHART DATA
+    ========================================== */
 
-                technicianMap[technician].revenue += Number(
-                    booking.amount || 0
-                );
+    const chartData = Object.entries(technicianRevenue)
+        .map(([technician, revenue]) => ({
+            technician,
+            revenue,
+        }))
+        .sort((a, b) => b.revenue - a.revenue);
 
-                technicianMap[technician].bookings += 1;
-
-            });
-
-
-        return Object.values(technicianMap)
-            .sort(
-                (a, b) =>
-                    b.revenue - a.revenue
-            )
-            .slice(0, 10);
-
-    }, [bookings]);
-
-
-    // ==========================================
-    // FORMAT CURRENCY
-    // ==========================================
+    /* ==========================================
+       FORMAT CURRENCY
+    ========================================== */
 
     const formatCurrency = (value) => {
 
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
             currency: "INR",
-            maximumFractionDigits: 0
+            maximumFractionDigits: 0,
         }).format(value);
-
     };
 
+    /* ==========================================
+       FORMAT Y AXIS
+    ========================================== */
 
-    // ==========================================
-    // EMPTY STATE
-    // ==========================================
+    const formatYAxis = (value) => {
 
-    if (technicianData.length === 0) {
+        if (value >= 10000000) {
+            return `₹${(value / 10000000).toFixed(1)}Cr`;
+        }
+
+        if (value >= 100000) {
+            return `₹${(value / 100000).toFixed(1)}L`;
+        }
+
+        if (value >= 1000) {
+            return `₹${(value / 1000).toFixed(1)}K`;
+        }
+
+        return `₹${value}`;
+    };
+
+    /* ==========================================
+       SHORTEN TECHNICIAN NAME FOR X AXIS
+    ========================================== */
+
+    const shortenName = (name) => {
+
+        if (name.length <= 14) {
+            return name;
+        }
+
+        const parts = name.split(" ");
+
+        if (parts.length >= 2) {
+            return `${parts[0]} ${parts[1].charAt(0)}.`;
+        }
+
+        return `${name.substring(0, 12)}...`;
+    };
+
+    const formattedChartData = chartData.map((item) => ({
+        ...item,
+        displayName: shortenName(item.technician),
+    }));
+
+    /* ==========================================
+       EMPTY STATE
+    ========================================== */
+
+    if (chartData.length === 0) {
 
         return (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
-                <div className="mb-6">
+                <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
 
                     <h3 className="text-lg font-bold text-slate-900">
                         Revenue by Technician
                     </h3>
 
                     <p className="text-sm text-slate-500 mt-1">
-                        Technician contribution based on completed services
+                        Technician performance based on completed services
                     </p>
 
                 </div>
 
+                <div className="h-[350px] flex flex-col items-center justify-center px-6">
 
-                <div className="h-72 flex items-center justify-center">
-
-                    <div className="text-center">
-
-                        <div className="text-4xl mb-3">
-                            🔧
-                        </div>
-
-                        <p className="text-sm font-medium text-slate-600">
-                            No technician revenue yet
-                        </p>
-
-                        <p className="text-xs text-slate-400 mt-1">
-                            Completed technician jobs will appear here
-                        </p>
-
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-2xl">
+                        👨‍🔧
                     </div>
+
+                    <h4 className="text-sm font-semibold text-slate-700 mt-4">
+                        No technician revenue yet
+                    </h4>
+
+                    <p className="text-xs text-slate-400 text-center mt-1 max-w-sm">
+                        Technician revenue will appear after assigned
+                        services are completed.
+                    </p>
 
                 </div>
 
             </div>
         );
-
     }
 
-
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
             {/* ==========================================
                 HEADER
             ========================================== */}
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
 
-                <div>
+                <div className="flex items-start justify-between gap-4">
 
-                    <h3 className="text-lg font-bold text-slate-900">
-                        Revenue by Technician
-                    </h3>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900">
+                            Revenue by Technician
+                        </h3>
 
-                    <p className="text-sm text-slate-500 mt-1">
-                        Top technicians by completed service revenue
-                    </p>
+                        <p className="text-sm text-slate-500 mt-1">
+                            Technician performance from completed services
+                        </p>
+                    </div>
 
-                </div>
+                    <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500">
+                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                        Revenue
+                    </div>
 
-                <div className="px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-semibold">
-                    Top {technicianData.length} Technicians
                 </div>
 
             </div>
-
 
             {/* ==========================================
                 CHART
             ========================================== */}
 
-            <div className="w-full h-[360px]">
+            <div className="p-4 sm:p-6">
 
-                <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                >
+                <div className="w-full h-[350px]">
 
-                    <BarChart
-                        data={technicianData}
-                        layout="vertical"
-                        margin={{
-                            top: 10,
-                            right: 30,
-                            left: 20,
-                            bottom: 10
-                        }}
+                    <ResponsiveContainer
+                        width="100%"
+                        height="100%"
                     >
 
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            horizontal={false}
-                        />
-
-                        <XAxis
-                            type="number"
-                            tick={{
-                                fontSize: 12
+                        <BarChart
+                            data={formattedChartData}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 65,
                             }}
-                            axisLine={false}
-                            tickLine={false}
-                            tickFormatter={(value) =>
-                                `₹${value}`
-                            }
-                        />
-
-                        <YAxis
-                            type="category"
-                            dataKey="technician"
-                            width={120}
-                            tick={{
-                                fontSize: 12
-                            }}
-                            axisLine={false}
-                            tickLine={false}
-                        />
-
-                        <Tooltip
-                            cursor={{
-                                fill: "rgba(15, 23, 42, 0.04)"
-                            }}
-                            formatter={(value, name) => {
-
-                                if (name === "revenue") {
-                                    return [
-                                        formatCurrency(value),
-                                        "Revenue"
-                                    ];
-                                }
-
-                                return [
-                                    value,
-                                    "Bookings"
-                                ];
-
-                            }}
-                            labelFormatter={(label) =>
-                                `Technician: ${label}`
-                            }
-                        />
-
-                        <Bar
-                            dataKey="revenue"
-                            name="Revenue"
-                            radius={[
-                                0,
-                                8,
-                                8,
-                                0
-                            ]}
-                            maxBarSize={35}
+                            barCategoryGap="25%"
                         >
 
-                            {technicianData.map(
-                                (entry, index) => (
-                                    <Cell
-                                        key={`technician-${index}`}
-                                    />
-                                )
-                            )}
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                vertical={false}
+                                stroke="#e2e8f0"
+                            />
 
-                        </Bar>
+                            <XAxis
+                                dataKey="displayName"
+                                tick={{
+                                    fontSize: 11,
+                                    fill: "#64748b",
+                                }}
+                                axisLine={{
+                                    stroke: "#cbd5e1",
+                                }}
+                                tickLine={false}
+                                interval={0}
+                                angle={
+                                    formattedChartData.length > 3
+                                        ? -35
+                                        : 0
+                                }
+                                textAnchor={
+                                    formattedChartData.length > 3
+                                        ? "end"
+                                        : "middle"
+                                }
+                            />
 
-                    </BarChart>
+                            <YAxis
+                                tick={{
+                                    fontSize: 11,
+                                    fill: "#64748b",
+                                }}
+                                axisLine={false}
+                                tickLine={false}
+                                tickFormatter={formatYAxis}
+                                width={65}
+                            />
 
-                </ResponsiveContainer>
+                            <Tooltip
+                                cursor={{
+                                    fill: "rgba(79, 70, 229, 0.05)",
+                                }}
+                                formatter={(value) => [
+                                    formatCurrency(value),
+                                    "Revenue",
+                                ]}
+                                labelFormatter={(label, payload) => {
 
-            </div>
+                                    const original =
+                                        payload?.[0]?.payload?.technician;
 
+                                    return `Technician: ${
+                                        original || label
+                                    }`;
+                                }}
+                                contentStyle={{
+                                    borderRadius: "12px",
+                                    border: "1px solid #e2e8f0",
+                                    boxShadow:
+                                        "0 10px 25px rgba(15, 23, 42, 0.08)",
+                                    padding: "10px 12px",
+                                }}
+                            />
 
-            {/* ==========================================
-                TECHNICIAN SUMMARY
-            ========================================== */}
+                            <Bar
+                                dataKey="revenue"
+                                name="Revenue"
+                                fill="#4f46e5"
+                                radius={[
+                                    6,
+                                    6,
+                                    0,
+                                    0,
+                                ]}
+                                maxBarSize={55}
+                            />
 
-            <div className="mt-6 overflow-x-auto">
+                        </BarChart>
 
-                <div className="min-w-[500px]">
-
-                    <div className="grid grid-cols-3 px-4 py-3 bg-slate-50 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-500">
-
-                        <span>
-                            Technician
-                        </span>
-
-                        <span className="text-center">
-                            Jobs
-                        </span>
-
-                        <span className="text-right">
-                            Revenue
-                        </span>
-
-                    </div>
-
-
-                    <div className="divide-y divide-slate-100">
-
-                        {technicianData.map(
-                            (technician, index) => (
-
-                                <div
-                                    key={technician.technician}
-                                    className="grid grid-cols-3 items-center px-4 py-3"
-                                >
-
-                                    <div className="flex items-center gap-3">
-
-                                        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-xs font-bold text-blue-700">
-                                            {index + 1}
-                                        </div>
-
-                                        <span className="text-sm font-semibold text-slate-700 truncate">
-                                            {technician.technician}
-                                        </span>
-
-                                    </div>
-
-
-                                    <div className="text-center text-sm text-slate-500">
-                                        {technician.bookings}
-                                    </div>
-
-
-                                    <div className="text-right text-sm font-bold text-slate-900">
-                                        {formatCurrency(
-                                            technician.revenue
-                                        )}
-                                    </div>
-
-                                </div>
-
-                            )
-                        )}
-
-                    </div>
+                    </ResponsiveContainer>
 
                 </div>
 
