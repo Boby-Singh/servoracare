@@ -94,9 +94,6 @@ function Login() {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       };
-
-      console.log("Login request started...");
-
       const response = await axios.post(
         `${API}/api/auth/login`,
         payload,
@@ -106,8 +103,6 @@ function Login() {
           },
         }
       );
-
-      console.log("Login response:", response.data);
 
       // ==========================================
       // CHECK RESPONSE
@@ -159,8 +154,6 @@ function Login() {
       }
 
     } catch (error) {
-      console.error("Login Error:", error);
-
       // Clear password after failed login
       setFormData((prev) => ({
         ...prev,
