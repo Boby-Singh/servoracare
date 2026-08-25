@@ -4,13 +4,13 @@ function AdminLayout({ children }) {
     return (
         <div className="min-h-screen bg-slate-50">
 
-            {/* ================= FIXED SIDEBAR ================= */}
+            {/* Admin Sidebar */}
             <AdminSidebar />
 
-            {/* ================= MAIN CONTENT ================= */}
+            {/* Admin Content */}
             <div className="ml-72 min-h-screen">
 
-                <main className="w-full px-4 sm:px-6 lg:px-8 py-6">
+                <main className="px-4 sm:px-6 lg:px-8 py-6">
                     {children}
                 </main>
 

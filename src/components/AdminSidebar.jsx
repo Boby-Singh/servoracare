@@ -59,10 +59,10 @@ function AdminSidebar() {
             className="
                 fixed
                 left-0
-                top-10
-                z-50
+                top-16
+                z-40
                 w-72
-                h-screen
+                h-[calc(100vh-4rem)]
                 bg-gradient-to-b
                 from-blue-950
                 via-blue-900
