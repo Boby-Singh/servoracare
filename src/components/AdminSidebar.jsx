@@ -59,7 +59,7 @@ function AdminSidebar() {
             className="
                 fixed
                 left-0
-                top-0
+                top-10
                 z-50
                 w-72
                 h-screen
