@@ -17,7 +17,6 @@ import {
 const API = import.meta.env.VITE_API_URL;
 
 function Customers() {
-
     const [customers, setCustomers] = useState([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -28,9 +27,7 @@ function Customers() {
     // ==========================================
 
     const fetchCustomers = async (isRefresh = false) => {
-
         try {
-
             if (isRefresh) {
                 setRefreshing(true);
             } else {
@@ -41,20 +38,21 @@ function Customers() {
                 `${API}/api/admin/customers`
             );
 
-            setCustomers(response.data);
-
+            setCustomers(
+                Array.isArray(response.data)
+                    ? response.data
+                    : []
+            );
         } catch (error) {
-
             console.error(
                 "Fetch Customers Error:",
                 error
             );
 
+            setCustomers([]);
         } finally {
-
             setLoading(false);
             setRefreshing(false);
-
         }
     };
 
@@ -70,12 +68,10 @@ function Customers() {
     // FILTER CUSTOMERS
     // ==========================================
 
+    const searchValue = search.toLowerCase().trim();
+
     const filteredCustomers = customers.filter(
         (customer) => {
-
-            const searchValue =
-                search.toLowerCase().trim();
-
             return (
                 customer.name
                     ?.toLowerCase()
@@ -100,39 +96,35 @@ function Customers() {
     // STATISTICS
     // ==========================================
 
-    const totalCustomers =
-        customers.length;
+    const totalCustomers = customers.length;
 
-    const activeCustomers =
-        customers.filter(
-            (customer) =>
-                customer.status === "Active"
-        ).length;
+    const activeCustomers = customers.filter(
+        (customer) =>
+            customer.status === "Active"
+    ).length;
 
-    const totalBookings =
-        customers.reduce(
-            (sum, customer) =>
-                sum +
-                (customer.total_bookings || 0),
-            0
-        );
+    const totalBookings = customers.reduce(
+        (sum, customer) =>
+            sum +
+            (customer.total_bookings || 0),
+        0
+    );
 
-    const repeatCustomers =
-        customers.filter(
-            (customer) =>
-                customer.total_bookings > 1
-        ).length;
+    const repeatCustomers = customers.filter(
+        (customer) =>
+            customer.total_bookings > 1
+    ).length;
 
     // ==========================================
     // INITIALS
     // ==========================================
 
     const getInitials = (name) => {
-
         if (!name) return "U";
 
         return name
             .split(" ")
+            .filter(Boolean)
             .map((word) => word[0])
             .join("")
             .substring(0, 2)
@@ -140,7 +132,6 @@ function Customers() {
     };
 
     return (
-
         <AdminLayout>
 
             <div className="min-h-screen bg-slate-50">
@@ -151,67 +142,80 @@ function Customers() {
 
                 <div className="bg-white border-b border-slate-200">
 
-                    <div className="
-                        max-w-[1800px]
-                        mx-auto
-                        px-4
-                        sm:px-6
-                        lg:px-8
-                        py-6
-                    ">
+                    <div
+                        className="
+                            max-w-[1800px]
+                            mx-auto
+                            px-4
+                            sm:px-6
+                            lg:px-8
+                            py-5
+                        "
+                    >
 
-                        <div className="
-                            flex
-                            flex-col
-                            md:flex-row
-                            md:items-center
-                            md:justify-between
-                            gap-5
-                        ">
+                        <div
+                            className="
+                                flex
+                                flex-col
+                                md:flex-row
+                                md:items-center
+                                md:justify-between
+                                gap-4
+                            "
+                        >
 
                             {/* TITLE */}
 
                             <div>
 
-                                <div className="
-                                    flex
-                                    items-center
-                                    gap-3
-                                ">
-
-                                    <div className="
-                                        w-11
-                                        h-11
-                                        rounded-xl
-                                        bg-blue-900
+                                <div
+                                    className="
                                         flex
                                         items-center
-                                        justify-center
-                                        shadow-sm
-                                    ">
+                                        gap-3
+                                    "
+                                >
 
+                                    <div
+                                        className="
+                                            w-11
+                                            h-11
+                                            rounded-xl
+                                            bg-blue-900
+                                            flex
+                                            items-center
+                                            justify-center
+                                            shadow-sm
+                                        "
+                                    >
                                         <FaUsers
-                                            className="text-white text-lg"
+                                            className="
+                                                text-white
+                                                text-lg
+                                            "
                                         />
-
                                     </div>
 
                                     <div>
 
-                                        <h1 className="
-                                            text-2xl
-                                            sm:text-3xl
-                                            font-bold
-                                            text-slate-900
-                                        ">
+                                        <h1
+                                            className="
+                                                text-2xl
+                                                sm:text-3xl
+                                                font-bold
+                                                text-slate-900
+                                            "
+                                        >
                                             Customers
                                         </h1>
 
-                                        <p className="
-                                            text-sm
-                                            text-slate-500
-                                            mt-1
-                                        ">
+                                        <p
+                                            className="
+                                                text-sm
+                                                text-slate-500
+                                                mt-1
+                                            "
+                                        >
                                             Manage registered customers
                                             and their service activity
                                         </p>
@@ -260,8 +264,7 @@ function Customers() {
 
                                 {refreshing
                                     ? "Refreshing..."
-                                    : "Refresh"
-                                }
+                                    : "Refresh"}
 
                             </button>
 
@@ -276,99 +279,113 @@ function Customers() {
                     MAIN CONTENT
                 ========================================== */}
 
-                <main className="
-                    max-w-[1800px]
-                    mx-auto
-                    px-4
-                    sm:px-6
-                    lg:px-8
-                    py-6
-                    sm:py-8
-                ">
-
+                <main
+                    className="
+                        max-w-[1800px]
+                        mx-auto
+                        px-4
+                        sm:px-6
+                        lg:px-8
+                        py-5
+                        sm:py-6
+                    "
+                >
 
                     {/* ==========================================
                         STATISTICS
                     ========================================== */}
 
-                    <div className="
-                        grid
-                        grid-cols-1
-                        sm:grid-cols-2
-                        xl:grid-cols-4
-                        gap-4
-                        sm:gap-6
-                        mb-8
-                    ">
-
+                    <div
+                        className="
+                            grid
+                            grid-cols-2
+                            xl:grid-cols-4
+                            gap-3
+                            sm:gap-5
+                            mb-6
+                        "
+                    >
 
                         {/* TOTAL CUSTOMERS */}
 
-                        <div className="
-                            bg-white
-                            rounded-2xl
-                            border
-                            border-slate-200
-                            p-5
-                            sm:p-6
-                            shadow-sm
-                            hover:shadow-md
-                            transition
-                        ">
+                        <div
+                            className="
+                                bg-white
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                p-4
+                                sm:p-5
+                                shadow-sm
+                                hover:shadow-md
+                                transition
+                            "
+                        >
 
-                            <div className="
-                                flex
-                                items-start
-                                justify-between
-                            ">
+                            <div
+                                className="
+                                    flex
+                                    items-start
+                                    justify-between
+                                    gap-3
+                                "
+                            >
 
                                 <div>
 
-                                    <p className="
-                                        text-sm
-                                        font-medium
-                                        text-slate-500
-                                    ">
+                                    <p
+                                        className="
+                                            text-xs
+                                            sm:text-sm
+                                            font-medium
+                                            text-slate-500
+                                        "
+                                    >
                                         Total Customers
                                     </p>
 
-                                    <p className="
-                                        text-3xl
-                                        font-bold
-                                        text-slate-900
-                                        mt-2
-                                    ">
+                                    <p
+                                        className="
+                                            text-2xl
+                                            sm:text-3xl
+                                            font-bold
+                                            text-slate-900
+                                            mt-1
+                                        "
+                                    >
                                         {totalCustomers}
                                     </p>
 
                                 </div>
 
-                                <div className="
-                                    w-11
-                                    h-11
-                                    rounded-xl
-                                    bg-blue-50
-                                    flex
-                                    items-center
-                                    justify-center
-                                ">
-
+                                <div
+                                    className="
+                                        w-10
+                                        h-10
+                                        rounded-xl
+                                        bg-blue-50
+                                        flex
+                                        items-center
+                                        justify-center
+                                        shrink-0
+                                    "
+                                >
                                     <FaUsers
                                         className="
                                             text-blue-700
-                                            text-lg
                                         "
                                     />
-
                                 </div>
 
                             </div>
 
-                            <p className="
-                                text-xs
-                                text-slate-400
-                                mt-4
-                            ">
+                            <p
+                                className="
+                                    text-[11px]
+                                    text-slate-400
+                                    mt-3
+                                "
+                            >
                                 Registered customers
                             </p>
 
@@ -377,145 +394,171 @@ function Customers() {
 
                         {/* ACTIVE CUSTOMERS */}
 
-                        <div className="
-                            bg-white
-                            rounded-2xl
-                            border
-                            border-slate-200
-                            p-5
-                            sm:p-6
-                            shadow-sm
-                            hover:shadow-md
-                            transition
-                        ">
+                        <div
+                            className="
+                                bg-white
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                p-4
+                                sm:p-5
+                                shadow-sm
+                                hover:shadow-md
+                                transition
+                            "
+                        >
 
-                            <div className="
-                                flex
-                                items-start
-                                justify-between
-                            ">
+                            <div
+                                className="
+                                    flex
+                                    items-start
+                                    justify-between
+                                    gap-3
+                                "
+                            >
 
                                 <div>
 
-                                    <p className="
-                                        text-sm
-                                        font-medium
-                                        text-slate-500
-                                    ">
+                                    <p
+                                        className="
+                                            text-xs
+                                            sm:text-sm
+                                            font-medium
+                                            text-slate-500
+                                        "
+                                    >
                                         Active Customers
                                     </p>
 
-                                    <p className="
-                                        text-3xl
-                                        font-bold
-                                        text-green-600
-                                        mt-2
-                                    ">
+                                    <p
+                                        className="
+                                            text-2xl
+                                            sm:text-3xl
+                                            font-bold
+                                            text-green-600
+                                            mt-1
+                                        "
+                                    >
                                         {activeCustomers}
                                     </p>
 
                                 </div>
 
-                                <div className="
-                                    w-11
-                                    h-11
-                                    rounded-xl
-                                    bg-green-50
-                                    flex
-                                    items-center
-                                    justify-center
-                                ">
-
+                                <div
+                                    className="
+                                        w-10
+                                        h-10
+                                        rounded-xl
+                                        bg-green-50
+                                        flex
+                                        items-center
+                                        justify-center
+                                        shrink-0
+                                    "
+                                >
                                     <FaUserCheck
                                         className="
                                             text-green-600
-                                            text-lg
                                         "
                                     />
-
                                 </div>
 
                             </div>
 
-                            <p className="
-                                text-xs
-                                text-slate-400
-                                mt-4
-                            ">
+                            <p
+                                className="
+                                    text-[11px]
+                                    text-slate-400
+                                    mt-3
+                                "
+                            >
                                 Currently active accounts
                             </p>
 
                         </div>
 
 
-                        {/* BOOKINGS */}
+                        {/* TOTAL BOOKINGS */}
 
-                        <div className="
-                            bg-white
-                            rounded-2xl
-                            border
-                            border-slate-200
-                            p-5
-                            sm:p-6
-                            shadow-sm
-                            hover:shadow-md
-                            transition
-                        ">
+                        <div
+                            className="
+                                bg-white
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                p-4
+                                sm:p-5
+                                shadow-sm
+                                hover:shadow-md
+                                transition
+                            "
+                        >
 
-                            <div className="
-                                flex
-                                items-start
-                                justify-between
-                            ">
+                            <div
+                                className="
+                                    flex
+                                    items-start
+                                    justify-between
+                                    gap-3
+                                "
+                            >
 
                                 <div>
 
-                                    <p className="
-                                        text-sm
-                                        font-medium
-                                        text-slate-500
-                                    ">
+                                    <p
+                                        className="
+                                            text-xs
+                                            sm:text-sm
+                                            font-medium
+                                            text-slate-500
+                                        "
+                                    >
                                         Total Bookings
                                     </p>
 
-                                    <p className="
-                                        text-3xl
-                                        font-bold
-                                        text-yellow-500
-                                        mt-2
-                                    ">
+                                    <p
+                                        className="
+                                            text-2xl
+                                            sm:text-3xl
+                                            font-bold
+                                            text-yellow-500
+                                            mt-1
+                                        "
+                                    >
                                         {totalBookings}
                                     </p>
 
                                 </div>
 
-                                <div className="
-                                    w-11
-                                    h-11
-                                    rounded-xl
-                                    bg-yellow-50
-                                    flex
-                                    items-center
-                                    justify-center
-                                ">
-
+                                <div
+                                    className="
+                                        w-10
+                                        h-10
+                                        rounded-xl
+                                        bg-yellow-50
+                                        flex
+                                        items-center
+                                        justify-center
+                                        shrink-0
+                                    "
+                                >
                                     <FaCalendarCheck
                                         className="
                                             text-yellow-600
-                                            text-lg
                                         "
                                     />
-
                                 </div>
 
                             </div>
 
-                            <p className="
-                                text-xs
-                                text-slate-400
-                                mt-4
-                            ">
-                                Service requests from customers
+                            <p
+                                className="
+                                    text-[11px]
+                                    text-slate-400
+                                    mt-3
+                                "
+                            >
+                                Service requests
                             </p>
 
                         </div>
@@ -523,72 +566,85 @@ function Customers() {
 
                         {/* REPEAT CUSTOMERS */}
 
-                        <div className="
-                            bg-white
-                            rounded-2xl
-                            border
-                            border-slate-200
-                            p-5
-                            sm:p-6
-                            shadow-sm
-                            hover:shadow-md
-                            transition
-                        ">
+                        <div
+                            className="
+                                bg-white
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                p-4
+                                sm:p-5
+                                shadow-sm
+                                hover:shadow-md
+                                transition
+                            "
+                        >
 
-                            <div className="
-                                flex
-                                items-start
-                                justify-between
-                            ">
+                            <div
+                                className="
+                                    flex
+                                    items-start
+                                    justify-between
+                                    gap-3
+                                "
+                            >
 
                                 <div>
 
-                                    <p className="
-                                        text-sm
-                                        font-medium
-                                        text-slate-500
-                                    ">
+                                    <p
+                                        className="
+                                            text-xs
+                                            sm:text-sm
+                                            font-medium
+                                            text-slate-500
+                                        "
+                                    >
                                         Repeat Customers
                                     </p>
 
-                                    <p className="
-                                        text-3xl
-                                        font-bold
-                                        text-purple-600
-                                        mt-2
-                                    ">
+                                    <p
+                                        className="
+                                            text-2xl
+                                            sm:text-3xl
+                                            font-bold
+                                            text-purple-600
+                                            mt-1
+                                        "
+                                    >
                                         {repeatCustomers}
                                     </p>
 
                                 </div>
 
-                                <div className="
-                                    w-11
-                                    h-11
-                                    rounded-xl
-                                    bg-purple-50
-                                    flex
-                                    items-center
-                                    justify-center
-                                ">
-
+                                <div
+                                    className="
+                                        w-10
+                                        h-10
+                                        rounded-xl
+                                        bg-purple-50
+                                        flex
+                                        items-center
+                                        justify-center
+                                        shrink-0
+                                    "
+                                >
                                     <FaUserFriends
                                         className="
                                             text-purple-600
-                                            text-lg
                                         "
                                     />
-
                                 </div>
 
                             </div>
 
-                            <p className="
-                                text-xs
-                                text-slate-400
-                                mt-4
-                            ">
-                                Customers with multiple bookings
+                            <p
+                                className="
+                                    text-[11px]
+                                    text-slate-400
+                                    mt-3
+                                "
+                            >
+                                Multiple bookings
                             </p>
 
                         </div>
@@ -597,55 +653,65 @@ function Customers() {
 
 
                     {/* ==========================================
-                        CUSTOMER TABLE
+                        CUSTOMER TABLE CARD
                     ========================================== */}
 
-                    <div className="
-                        bg-white
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        shadow-sm
-                        overflow-hidden
-                    ">
-
+                    <div
+                        className="
+                            bg-white
+                            rounded-2xl
+                            border
+                            border-slate-200
+                            shadow-sm
+                            overflow-hidden
+                        "
+                    >
 
                         {/* TABLE HEADER */}
 
-                        <div className="
-                            px-5
-                            sm:px-6
-                            py-5
-                            border-b
-                            border-slate-200
-                        ">
+                        <div
+                            className="
+                                px-4
+                                sm:px-5
+                                py-4
+                                border-b
+                                border-slate-200
+                            "
+                        >
 
-                            <div className="
-                                flex
-                                flex-col
-                                lg:flex-row
-                                lg:items-center
-                                lg:justify-between
-                                gap-4
-                            ">
+                            <div
+                                className="
+                                    flex
+                                    flex-col
+                                    lg:flex-row
+                                    lg:items-center
+                                    lg:justify-between
+                                    gap-3
+                                "
+                            >
 
                                 <div>
 
-                                    <h2 className="
-                                        text-lg
-                                        sm:text-xl
-                                        font-bold
-                                        text-slate-900
-                                    ">
+                                    <h2
+                                        className="
+                                            text-lg
+                                            sm:text-xl
+                                            font-bold
+                                            text-slate-900
+                                        "
+                                    >
                                         Customer Directory
                                     </h2>
 
-                                    <p className="
-                                        text-sm
-                                        text-slate-500
-                                        mt-1
-                                    ">
-                                        View and manage all registered customers
+                                    <p
+                                        className="
+                                            text-xs
+                                            sm:text-sm
+                                            text-slate-500
+                                            mt-1
+                                        "
+                                    >
+                                        View all registered customers
                                     </p>
 
                                 </div>
@@ -653,37 +719,42 @@ function Customers() {
 
                                 {/* SEARCH */}
 
-                                <div className="
-                                    relative
-                                    w-full
-                                    lg:w-96
-                                ">
+                                <div
+                                    className="
+                                        relative
+                                        w-full
+                                        lg:w-80
+                                    "
+                                >
 
                                     <FaSearch
                                         className="
                                             absolute
-                                            left-3.5
+                                            left-3
                                             top-1/2
                                             -translate-y-1/2
                                             text-slate-400
+                                            text-sm
                                         "
                                     />
 
                                     <input
                                         type="text"
-                                        placeholder="Search by name, email, phone or ID..."
+                                        placeholder="Search customer..."
                                         value={search}
                                         onChange={(e) =>
-                                            setSearch(e.target.value)
+                                            setSearch(
+                                                e.target.value
+                                            )
                                         }
                                         className="
                                             w-full
                                             border
                                             border-slate-200
                                             rounded-xl
-                                            pl-10
+                                            pl-9
                                             pr-4
-                                            py-3
+                                            py-2.5
                                             text-sm
                                             text-slate-700
                                             outline-none
@@ -706,49 +777,54 @@ function Customers() {
                         {/* RESULT COUNT */}
 
                         {!loading && (
+                            <div
+                                className="
+                                    px-4
+                                    sm:px-5
+                                    py-2.5
+                                    bg-slate-50
+                                    border-b
+                                    border-slate-100
+                                    flex
+                                    items-center
+                                    justify-between
+                                "
+                            >
 
-                            <div className="
-                                px-5
-                                sm:px-6
-                                py-3
-                                bg-slate-50
-                                border-b
-                                border-slate-100
-                                flex
-                                items-center
-                                justify-between
-                            ">
-
-                                <p className="
-                                    text-xs
-                                    sm:text-sm
-                                    text-slate-500
-                                ">
-
+                                <p
+                                    className="
+                                        text-xs
+                                        sm:text-sm
+                                        text-slate-500
+                                    "
+                                >
                                     Showing{" "}
 
-                                    <span className="
-                                        font-semibold
-                                        text-slate-700
-                                    ">
+                                    <span
+                                        className="
+                                            font-semibold
+                                            text-slate-700
+                                        "
+                                    >
                                         {filteredCustomers.length}
                                     </span>
 
                                     {" "}of{" "}
 
-                                    <span className="
-                                        font-semibold
-                                        text-slate-700
-                                    ">
+                                    <span
+                                        className="
+                                            font-semibold
+                                            text-slate-700
+                                        "
+                                    >
                                         {customers.length}
                                     </span>
 
                                     {" "}customers
-
                                 </p>
 
-                                {search && (
 
+                                {search && (
                                     <button
                                         onClick={() =>
                                             setSearch("")
@@ -762,11 +838,9 @@ function Customers() {
                                     >
                                         Clear search
                                     </button>
-
                                 )}
 
                             </div>
-
                         )}
 
 
@@ -776,29 +850,35 @@ function Customers() {
 
                         {loading ? (
 
-                            <div className="
-                                flex
-                                flex-col
-                                items-center
-                                justify-center
-                                py-20
-                            ">
+                            <div
+                                className="
+                                    flex
+                                    flex-col
+                                    items-center
+                                    justify-center
+                                    py-20
+                                "
+                            >
 
-                                <div className="
-                                    w-10
-                                    h-10
-                                    border-4
-                                    border-blue-100
-                                    border-t-blue-700
-                                    rounded-full
-                                    animate-spin
-                                " />
+                                <div
+                                    className="
+                                        w-10
+                                        h-10
+                                        border-4
+                                        border-blue-100
+                                        border-t-blue-700
+                                        rounded-full
+                                        animate-spin
+                                    "
+                                />
 
-                                <p className="
-                                    text-sm
-                                    text-slate-500
-                                    mt-4
-                                ">
+                                <p
+                                    className="
+                                        text-sm
+                                        text-slate-500
+                                        mt-4
+                                    "
+                                >
                                     Loading customers...
                                 </p>
 
@@ -807,25 +887,29 @@ function Customers() {
                         ) : filteredCustomers.length === 0 ? (
 
                             /* ==========================================
-                                EMPTY
+                                EMPTY STATE
                             ========================================== */
 
-                            <div className="
-                                text-center
-                                py-20
-                                px-6
-                            ">
+                            <div
+                                className="
+                                    text-center
+                                    py-20
+                                    px-6
+                                "
+                            >
 
-                                <div className="
-                                    w-16
-                                    h-16
-                                    mx-auto
-                                    rounded-2xl
-                                    bg-slate-100
-                                    flex
-                                    items-center
-                                    justify-center
-                                ">
+                                <div
+                                    className="
+                                        w-16
+                                        h-16
+                                        mx-auto
+                                        rounded-2xl
+                                        bg-slate-100
+                                        flex
+                                        items-center
+                                        justify-center
+                                    "
+                                >
 
                                     <FaUsers
                                         className="
@@ -836,21 +920,28 @@ function Customers() {
 
                                 </div>
 
-                                <h3 className="
-                                    text-lg
-                                    font-semibold
-                                    text-slate-900
-                                    mt-5
-                                ">
+                                <h3
+                                    className="
+                                        text-lg
+                                        font-semibold
+                                        text-slate-900
+                                        mt-5
+                                    "
+                                >
                                     No customers found
                                 </h3>
 
-                                <p className="
-                                    text-sm
-                                    text-slate-500
-                                    mt-2
-                                ">
-                                    Try changing your search criteria.
+                                <p
+                                    className="
+                                        text-sm
+                                        text-slate-500
+                                        mt-2
+                                    "
+                                >
+                                    {search
+                                        ? "Try changing your search criteria."
+                                        : "No customers are registered yet."
+                                    }
                                 </p>
 
                             </div>
@@ -858,86 +949,129 @@ function Customers() {
                         ) : (
 
                             /* ==========================================
-                                TABLE
+                                COMPACT TABLE
                             ========================================== */
 
-                            <div className="overflow-x-auto">
+                            <div className="w-full overflow-hidden">
 
-                                <table className="
-                                    w-full
-                                    min-w-[1050px]
-                                ">
+                                <table
+                                    className="
+                                        w-full
+                                        table-fixed
+                                    "
+                                >
 
-                                    <thead className="
-                                        bg-slate-50
-                                        border-b
-                                        border-slate-200
-                                    ">
+                                    <thead
+                                        className="
+                                            bg-slate-50
+                                            border-b
+                                            border-slate-200
+                                        "
+                                    >
 
                                         <tr>
 
-                                            <th className="
-                                                px-5
-                                                py-4
-                                                text-left
-                                                text-xs
-                                                font-bold
-                                                uppercase
-                                                tracking-wider
-                                                text-slate-500
-                                            ">
+                                            {/* CUSTOMER */}
+
+                                            <th
+                                                className="
+                                                    w-[24%]
+                                                    px-3
+                                                    sm:px-4
+                                                    py-3
+                                                    text-left
+                                                    text-[10px]
+                                                    sm:text-[11px]
+                                                    font-bold
+                                                    uppercase
+                                                    tracking-wider
+                                                    text-slate-500
+                                                "
+                                            >
                                                 Customer
                                             </th>
 
-                                            <th className="
-                                                px-5
-                                                py-4
-                                                text-left
-                                                text-xs
-                                                font-bold
-                                                uppercase
-                                                tracking-wider
-                                                text-slate-500
-                                            ">
+
+                                            {/* CONTACT */}
+
+                                            <th
+                                                className="
+                                                    w-[29%]
+                                                    px-3
+                                                    sm:px-4
+                                                    py-3
+                                                    text-left
+                                                    text-[10px]
+                                                    sm:text-[11px]
+                                                    font-bold
+                                                    uppercase
+                                                    tracking-wider
+                                                    text-slate-500
+                                                "
+                                            >
                                                 Contact
                                             </th>
 
-                                            <th className="
-                                                px-5
-                                                py-4
-                                                text-left
-                                                text-xs
-                                                font-bold
-                                                uppercase
-                                                tracking-wider
-                                                text-slate-500
-                                            ">
+
+                                            {/* USER ID */}
+
+                                            <th
+                                                className="
+                                                    w-[15%]
+                                                    px-3
+                                                    sm:px-4
+                                                    py-3
+                                                    text-left
+                                                    text-[10px]
+                                                    sm:text-[11px]
+                                                    font-bold
+                                                    uppercase
+                                                    tracking-wider
+                                                    text-slate-500
+                                                "
+                                            >
                                                 User ID
                                             </th>
 
-                                            <th className="
-                                                px-5
-                                                py-4
-                                                text-center
-                                                text-xs
-                                                font-bold
-                                                uppercase
-                                                tracking-wider
-                                                text-slate-500
-                                            ">
+
+                                            {/* BOOKINGS */}
+
+                                            <th
+                                                className="
+                                                    w-[14%]
+                                                    px-3
+                                                    sm:px-4
+                                                    py-3
+                                                    text-center
+                                                    text-[10px]
+                                                    sm:text-[11px]
+                                                    font-bold
+                                                    uppercase
+                                                    tracking-wider
+                                                    text-slate-500
+                                                "
+                                            >
                                                 Bookings
                                             </th>
 
-                                            <th className="
-                                                px-5
-                                                py-4
-                                                text-center
-                                                text-xs
-                                                font-bold
-                                                uppercase
-                                                tracking-wider
-                                                text-slate-500
-                                            ">
+
+                                            {/* STATUS */}
+
+                                            <th
+                                                className="
+                                                    w-[18%]
+                                                    px-3
+                                                    sm:px-4
+                                                    py-3
+                                                    text-center
+                                                    text-[10px]
+                                                    sm:text-[11px]
+                                                    font-bold
+                                                    uppercase
+                                                    tracking-wider
+                                                    text-slate-500
+                                                "
+                                            >
                                                 Status
                                             </th>
 
@@ -946,10 +1080,12 @@ function Customers() {
                                     </thead>
 
 
-                                    <tbody className="
-                                        divide-y
-                                        divide-slate-100
-                                    ">
+                                    <tbody
+                                        className="
+                                            divide-y
+                                            divide-slate-100
+                                        "
+                                    >
 
                                         {filteredCustomers.map(
                                             (customer) => (
@@ -961,61 +1097,81 @@ function Customers() {
                                                         customer.user_id
                                                     }
                                                     className="
-                                                        hover:bg-slate-50/70
+                                                        hover:bg-slate-50
                                                         transition
                                                     "
                                                 >
 
-                                                    {/* CUSTOMER */}
+                                                    {/* ==================================
+                                                        CUSTOMER
+                                                    ================================== */}
 
-                                                    <td className="
-                                                        px-5
-                                                        py-5
-                                                    ">
+                                                    <td
+                                                        className="
+                                                            px-3
+                                                            sm:px-4
+                                                            py-3.5
+                                                        "
+                                                    >
 
-                                                        <div className="
-                                                            flex
-                                                            items-center
-                                                            gap-3
-                                                        ">
-
-                                                            <div className="
-                                                                w-11
-                                                                h-11
-                                                                rounded-xl
-                                                                bg-blue-50
-                                                                text-blue-700
+                                                        <div
+                                                            className="
                                                                 flex
                                                                 items-center
-                                                                justify-center
-                                                                font-bold
-                                                                text-sm
-                                                                shrink-0
-                                                            ">
+                                                                gap-2.5
+                                                                min-w-0
+                                                            "
+                                                        >
 
+                                                            <div
+                                                                className="
+                                                                    w-9
+                                                                    h-9
+                                                                    rounded-lg
+                                                                    bg-blue-50
+                                                                    text-blue-700
+                                                                    flex
+                                                                    items-center
+                                                                    justify-center
+                                                                    font-bold
+                                                                    text-xs
+                                                                    shrink-0
+                                                                "
+                                                            >
                                                                 {getInitials(
                                                                     customer.name
                                                                 )}
-
                                                             </div>
 
-                                                            <div>
+                                                            <div
+                                                                className="
+                                                                    min-w-0
+                                                                "
+                                                            >
 
-                                                                <div className="
-                                                                    font-semibold
-                                                                    text-slate-900
-                                                                ">
+                                                                <div
+                                                                    className="
+                                                                        font-semibold
+                                                                        text-sm
+                                                                        text-slate-900
+                                                                        truncate
+                                                                    "
+                                                                    title={
+                                                                        customer.name
+                                                                    }
+                                                                >
                                                                     {customer.name ||
                                                                         "Unknown Customer"}
                                                                 </div>
 
-                                                                <div className="
-                                                                    text-xs
-                                                                    text-slate-400
-                                                                    mt-1
-                                                                ">
-                                                                    Customer
-                                                                    Account
+                                                                <div
+                                                                    className="
+                                                                        text-[10px]
+                                                                        text-slate-400
+                                                                        mt-0.5
+                                                                    "
+                                                                >
+                                                                    Customer Account
                                                                 </div>
 
                                                             </div>
@@ -1025,33 +1181,54 @@ function Customers() {
                                                     </td>
 
 
-                                                    {/* CONTACT */}
+                                                    {/* ==================================
+                                                        CONTACT
+                                                    ================================== */}
 
-                                                    <td className="
-                                                        px-5
-                                                        py-5
-                                                    ">
+                                                    <td
+                                                        className="
+                                                            px-3
+                                                            sm:px-4
+                                                            py-3.5
+                                                        "
+                                                    >
 
-                                                        <div className="
-                                                            space-y-1.5
-                                                        ">
+                                                        <div
+                                                            className="
+                                                                space-y-1
+                                                                min-w-0
+                                                            "
+                                                        >
 
-                                                            <div className="
-                                                                flex
-                                                                items-center
-                                                                gap-2
-                                                                text-sm
-                                                                text-slate-700
-                                                            ">
+                                                            {/* EMAIL */}
+
+                                                            <div
+                                                                className="
+                                                                    flex
+                                                                    items-center
+                                                                    gap-2
+                                                                    text-xs
+                                                                    text-slate-700
+                                                                    min-w-0
+                                                                "
+                                                            >
 
                                                                 <FaEnvelope
                                                                     className="
                                                                         text-slate-400
-                                                                        text-xs
+                                                                        text-[10px]
+                                                                        shrink-0
                                                                     "
                                                                 />
 
-                                                                <span>
+                                                                <span
+                                                                    className="
+                                                                        truncate
+                                                                    "
+                                                                    title={
+                                                                        customer.email
+                                                                    }
+                                                                >
                                                                     {customer.email ||
                                                                         "-"}
                                                                 </span>
@@ -1059,18 +1236,23 @@ function Customers() {
                                                             </div>
 
 
-                                                            <div className="
-                                                                flex
-                                                                items-center
-                                                                gap-2
-                                                                text-sm
-                                                                text-slate-500
-                                                            ">
+                                                            {/* PHONE */}
+
+                                                            <div
+                                                                className="
+                                                                    flex
+                                                                    items-center
+                                                                    gap-2
+                                                                    text-xs
+                                                                    text-slate-500
+                                                                "
+                                                            >
 
                                                                 <FaPhoneAlt
                                                                     className="
                                                                         text-slate-400
-                                                                        text-xs
+                                                                        text-[10px]
+                                                                        shrink-0
                                                                     "
                                                                 />
 
@@ -1086,95 +1268,114 @@ function Customers() {
                                                     </td>
 
 
-                                                    {/* USER ID */}
+                                                    {/* ==================================
+                                                        USER ID
+                                                    ================================== */}
 
-                                                    <td className="
-                                                        px-5
-                                                        py-5
-                                                    ">
-
-                                                        <span className="
-                                                            inline-flex
-                                                            items-center
-                                                            gap-2
+                                                    <td
+                                                        className="
                                                             px-3
-                                                            py-1.5
-                                                            rounded-lg
-                                                            bg-slate-100
-                                                            text-slate-700
-                                                            text-sm
-                                                            font-semibold
-                                                        ">
+                                                            sm:px-4
+                                                            py-3.5
+                                                        "
+                                                    >
+
+                                                        <span
+                                                            className="
+                                                                inline-flex
+                                                                items-center
+                                                                gap-1.5
+                                                                px-2.5
+                                                                py-1
+                                                                rounded-lg
+                                                                bg-slate-100
+                                                                text-slate-700
+                                                                text-xs
+                                                                font-semibold
+                                                            "
+                                                        >
 
                                                             <FaUser
                                                                 className="
                                                                     text-slate-400
-                                                                    text-xs
+                                                                    text-[9px]
                                                                 "
                                                             />
 
-                                                            #{customer.user_id}
+                                                            #
+                                                            {customer.user_id ||
+                                                                "-"}
 
                                                         </span>
 
                                                     </td>
 
 
-                                                    {/* BOOKINGS */}
+                                                    {/* ==================================
+                                                        BOOKINGS
+                                                    ================================== */}
 
-                                                    <td className="
-                                                        px-5
-                                                        py-5
-                                                        text-center
-                                                    ">
-
-                                                        <span className="
-                                                            inline-flex
-                                                            min-w-[42px]
-                                                            justify-center
-                                                            items-center
+                                                    <td
+                                                        className="
                                                             px-3
-                                                            py-1.5
-                                                            rounded-lg
-                                                            bg-blue-50
-                                                            text-blue-700
-                                                            text-sm
-                                                            font-bold
-                                                        ">
+                                                            sm:px-4
+                                                            py-3.5
+                                                            text-center
+                                                        "
+                                                    >
 
+                                                        <span
+                                                            className="
+                                                                inline-flex
+                                                                min-w-[36px]
+                                                                justify-center
+                                                                items-center
+                                                                px-2.5
+                                                                py-1
+                                                                rounded-lg
+                                                                bg-blue-50
+                                                                text-blue-700
+                                                                text-xs
+                                                                font-bold
+                                                            "
+                                                        >
                                                             {customer.total_bookings ||
                                                                 0}
-
                                                         </span>
 
                                                     </td>
 
 
-                                                    {/* STATUS */}
+                                                    {/* ==================================
+                                                        STATUS
+                                                    ================================== */}
 
-                                                    <td className="
-                                                        px-5
-                                                        py-5
-                                                        text-center
-                                                    ">
+                                                    <td
+                                                        className="
+                                                            px-3
+                                                            sm:px-4
+                                                            py-3.5
+                                                            text-center
+                                                        "
+                                                    >
 
                                                         <span
                                                             className={`
                                                                 inline-flex
                                                                 items-center
-                                                                gap-2
-                                                                px-3
-                                                                py-1.5
+                                                                gap-1.5
+                                                                px-2.5
+                                                                py-1
                                                                 rounded-full
-                                                                text-xs
+                                                                text-[10px]
+                                                                sm:text-[11px]
                                                                 font-bold
+                                                                whitespace-nowrap
 
                                                                 ${
                                                                     customer.status ===
                                                                     "Active"
-
                                                                         ? "bg-green-50 text-green-700"
-
                                                                         : "bg-slate-100 text-slate-600"
                                                                 }
                                                             `}
@@ -1189,9 +1390,7 @@ function Customers() {
                                                                     ${
                                                                         customer.status ===
                                                                         "Active"
-
                                                                             ? "bg-green-500"
-
                                                                             : "bg-slate-400"
                                                                     }
                                                                 `}
