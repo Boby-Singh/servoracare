@@ -184,10 +184,6 @@ function Dashboard() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
 
             <div>
-              <p className="text-sm font-semibold text-blue-700 mb-1">
-                CUSTOMER PORTAL
-              </p>
-
               <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
                 Welcome back, {user?.name || "Customer"} 👋
               </h1>
