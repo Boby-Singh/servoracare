@@ -286,7 +286,7 @@ ${formData.message}`;
                       </p>
 
                       <p className="font-semibold text-slate-900 mt-1 break-all">
-                        support@servoracare.in
+                        bobysinghsaini236@gmail.com
                       </p>
 
                     </div>

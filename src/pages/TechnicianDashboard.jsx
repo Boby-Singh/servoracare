@@ -497,18 +497,13 @@ function TechnicianDashboard() {
                 </div>
 
                 <div className="min-w-0">
-
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                    Dear Partner
+                  <p className="text-xs sm:text-sm font-medium text-slate-500">
+                    Welcome back, Partner
                   </p>
 
-                  <h1 className="text-lg sm:text-2xl font-bold text-slate-900 truncate">
-
-                    Welcome,{" "}
+                  <h1 className="mt-0.5 text-lg sm:text-2xl font-bold text-slate-900 truncate">
                     {user?.name || "Technician"}
-
                   </h1>
-
                 </div>
 
               </div>
@@ -2524,7 +2519,7 @@ function TechnicianDashboard() {
 
                     <Mail size={15} />
 
-                    support@servoracare.in
+                    bobysinghsaini236@gmail.com
 
                   </a>
 
