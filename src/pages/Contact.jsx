@@ -115,7 +115,7 @@ ${formData.message}`;
             name: "ServoraCare",
             url: "https://www.servoracare.in",
             telephone: "+91-7828908522",
-            email: "support@servoracare.in",
+            email: "bobysinghsaini236@gmail.com",
 
             address: {
               "@type": "PostalAddress",
@@ -128,8 +128,8 @@ ${formData.message}`;
 
             sameAs: [
               "https://www.facebook.com/Boby.Singh.saini.908/",
-              "https://www.instagram.com/themanager.bs/",
-              "https://www.linkedin.com/in/bobysingh1/",
+              "https://www.instagram.com/servoracare.in",
+              "https://www.linkedin.com/company/servoracare/",
             ],
           })}
         </script>
@@ -269,7 +269,7 @@ ${formData.message}`;
                   {/* EMAIL */}
 
                   <a
-                    href="mailto:support@servoracare.in"
+                    href="mailto:bobysinghsaini236@gmail.com"
                     className="group flex items-start gap-4"
                   >
 
@@ -372,7 +372,7 @@ ${formData.message}`;
                     </a>
 
                     <a
-                      href="https://www.instagram.com/themanager.bs/"
+                      href="https://www.instagram.com/servoracare.in"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Instagram"
@@ -382,7 +382,7 @@ ${formData.message}`;
                     </a>
 
                     <a
-                      href="https://www.linkedin.com/in/bobysingh1/"
+                      href="https://www.linkedin.com/company/servoracare/"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="LinkedIn"
