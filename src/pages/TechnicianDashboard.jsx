@@ -1459,11 +1459,11 @@
 
 // export default TechnicianDashboard;
 
-
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+
 import {
   Wrench,
   ClipboardList,
@@ -1480,11 +1480,10 @@ import {
   AlertCircle,
   Check,
   ShieldCheck,
+  IndianRupee,
+  TrendingUp,
   RefreshCw,
-  Navigation,
-  Timer,
-  BriefcaseBusiness,
-  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL;
@@ -1492,9 +1491,9 @@ const API = import.meta.env.VITE_API_URL;
 function TechnicianDashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  // ==========================================
+  // =========================================================
   // STATES
-  // ==========================================
+  // =========================================================
 
   const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState("");
@@ -1508,53 +1507,28 @@ function TechnicianDashboard() {
   const [otp, setOtp] = useState("");
 
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
 
   const [error, setError] = useState("");
   const [otpError, setOtpError] = useState("");
 
-  const [toast, setToast] = useState(null);
+  const [showAllMobileJobs, setShowAllMobileJobs] = useState(false);
 
-  const [otpTimer, setOtpTimer] = useState(300);
-
-  const [resendLoading, setResendLoading] = useState(false);
-
-  // ==========================================
+  // =========================================================
   // CHECK TECHNICIAN
-  // ==========================================
+  // =========================================================
 
   if (user?.role !== "technician") {
     return <Navigate to="/" replace />;
   }
 
-  // ==========================================
-  // TOAST
-  // ==========================================
-
-  const showToast = (type, message) => {
-    setToast({
-      type,
-      message,
-    });
-
-    setTimeout(() => {
-      setToast(null);
-    }, 4000);
-  };
-
-  // ==========================================
+  // =========================================================
   // FETCH JOBS
-  // ==========================================
+  // =========================================================
 
-  const fetchJobs = async (isRefresh = false) => {
+  const fetchJobs = async () => {
     try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-
+      setLoading(true);
       setError("");
 
       const res = await axios.get(
@@ -1562,71 +1536,31 @@ function TechnicianDashboard() {
       );
 
       setJobs(Array.isArray(res.data) ? res.data : []);
-    } catch (error) {
-      console.error("Fetch Technician Jobs Error:", error);
+    } catch (err) {
+      console.error("Fetch Technician Jobs Error:", err);
 
       setError(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
           "Unable to load assigned jobs."
       );
 
       setJobs([]);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
-  // ==========================================
+  // =========================================================
   // LOAD JOBS
-  // ==========================================
+  // =========================================================
 
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // ==========================================
-  // OTP COUNTDOWN
-  // ==========================================
-
-  useEffect(() => {
-    if (!showOTPModal || otpTimer <= 0) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setOtpTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [showOTPModal, otpTimer]);
-
-  // ==========================================
-  // FORMAT OTP TIMER
-  // ==========================================
-
-  const formattedOtpTimer = useMemo(() => {
-    const minutes = Math.floor(otpTimer / 60)
-      .toString()
-      .padStart(2, "0");
-
-    const seconds = (otpTimer % 60)
-      .toString()
-      .padStart(2, "0");
-
-    return `${minutes}:${seconds}`;
-  }, [otpTimer]);
-
-  // ==========================================
+  // =========================================================
   // OPEN COMPLETE MODAL
-  // ==========================================
+  // =========================================================
 
   const openCompleteModal = (job) => {
     setSelectedJob(job);
@@ -1635,34 +1569,27 @@ function TechnicianDashboard() {
     setShowModal(true);
   };
 
-  // ==========================================
+  // =========================================================
   // CLOSE COMPLETE MODAL
-  // ==========================================
+  // =========================================================
 
   const closeCompleteModal = () => {
-    if (otpLoading) {
-      return;
-    }
+    if (otpLoading) return;
 
     setShowModal(false);
     setWorkReport("");
     setSelectedJob(null);
   };
 
-  // ==========================================
+  // =========================================================
   // REQUEST CUSTOMER OTP
-  // ==========================================
+  // =========================================================
 
   const requestCompletionOTP = async () => {
-    if (!selectedJob) {
-      return;
-    }
+    if (!selectedJob) return;
 
     if (!workReport.trim()) {
-      showToast(
-        "error",
-        "Please enter the work completion report."
-      );
+      alert("Please enter the work completion report.");
       return;
     }
 
@@ -1680,30 +1607,16 @@ function TechnicianDashboard() {
         setOtp("");
         setOtpError("");
 
-        setOtpTimer(300);
-
         setShowOTPModal(true);
-
-        showToast(
-          "success",
-          "Verification OTP sent to the customer."
-        );
-      } else {
-        showToast(
-          "error",
-          response.data.message ||
-            "Unable to send customer OTP."
-        );
       }
-    } catch (error) {
+    } catch (err) {
       console.error(
         "Request Completion OTP Error:",
-        error
+        err
       );
 
-      showToast(
-        "error",
-        error.response?.data?.message ||
+      alert(
+        err.response?.data?.message ||
           "Unable to send customer OTP."
       );
     } finally {
@@ -1711,60 +1624,12 @@ function TechnicianDashboard() {
     }
   };
 
-  // ==========================================
-  // RESEND OTP
-  // ==========================================
-
-  const resendCompletionOTP = async () => {
-    if (!selectedJob || resendLoading) {
-      return;
-    }
-
-    try {
-      setResendLoading(true);
-      setOtpError("");
-
-      const response = await axios.post(
-        `${API}/api/bookings/${selectedJob._id}/request-completion-otp`
-      );
-
-      if (response.data.success) {
-        setOtp("");
-        setOtpTimer(300);
-
-        showToast(
-          "success",
-          "A new OTP has been sent to the customer."
-        );
-      } else {
-        setOtpError(
-          response.data.message ||
-            "Unable to resend OTP."
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Resend Completion OTP Error:",
-        error
-      );
-
-      setOtpError(
-        error.response?.data?.message ||
-          "Unable to resend OTP."
-      );
-    } finally {
-      setResendLoading(false);
-    }
-  };
-
-  // ==========================================
+  // =========================================================
   // VERIFY CUSTOMER OTP
-  // ==========================================
+  // =========================================================
 
   const verifyCompletionOTP = async () => {
-    if (!selectedJob) {
-      return;
-    }
+    if (!selectedJob) return;
 
     if (otp.length !== 6) {
       setOtpError("Please enter the 6-digit OTP.");
@@ -1778,7 +1643,7 @@ function TechnicianDashboard() {
       const response = await axios.post(
         `${API}/api/bookings/${selectedJob._id}/verify-completion-otp`,
         {
-          otp: otp,
+          otp,
           technician_comment: workReport.trim(),
         }
       );
@@ -1791,26 +1656,18 @@ function TechnicianDashboard() {
         setSelectedJob(null);
         setOtpError("");
 
-        await fetchJobs(true);
+        await fetchJobs();
 
-        showToast(
-          "success",
-          "Service completed successfully."
-        );
-      } else {
-        setOtpError(
-          response.data.message ||
-            "Unable to complete service."
-        );
+        alert("Service completed successfully!");
       }
-    } catch (error) {
+    } catch (err) {
       console.error(
         "Verify Completion OTP Error:",
-        error
+        err
       );
 
       setOtpError(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
           "Invalid OTP. Please try again."
       );
     } finally {
@@ -1818,24 +1675,149 @@ function TechnicianDashboard() {
     }
   };
 
-  // ==========================================
+  // =========================================================
   // CLOSE OTP MODAL
-  // ==========================================
+  // =========================================================
 
   const closeOTPModal = () => {
-    if (otpLoading) {
-      return;
-    }
+    if (otpLoading) return;
 
     setShowOTPModal(false);
     setOtp("");
     setOtpError("");
-    setOtpTimer(300);
   };
 
-  // ==========================================
+  // =========================================================
+  // STATISTICS
+  // =========================================================
+
+  const completedJobs = jobs.filter(
+    (job) => job.status === "Completed"
+  ).length;
+
+  const activeJobs = jobs.filter(
+    (job) => job.status === "Accepted"
+  ).length;
+
+  const pendingJobs = jobs.filter(
+    (job) => job.status === "Pending"
+  ).length;
+
+  // =========================================================
+  // EARNINGS
+  // =========================================================
+
+  const getJobAmount = (job) => {
+    const amount = Number(job?.amount);
+
+    return Number.isFinite(amount) ? amount : 0;
+  };
+
+  const totalEarnings = useMemo(() => {
+    return jobs
+      .filter((job) => job.status === "Completed")
+      .reduce(
+        (total, job) => total + getJobAmount(job),
+        0
+      );
+  }, [jobs]);
+
+  const averageEarning =
+    completedJobs > 0
+      ? totalEarnings / completedJobs
+      : 0;
+
+  const currentMonthEarnings = useMemo(() => {
+    const now = new Date();
+
+    return jobs
+      .filter((job) => {
+        if (job.status !== "Completed") return false;
+
+        const date = new Date(
+          job.completed_at ||
+            job.updatedAt ||
+            job.createdAt ||
+            job.visit_date
+        );
+
+        if (Number.isNaN(date.getTime())) return false;
+
+        return (
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
+      })
+      .reduce(
+        (total, job) => total + getJobAmount(job),
+        0
+      );
+  }, [jobs]);
+
+  // =========================================================
+  // MONTHLY EARNINGS DATA
+  // =========================================================
+
+  const monthlyEarnings = useMemo(() => {
+    const months = [];
+
+    const now = new Date();
+
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(
+        now.getFullYear(),
+        now.getMonth() - i,
+        1
+      );
+
+      months.push({
+        month: date.toLocaleDateString("en-IN", {
+          month: "short",
+        }),
+        fullMonth: date.toLocaleDateString("en-IN", {
+          month: "long",
+          year: "numeric",
+        }),
+        monthIndex: date.getMonth(),
+        year: date.getFullYear(),
+        earnings: 0,
+      });
+    }
+
+    jobs
+      .filter((job) => job.status === "Completed")
+      .forEach((job) => {
+        const date = new Date(
+          job.completed_at ||
+            job.updatedAt ||
+            job.createdAt ||
+            job.visit_date
+        );
+
+        if (Number.isNaN(date.getTime())) return;
+
+        const matchingMonth = months.find(
+          (item) =>
+            item.monthIndex === date.getMonth() &&
+            item.year === date.getFullYear()
+        );
+
+        if (matchingMonth) {
+          matchingMonth.earnings += getJobAmount(job);
+        }
+      });
+
+    return months;
+  }, [jobs]);
+
+  const maxMonthlyEarning = Math.max(
+    ...monthlyEarnings.map((item) => item.earnings),
+    1
+  );
+
+  // =========================================================
   // SEARCH
-  // ==========================================
+  // =========================================================
 
   const searchValue = search.toLowerCase().trim();
 
@@ -1860,44 +1842,9 @@ function TechnicianDashboard() {
     );
   });
 
-  // ==========================================
-  // STATISTICS
-  // ==========================================
-
-  const completedJobs = jobs.filter(
-    (job) => job.status === "Completed"
-  ).length;
-
-  const activeJobs = jobs.filter(
-    (job) => job.status === "Accepted"
-  ).length;
-
-  const pendingJobs = jobs.filter(
-    (job) => job.status === "Pending"
-  ).length;
-
-  // ==========================================
-  // TODAY'S JOBS
-  // ==========================================
-
-  const todayJobs = jobs.filter((job) => {
-    if (!job.visit_date) {
-      return false;
-    }
-
-    const visitDate = new Date(job.visit_date);
-    const today = new Date();
-
-    return (
-      visitDate.getDate() === today.getDate() &&
-      visitDate.getMonth() === today.getMonth() &&
-      visitDate.getFullYear() === today.getFullYear()
-    );
-  }).length;
-
-  // ==========================================
+  // =========================================================
   // STATUS STYLE
-  // ==========================================
+  // =========================================================
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -1914,72 +1861,51 @@ function TechnicianDashboard() {
         return "bg-red-50 text-red-700 border-red-200";
 
       default:
-        return "bg-slate-50 text-slate-700 border-slate-200";
+        return "bg-gray-50 text-gray-700 border-gray-200";
     }
   };
 
-  // ==========================================
-  // STATUS DOT
-  // ==========================================
+  // =========================================================
+  // FORMAT CURRENCY
+  // =========================================================
 
-  const getStatusDot = (status) => {
-    switch (status) {
-      case "Accepted":
-        return "bg-blue-500";
-
-      case "Completed":
-        return "bg-green-500";
-
-      case "Pending":
-        return "bg-yellow-500";
-
-      case "Rejected":
-        return "bg-red-500";
-
-      default:
-        return "bg-slate-400";
-    }
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-IN", {
+      maximumFractionDigits: 0,
+    }).format(value || 0);
   };
 
-  // ==========================================
-  // MAP URL
-  // ==========================================
-
-  const getMapUrl = (address) => {
-    if (!address) {
-      return "#";
-    }
-
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      address
-    )}`;
-  };
-
-  // ==========================================
+  // =========================================================
   // FORMAT DATE
-  // ==========================================
+  // =========================================================
 
   const formatDate = (date) => {
-    if (!date) {
-      return "Date not specified";
+    if (!date) return "-";
+
+    const parsed = new Date(date);
+
+    if (Number.isNaN(parsed.getTime())) {
+      return "-";
     }
 
-    const parsedDate = new Date(date);
-
-    if (Number.isNaN(parsedDate.getTime())) {
-      return "Date not specified";
-    }
-
-    return parsedDate.toLocaleDateString("en-IN", {
+    return parsed.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
   };
 
-  // ==========================================
+  // =========================================================
+  // MOBILE JOBS
+  // =========================================================
+
+  const mobileJobs = showAllMobileJobs
+    ? filteredJobs
+    : filteredJobs.slice(0, 5);
+
+  // =========================================================
   // RENDER
-  // ==========================================
+  // =========================================================
 
   return (
     <>
@@ -1995,159 +1921,77 @@ function TechnicianDashboard() {
 
         <meta
           name="description"
-          content="ServoraCare technician dashboard for managing assigned service jobs, customer details and completion reports."
+          content="ServoraCare technician dashboard for managing assigned service jobs, customer details, earnings and completion reports."
         />
       </Helmet>
 
       <div className="min-h-screen bg-slate-50">
 
-        {/* ==========================================
-            TOAST
-        ========================================== */}
-
-        {toast && (
-          <div className="fixed top-4 right-4 z-[100] w-[calc(100%-2rem)] max-w-sm">
-            <div
-              className={`
-                flex items-start gap-3
-                rounded-2xl
-                border
-                bg-white
-                p-4
-                shadow-xl
-                ${
-                  toast.type === "success"
-                    ? "border-green-200"
-                    : "border-red-200"
-                }
-              `}
-            >
-              <div
-                className={`
-                  flex h-9 w-9 shrink-0
-                  items-center justify-center
-                  rounded-xl
-                  ${
-                    toast.type === "success"
-                      ? "bg-green-50 text-green-600"
-                      : "bg-red-50 text-red-600"
-                  }
-                `}
-              >
-                {toast.type === "success" ? (
-                  <Check size={18} />
-                ) : (
-                  <AlertCircle size={18} />
-                )}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-slate-900">
-                  {toast.type === "success"
-                    ? "Success"
-                    : "Something went wrong"}
-                </p>
-
-                <p className="mt-0.5 text-sm text-slate-500">
-                  {toast.message}
-                </p>
-              </div>
-
-              <button
-                onClick={() => setToast(null)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ==========================================
+        {/* =====================================================
             HEADER
-        ========================================== */}
+        ===================================================== */}
 
-        <header className="border-b border-slate-200 bg-white">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+          <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
 
-          <div className="mx-auto max-w-[1800px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+            <div className="flex items-center justify-between gap-4">
 
-            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
 
-              {/* PROFILE */}
-
-              <div className="flex items-center gap-3 sm:gap-4">
-
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-900 shadow-sm sm:h-14 sm:w-14">
+                <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-blue-900 flex items-center justify-center shadow-sm shrink-0">
                   <Wrench
-                    size={25}
-                    className="text-white sm:h-7 sm:w-7"
+                    size={23}
+                    className="text-white sm:hidden"
+                  />
+
+                  <Wrench
+                    size={27}
+                    className="text-white hidden sm:block"
                   />
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-slate-500 sm:text-sm">
+                  <p className="text-xs sm:text-sm text-slate-500">
                     Technician Dashboard
                   </p>
 
-                  <h1 className="truncate text-xl font-bold text-slate-900 sm:text-3xl">
+                  <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-slate-900 truncate">
                     Welcome, {user?.name || "Technician"}
                   </h1>
                 </div>
+
               </div>
 
-              {/* HEADER ACTIONS */}
-
-              <div className="flex items-center justify-between gap-3 sm:justify-end">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
 
                 <button
-                  onClick={() => fetchJobs(true)}
-                  disabled={refreshing}
-                  className="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                    shadow-sm
-                    transition
-                    hover:bg-slate-50
-                    disabled:cursor-not-allowed
-                    disabled:opacity-60
-                    sm:px-4
-                  "
+                  onClick={fetchJobs}
+                  disabled={loading}
+                  title="Refresh jobs"
+                  className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition"
                 >
                   <RefreshCw
                     size={17}
                     className={
-                      refreshing
+                      loading
                         ? "animate-spin"
                         : ""
                     }
                   />
-
-                  <span className="hidden sm:inline">
-                    Refresh
-                  </span>
                 </button>
 
-                <div className="flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-2 sm:px-4">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-50 border border-green-200 rounded-full">
 
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
                   </span>
 
-                  <span className="text-xs font-bold text-green-700 sm:text-sm">
+                  <span className="text-xs sm:text-sm font-semibold text-green-700">
                     Online
                   </span>
+
                 </div>
 
               </div>
@@ -2155,69 +1999,68 @@ function TechnicianDashboard() {
             </div>
 
           </div>
-
         </header>
 
-        {/* ==========================================
+        {/* =====================================================
             MAIN
-        ========================================== */}
+        ===================================================== */}
 
-        <main className="mx-auto max-w-[1800px] px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+        <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
 
-          {/* ==========================================
+          {/* ===================================================
               STATISTICS
-          ========================================== */}
+          =================================================== */}
 
-          <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6">
 
-            {/* TODAY */}
+            {/* TOTAL */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
 
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start justify-between">
 
                 <div>
-                  <p className="text-xs font-medium text-slate-500 sm:text-sm">
-                    Today's Jobs
+                  <p className="text-xs sm:text-sm font-medium text-slate-500">
+                    Total Jobs
                   </p>
 
-                  <h2 className="mt-1.5 text-2xl font-bold text-slate-900 sm:mt-2 sm:text-3xl">
-                    {todayJobs}
+                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
+                    {jobs.length}
                   </h2>
                 </div>
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-50 sm:h-11 sm:w-11">
-                  <CalendarDays
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+                  <ClipboardList
                     size={19}
-                    className="text-indigo-600"
+                    className="text-blue-700"
                   />
                 </div>
 
               </div>
 
-              <p className="mt-3 hidden text-xs text-slate-400 sm:block">
-                Scheduled for today
+              <p className="hidden sm:block text-xs text-slate-400 mt-4">
+                All assigned service jobs
               </p>
 
             </div>
 
             {/* ACTIVE */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
 
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start justify-between">
 
                 <div>
-                  <p className="text-xs font-medium text-slate-500 sm:text-sm">
+                  <p className="text-xs sm:text-sm font-medium text-slate-500">
                     Active Jobs
                   </p>
 
-                  <h2 className="mt-1.5 text-2xl font-bold text-blue-600 sm:mt-2 sm:text-3xl">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 mt-2">
                     {activeJobs}
                   </h2>
                 </div>
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 sm:h-11 sm:w-11">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-blue-50 flex items-center justify-center">
                   <Clock
                     size={19}
                     className="text-blue-600"
@@ -2226,7 +2069,7 @@ function TechnicianDashboard() {
 
               </div>
 
-              <p className="mt-3 hidden text-xs text-slate-400 sm:block">
+              <p className="hidden sm:block text-xs text-slate-400 mt-4">
                 Currently accepted
               </p>
 
@@ -2234,21 +2077,21 @@ function TechnicianDashboard() {
 
             {/* COMPLETED */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
 
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start justify-between">
 
                 <div>
-                  <p className="text-xs font-medium text-slate-500 sm:text-sm">
+                  <p className="text-xs sm:text-sm font-medium text-slate-500">
                     Completed
                   </p>
 
-                  <h2 className="mt-1.5 text-2xl font-bold text-green-600 sm:mt-2 sm:text-3xl">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-green-600 mt-2">
                     {completedJobs}
                   </h2>
                 </div>
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-50 sm:h-11 sm:w-11">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-green-50 flex items-center justify-center">
                   <CheckCircle
                     size={19}
                     className="text-green-600"
@@ -2257,85 +2100,273 @@ function TechnicianDashboard() {
 
               </div>
 
-              <p className="mt-3 hidden text-xs text-slate-400 sm:block">
+              <p className="hidden sm:block text-xs text-slate-400 mt-4">
                 Successfully completed
               </p>
 
             </div>
 
-            {/* TOTAL */}
+            {/* EARNINGS */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
 
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start justify-between">
 
-                <div>
-                  <p className="text-xs font-medium text-slate-500 sm:text-sm">
-                    Total Jobs
+                <div className="min-w-0">
+
+                  <p className="text-xs sm:text-sm font-medium text-slate-500">
+                    Total Earnings
                   </p>
 
-                  <h2 className="mt-1.5 text-2xl font-bold text-slate-900 sm:mt-2 sm:text-3xl">
-                    {jobs.length}
+                  <h2 className="text-xl sm:text-3xl font-bold text-slate-900 mt-2 truncate">
+                    ₹{formatCurrency(totalEarnings)}
                   </h2>
+
                 </div>
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 sm:h-11 sm:w-11">
-                  <ClipboardList
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <IndianRupee
                     size={19}
-                    className="text-slate-600"
+                    className="text-emerald-600"
                   />
                 </div>
 
               </div>
 
-              <p className="mt-3 hidden text-xs text-slate-400 sm:block">
-                All assigned jobs
+              <p className="hidden sm:block text-xs text-slate-400 mt-4">
+                From completed jobs
               </p>
 
             </div>
 
           </div>
 
-          {/* ==========================================
-              JOB SECTION
-          ========================================== */}
+          {/* ===================================================
+              EARNINGS SECTION
+          =================================================== */}
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
 
-            {/* SECTION HEADER */}
+            <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
 
-            <div className="border-b border-slate-200 px-4 py-5 sm:px-6">
-
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
                 <div>
                   <div className="flex items-center gap-2">
 
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
-                      <BriefcaseBusiness
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                      <TrendingUp
                         size={18}
-                        className="text-blue-700"
+                        className="text-emerald-600"
                       />
                     </div>
 
-                    <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
-                      Assigned Jobs
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                      Earnings Overview
                     </h2>
 
                   </div>
 
-                  <p className="mt-2 text-xs text-slate-500 sm:text-sm">
+                  <p className="text-xs sm:text-sm text-slate-500 mt-2">
+                    Your earnings from completed service jobs
+                  </p>
+                </div>
+
+                <div className="text-left sm:text-right">
+
+                  <p className="text-xs text-slate-500">
+                    This month
+                  </p>
+
+                  <p className="text-xl font-bold text-emerald-600">
+                    ₹{formatCurrency(currentMonthEarnings)}
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* EARNING SUMMARY */}
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 sm:p-6">
+
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-4">
+
+                <p className="text-xs text-slate-500">
+                  Total Earnings
+                </p>
+
+                <p className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
+                  ₹{formatCurrency(totalEarnings)}
+                </p>
+
+              </div>
+
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-4">
+
+                <p className="text-xs text-slate-500">
+                  Average / Job
+                </p>
+
+                <p className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
+                  ₹{formatCurrency(averageEarning)}
+                </p>
+
+              </div>
+
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 col-span-2 sm:col-span-1">
+
+                <p className="text-xs text-slate-500">
+                  Completed Jobs
+                </p>
+
+                <p className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
+                  {completedJobs}
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* =================================================
+                EARNING GRAPH
+            ================================================= */}
+
+            <div className="px-4 sm:px-6 pb-6">
+
+              <div className="border border-slate-100 rounded-2xl p-4 sm:p-6">
+
+                <div className="flex items-center justify-between mb-6">
+
+                  <div>
+                    <h3 className="font-semibold text-slate-900">
+                      Monthly Earnings
+                    </h3>
+
+                    <p className="text-xs text-slate-400 mt-1">
+                      Last 6 months
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs text-emerald-600 font-semibold">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    Earnings
+                  </div>
+
+                </div>
+
+                {/* GRAPH */}
+
+                <div className="h-64 sm:h-72 flex items-end gap-2 sm:gap-5">
+
+                  {monthlyEarnings.map((item) => {
+
+                    const height =
+                      item.earnings > 0
+                        ? Math.max(
+                            (item.earnings /
+                              maxMonthlyEarning) *
+                              100,
+                            5
+                          )
+                        : 3;
+
+                    return (
+                      <div
+                        key={`${item.month}-${item.year}`}
+                        className="flex-1 h-full flex flex-col justify-end items-center min-w-0"
+                      >
+
+                        {/* AMOUNT */}
+
+                        <div className="mb-2 text-[10px] sm:text-xs font-semibold text-slate-600 whitespace-nowrap">
+                          {item.earnings > 0
+                            ? `₹${formatCurrency(
+                                item.earnings
+                              )}`
+                            : "₹0"}
+                        </div>
+
+                        {/* BAR */}
+
+                        <div className="w-full max-w-12 sm:max-w-16 h-44 sm:h-52 flex items-end">
+
+                          <div
+                            className="w-full rounded-t-xl bg-emerald-500 hover:bg-emerald-600 transition-all duration-300"
+                            style={{
+                              height: `${height}%`,
+                              minHeight:
+                                item.earnings > 0
+                                  ? "8px"
+                                  : "3px",
+                            }}
+                            title={`${item.fullMonth}: ₹${formatCurrency(
+                              item.earnings
+                            )}`}
+                          />
+
+                        </div>
+
+                        {/* MONTH */}
+
+                        <div className="mt-3 text-[10px] sm:text-xs font-medium text-slate-500">
+                          {item.month}
+                        </div>
+
+                      </div>
+                    );
+                  })}
+
+                </div>
+
+                {/* GRAPH NOTE */}
+
+                {completedJobs === 0 && (
+                  <div className="text-center mt-5">
+                    <p className="text-xs text-slate-400">
+                      Complete your first service job to start
+                      tracking earnings.
+                    </p>
+                  </div>
+                )}
+
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* ===================================================
+              JOB SECTION
+          =================================================== */}
+
+          <section className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+
+            {/* SECTION HEADER */}
+
+            <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
+
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                    Assigned Jobs
+                  </h2>
+
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
                     Manage your assigned service requests
                   </p>
                 </div>
 
                 {/* SEARCH */}
 
-                <div className="relative w-full lg:max-w-md">
+                <div className="relative w-full lg:w-96">
 
                   <Search
                     size={18}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                   />
 
                   <input
@@ -2347,23 +2378,31 @@ function TechnicianDashboard() {
                     }
                     className="
                       w-full
-                      rounded-xl
                       border
                       border-slate-200
                       bg-slate-50
-                      py-3
+                      rounded-xl
                       pl-10
                       pr-4
+                      py-3
                       text-sm
                       outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-blue-500
                       focus:bg-white
+                      focus:border-blue-500
                       focus:ring-2
                       focus:ring-blue-500/20
+                      transition
                     "
                   />
+
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
 
                 </div>
 
@@ -2374,15 +2413,16 @@ function TechnicianDashboard() {
             {/* ERROR */}
 
             {error && !loading && (
-              <div className="mx-4 mt-5 rounded-xl border border-red-200 bg-red-50 p-4 sm:mx-6">
 
-                <div className="flex items-start justify-between gap-4">
+              <div className="mx-4 sm:mx-6 mt-5 p-4 bg-red-50 border border-red-200 rounded-xl">
 
-                  <div className="flex min-w-0 items-start gap-2 text-red-700">
+                <div className="flex items-center justify-between gap-4">
+
+                  <div className="flex items-center gap-2 text-red-700 min-w-0">
 
                     <AlertCircle
                       size={18}
-                      className="mt-0.5 shrink-0"
+                      className="shrink-0"
                     />
 
                     <span className="text-sm font-medium">
@@ -2392,8 +2432,8 @@ function TechnicianDashboard() {
                   </div>
 
                   <button
-                    onClick={() => fetchJobs()}
-                    className="shrink-0 text-sm font-bold text-red-700 hover:text-red-900"
+                    onClick={fetchJobs}
+                    className="text-sm font-semibold text-red-700 hover:text-red-900 shrink-0"
                   >
                     Retry
                   </button>
@@ -2406,70 +2446,59 @@ function TechnicianDashboard() {
             {/* LOADING */}
 
             {loading ? (
-              <div className="flex min-h-[350px] flex-col items-center justify-center px-6 py-20">
 
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50">
-                  <Loader2
-                    size={28}
-                    className="animate-spin text-blue-700"
-                  />
-                </div>
+              <div className="flex flex-col items-center justify-center py-24">
 
-                <p className="mt-4 text-sm font-medium text-slate-600">
+                <Loader2
+                  size={38}
+                  className="text-blue-700 animate-spin"
+                />
+
+                <p className="text-sm text-slate-500 mt-4">
                   Loading assigned jobs...
                 </p>
 
-                <p className="mt-1 text-xs text-slate-400">
-                  Please wait
-                </p>
-
               </div>
+
             ) : filteredJobs.length === 0 ? (
 
               /* EMPTY */
 
-              <div className="px-6 py-20 text-center">
+              <div className="text-center py-20 px-6">
 
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center">
+
                   <ClipboardList
                     size={28}
                     className="text-slate-400"
                   />
+
                 </div>
 
-                <h3 className="mt-5 text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900 mt-5">
                   No jobs found
                 </h3>
 
-                <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500">
+                <p className="text-sm text-slate-500 mt-2">
                   {search
-                    ? "Try changing your search keywords."
+                    ? "Try changing your search."
                     : "You don't have any assigned jobs yet."}
                 </p>
-
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="mt-5 rounded-xl bg-blue-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
-                  >
-                    Clear Search
-                  </button>
-                )}
 
               </div>
 
             ) : (
 
               <>
-                {/* ==========================================
+                {/* =================================================
                     DESKTOP TABLE
-                ========================================== */}
+                ================================================= */}
 
-                <div className="hidden overflow-x-auto lg:block">
+                <div className="hidden lg:block overflow-x-auto">
 
                   <table className="w-full">
 
-                    <thead className="border-b border-slate-200 bg-slate-50">
+                    <thead className="bg-slate-50 border-b border-slate-200">
 
                       <tr>
 
@@ -2493,6 +2522,10 @@ function TechnicianDashboard() {
                           Schedule
                         </th>
 
+                        <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500">
+                          Amount
+                        </th>
+
                         <th className="px-5 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
                           Status
                         </th>
@@ -2511,14 +2544,14 @@ function TechnicianDashboard() {
 
                         <tr
                           key={job._id}
-                          className="transition hover:bg-slate-50/70"
+                          className="hover:bg-slate-50/70 transition"
                         >
 
                           {/* BOOKING */}
 
                           <td className="px-5 py-5">
 
-                            <span className="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">
+                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-sm">
                               #{job.booking_id || "-"}
                             </span>
 
@@ -2530,30 +2563,29 @@ function TechnicianDashboard() {
 
                             <div className="flex items-center gap-3">
 
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100">
+                              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+
                                 <UserRound
                                   size={18}
                                   className="text-slate-500"
                                 />
+
                               </div>
 
-                              <div className="min-w-0">
+                              <div>
 
-                                <p className="max-w-[180px] truncate font-semibold text-slate-900">
-                                  {job.full_name || "Unknown"}
+                                <p className="font-semibold text-slate-900">
+                                  {job.full_name ||
+                                    "Unknown"}
                                 </p>
 
-                                <a
-                                  href={
-                                    job.phone
-                                      ? `tel:${job.phone}`
-                                      : "#"
-                                  }
-                                  className="mt-1 flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600"
-                                >
+                                <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+
                                   <Phone size={12} />
+
                                   {job.phone || "-"}
-                                </a>
+
+                                </div>
 
                               </div>
 
@@ -2567,11 +2599,13 @@ function TechnicianDashboard() {
 
                             <div className="flex items-center gap-2">
 
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-50">
+                              <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center">
+
                                 <Wrench
                                   size={17}
                                   className="text-orange-600"
                                 />
+
                               </div>
 
                               <span className="font-medium text-slate-800">
@@ -2584,36 +2618,18 @@ function TechnicianDashboard() {
 
                           {/* LOCATION */}
 
-                          <td className="max-w-xs px-5 py-5">
+                          <td className="px-5 py-5 max-w-xs">
 
                             <div className="flex items-start gap-2">
 
                               <MapPin
                                 size={17}
-                                className="mt-0.5 shrink-0 text-red-500"
+                                className="text-red-500 mt-0.5 shrink-0"
                               />
 
-                              <div className="min-w-0">
-
-                                <p className="line-clamp-2 text-sm text-slate-600">
-                                  {job.address || "-"}
-                                </p>
-
-                                {job.address && (
-                                  <a
-                                    href={getMapUrl(
-                                      job.address
-                                    )}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800"
-                                  >
-                                    <Navigation size={12} />
-                                    Open Maps
-                                  </a>
-                                )}
-
-                              </div>
+                              <span className="text-sm text-slate-600 line-clamp-2">
+                                {job.address || "-"}
+                              </span>
 
                             </div>
 
@@ -2625,7 +2641,7 @@ function TechnicianDashboard() {
 
                             <div className="space-y-1">
 
-                              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                              <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
 
                                 <CalendarDays
                                   size={15}
@@ -2638,12 +2654,25 @@ function TechnicianDashboard() {
 
                               </div>
 
-                              <div className="ml-6 text-xs text-slate-500">
+                              <div className="text-xs text-slate-500 ml-5">
                                 {job.visit_time ||
                                   "Time not specified"}
                               </div>
 
                             </div>
+
+                          </td>
+
+                          {/* AMOUNT */}
+
+                          <td className="px-5 py-5 text-right">
+
+                            <span className="font-bold text-slate-800">
+                              ₹
+                              {formatCurrency(
+                                getJobAmount(job)
+                              )}
+                            </span>
 
                           </td>
 
@@ -2656,10 +2685,10 @@ function TechnicianDashboard() {
                                 inline-flex
                                 items-center
                                 gap-2
-                                rounded-full
-                                border
                                 px-3
                                 py-1.5
+                                rounded-full
+                                border
                                 text-xs
                                 font-bold
                                 ${getStatusStyle(
@@ -2668,16 +2697,7 @@ function TechnicianDashboard() {
                               `}
                             >
 
-                              <span
-                                className={`
-                                  h-1.5
-                                  w-1.5
-                                  rounded-full
-                                  ${getStatusDot(
-                                    job.status
-                                  )}
-                                `}
-                              />
+                              <span className="w-1.5 h-1.5 rounded-full bg-current" />
 
                               {job.status}
 
@@ -2689,42 +2709,52 @@ function TechnicianDashboard() {
 
                           <td className="px-5 py-5 text-center">
 
-                            {job.status === "Accepted" ? (
+                            {job.status ===
+                            "Accepted" ? (
 
                               <button
                                 onClick={() =>
-                                  openCompleteModal(job)
+                                  openCompleteModal(
+                                    job
+                                  )
                                 }
                                 className="
                                   inline-flex
                                   items-center
                                   gap-2
-                                  rounded-xl
-                                  bg-green-600
                                   px-4
                                   py-2.5
+                                  rounded-xl
+                                  bg-green-600
+                                  text-white
                                   text-sm
                                   font-semibold
-                                  text-white
-                                  transition
                                   hover:bg-green-700
                                   active:scale-95
+                                  transition
                                 "
                               >
+
                                 <CheckCircle size={16} />
+
                                 Complete
+
                               </button>
 
-                            ) : job.status === "Completed" ? (
+                            ) : job.status ===
+                              "Completed" ? (
 
-                              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-600">
+                              <span className="inline-flex items-center gap-1.5 text-green-600 font-semibold text-sm">
+
                                 <Check size={17} />
+
                                 Completed
+
                               </span>
 
                             ) : (
 
-                              <span className="text-sm text-slate-400">
+                              <span className="text-slate-400 text-sm">
                                 No action
                               </span>
 
@@ -2742,278 +2772,251 @@ function TechnicianDashboard() {
 
                 </div>
 
-                {/* ==========================================
-                    MOBILE / TABLET JOB CARDS
-                ========================================== */}
+                {/* =================================================
+                    MOBILE / TABLET CARDS
+                ================================================= */}
 
-                <div className="divide-y divide-slate-100 lg:hidden">
+                <div className="lg:hidden divide-y divide-slate-100">
 
-                  {filteredJobs.map((job) => (
+                  {mobileJobs.map((job) => (
 
                     <div
                       key={job._id}
                       className="p-4 sm:p-5"
                     >
 
-                      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
 
                         {/* CARD TOP */}
 
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="p-4 bg-slate-50 border-b border-slate-100">
 
-                          <div>
+                          <div className="flex items-start justify-between gap-3">
 
-                            <span className="inline-flex items-center rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
-                              #{job.booking_id || "-"}
-                            </span>
+                            <div>
 
-                            <h3 className="mt-2 text-base font-bold text-slate-900">
-                              {job.service_type ||
-                                "Service Request"}
-                            </h3>
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs">
+                                #{job.booking_id || "-"}
+                              </span>
 
-                          </div>
+                              <h3 className="font-bold text-slate-900 mt-2">
+                                {job.service_type ||
+                                  "Service"}
+                              </h3>
 
-                          <span
-                            className={`
-                              inline-flex
-                              shrink-0
-                              items-center
-                              gap-1.5
-                              rounded-full
-                              border
-                              px-2.5
-                              py-1
-                              text-[11px]
-                              font-bold
-                              ${getStatusStyle(
-                                job.status
-                              )}
-                            `}
-                          >
+                            </div>
 
                             <span
                               className={`
-                                h-1.5
-                                w-1.5
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                px-2.5
+                                py-1.5
                                 rounded-full
-                                ${getStatusDot(
+                                border
+                                text-[10px]
+                                font-bold
+                                shrink-0
+                                ${getStatusStyle(
                                   job.status
                                 )}
                               `}
-                            />
+                            >
 
-                            {job.status}
+                              <span className="w-1.5 h-1.5 rounded-full bg-current" />
 
-                          </span>
+                              {job.status}
+
+                            </span>
+
+                          </div>
 
                         </div>
 
                         {/* CUSTOMER */}
 
-                        <div className="mt-4 flex items-center gap-3">
+                        <div className="p-4">
 
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                            <UserRound
-                              size={18}
-                              className="text-slate-500"
-                            />
+                          <div className="flex items-center gap-3 mb-4">
+
+                            <div className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+
+                              <UserRound
+                                size={19}
+                                className="text-slate-500"
+                              />
+
+                            </div>
+
+                            <div className="min-w-0">
+
+                              <p className="font-semibold text-slate-900 truncate">
+                                {job.full_name ||
+                                  "Unknown"}
+                              </p>
+
+                              <a
+                                href={
+                                  job.phone
+                                    ? `tel:${job.phone}`
+                                    : undefined
+                                }
+                                className="flex items-center gap-1 text-xs text-slate-500 mt-1"
+                              >
+
+                                <Phone size={12} />
+
+                                {job.phone || "-"}
+
+                              </a>
+
+                            </div>
+
                           </div>
 
-                          <div className="min-w-0 flex-1">
+                          {/* DETAILS */}
 
-                            <p className="truncate text-sm font-semibold text-slate-900">
-                              {job.full_name ||
-                                "Unknown Customer"}
-                            </p>
+                          <div className="space-y-3">
 
-                            {job.phone && (
-                              <p className="mt-0.5 text-xs text-slate-500">
-                                {job.phone}
+                            <div className="flex items-start gap-3">
+
+                              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
+
+                                <MapPin
+                                  size={16}
+                                  className="text-red-500"
+                                />
+
+                              </div>
+
+                              <div className="min-w-0">
+
+                                <p className="text-[11px] text-slate-400">
+                                  Location
+                                </p>
+
+                                <p className="text-sm text-slate-700 mt-0.5">
+                                  {job.address || "-"}
+                                </p>
+
+                              </div>
+
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+
+                              <div className="flex items-start gap-2">
+
+                                <CalendarDays
+                                  size={16}
+                                  className="text-blue-600 mt-0.5 shrink-0"
+                                />
+
+                                <div>
+
+                                  <p className="text-[11px] text-slate-400">
+                                    Date
+                                  </p>
+
+                                  <p className="text-xs font-medium text-slate-700 mt-0.5">
+                                    {formatDate(
+                                      job.visit_date
+                                    )}
+                                  </p>
+
+                                </div>
+
+                              </div>
+
+                              <div>
+
+                                <p className="text-[11px] text-slate-400">
+                                  Time
+                                </p>
+
+                                <p className="text-xs font-medium text-slate-700 mt-0.5">
+                                  {job.visit_time ||
+                                    "Not specified"}
+                                </p>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                          {/* AMOUNT + ACTION */}
+
+                          <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+
+                            <div>
+
+                              <p className="text-[11px] text-slate-400">
+                                Job Amount
                               </p>
+
+                              <p className="text-lg font-bold text-slate-900">
+                                ₹
+                                {formatCurrency(
+                                  getJobAmount(job)
+                                )}
+                              </p>
+
+                            </div>
+
+                            {job.status ===
+                            "Accepted" ? (
+
+                              <button
+                                onClick={() =>
+                                  openCompleteModal(
+                                    job
+                                  )
+                                }
+                                className="
+                                  inline-flex
+                                  items-center
+                                  gap-2
+                                  px-4
+                                  py-2.5
+                                  rounded-xl
+                                  bg-green-600
+                                  text-white
+                                  text-sm
+                                  font-semibold
+                                  active:scale-95
+                                "
+                              >
+
+                                <CheckCircle size={16} />
+
+                                Complete
+
+                              </button>
+
+                            ) : job.status ===
+                              "Completed" ? (
+
+                              <span className="inline-flex items-center gap-1.5 text-green-600 font-semibold text-sm">
+
+                                <Check size={17} />
+
+                                Completed
+
+                              </span>
+
+                            ) : (
+
+                              <span className="text-slate-400 text-xs">
+                                No action
+                              </span>
+
                             )}
 
                           </div>
 
                         </div>
-
-                        {/* DETAILS */}
-
-                        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-
-                          {/* LOCATION */}
-
-                          <div className="rounded-xl bg-slate-50 p-3">
-
-                            <div className="flex items-start gap-2">
-
-                              <MapPin
-                                size={16}
-                                className="mt-0.5 shrink-0 text-red-500"
-                              />
-
-                              <div className="min-w-0">
-
-                                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                                  Location
-                                </p>
-
-                                <p className="mt-1 line-clamp-2 text-xs font-medium leading-relaxed text-slate-700">
-                                  {job.address ||
-                                    "Address not available"}
-                                </p>
-
-                              </div>
-
-                            </div>
-
-                          </div>
-
-                          {/* SCHEDULE */}
-
-                          <div className="rounded-xl bg-slate-50 p-3">
-
-                            <div className="flex items-start gap-2">
-
-                              <CalendarDays
-                                size={16}
-                                className="mt-0.5 shrink-0 text-blue-600"
-                              />
-
-                              <div>
-
-                                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                                  Schedule
-                                </p>
-
-                                <p className="mt-1 text-xs font-semibold text-slate-700">
-                                  {formatDate(
-                                    job.visit_date
-                                  )}
-                                </p>
-
-                                <p className="mt-0.5 text-xs text-slate-500">
-                                  {job.visit_time ||
-                                    "Time not specified"}
-                                </p>
-
-                              </div>
-
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                        {/* ACTIONS */}
-
-                        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-
-                          {job.phone && (
-                            <a
-                              href={`tel:${job.phone}`}
-                              className="
-                                inline-flex
-                                flex-1
-                                items-center
-                                justify-center
-                                gap-2
-                                rounded-xl
-                                border
-                                border-slate-200
-                                bg-white
-                                px-4
-                                py-3
-                                text-sm
-                                font-semibold
-                                text-slate-700
-                                transition
-                                hover:bg-slate-50
-                              "
-                            >
-                              <Phone size={16} />
-                              Call Customer
-                            </a>
-                          )}
-
-                          {job.address && (
-                            <a
-                              href={getMapUrl(
-                                job.address
-                              )}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="
-                                inline-flex
-                                flex-1
-                                items-center
-                                justify-center
-                                gap-2
-                                rounded-xl
-                                border
-                                border-blue-200
-                                bg-blue-50
-                                px-4
-                                py-3
-                                text-sm
-                                font-semibold
-                                text-blue-700
-                                transition
-                                hover:bg-blue-100
-                              "
-                            >
-                              <Navigation size={16} />
-                              Open Maps
-                            </a>
-                          )}
-
-                        </div>
-
-                        {/* COMPLETE */}
-
-                        {job.status === "Accepted" && (
-
-                          <button
-                            onClick={() =>
-                              openCompleteModal(job)
-                            }
-                            className="
-                              mt-2
-                              flex
-                              w-full
-                              items-center
-                              justify-center
-                              gap-2
-                              rounded-xl
-                              bg-green-600
-                              px-4
-                              py-3
-                              text-sm
-                              font-semibold
-                              text-white
-                              shadow-sm
-                              transition
-                              hover:bg-green-700
-                              active:scale-[0.99]
-                            "
-                          >
-                            <CheckCircle size={17} />
-                            Complete Job
-                            <ChevronRight
-                              size={16}
-                            />
-                          </button>
-
-                        )}
-
-                        {job.status === "Completed" && (
-
-                          <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
-                            <CheckCircle size={17} />
-                            Service Completed
-                          </div>
-
-                        )}
 
                       </div>
 
@@ -3021,48 +3024,72 @@ function TechnicianDashboard() {
 
                   ))}
 
+                  {/* SHOW MORE */}
+
+                  {filteredJobs.length > 5 && (
+
+                    <div className="p-4">
+
+                      <button
+                        onClick={() =>
+                          setShowAllMobileJobs(
+                            !showAllMobileJobs
+                          )
+                        }
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                      >
+
+                        {showAllMobileJobs
+                          ? "Show Less"
+                          : `Show ${
+                              filteredJobs.length - 5
+                            } More Jobs`}
+
+                        <ChevronDown
+                          size={17}
+                          className={
+                            showAllMobileJobs
+                              ? "rotate-180 transition"
+                              : "transition"
+                          }
+                        />
+
+                      </button>
+
+                    </div>
+
+                  )}
+
                 </div>
 
               </>
 
             )}
 
-            {/* ==========================================
-                FOOTER
-            ========================================== */}
+            {/* FOOTER */}
 
             {!loading &&
               filteredJobs.length > 0 && (
 
-                <div className="border-t border-slate-200 bg-slate-50 px-4 py-4 sm:px-6">
+                <div className="px-5 sm:px-6 py-4 border-t border-slate-200 bg-slate-50">
 
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs sm:text-sm text-slate-500">
 
-                    <p className="text-xs text-slate-500 sm:text-sm">
+                    Showing{" "}
 
-                      Showing{" "}
+                    <span className="font-semibold text-slate-700">
+                      {filteredJobs.length}
+                    </span>{" "}
 
-                      <span className="font-bold text-slate-700">
-                        {filteredJobs.length}
-                      </span>{" "}
+                    of{" "}
 
-                      of{" "}
+                    <span className="font-semibold text-slate-700">
+                      {jobs.length}
+                    </span>{" "}
 
-                      <span className="font-bold text-slate-700">
-                        {jobs.length}
-                      </span>{" "}
+                    jobs
 
-                      jobs
-
-                    </p>
-
-                    {search && (
-                      <p className="text-xs text-slate-400">
-                        Filtered by "{search}"
-                      </p>
-                    )}
-
-                  </div>
+                  </p>
 
                 </div>
 
@@ -3072,41 +3099,39 @@ function TechnicianDashboard() {
 
         </main>
 
-        {/* ==========================================
+        {/* =====================================================
             COMPLETE JOB MODAL
-        ========================================== */}
+        ===================================================== */}
 
         {showModal && selectedJob && (
 
-          <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-
-            {/* BACKDROP */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
 
             <div
               className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
               onClick={closeCompleteModal}
             />
 
-            {/* MODAL */}
-
-            <div className="relative max-h-[95vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:max-w-lg sm:rounded-2xl">
+            <div className="relative w-full max-w-lg max-h-[92vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
               {/* HEADER */}
 
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4 sm:px-6 sm:py-5">
+              <div className="px-5 sm:px-6 py-4 sm:py-5 border-b border-slate-200 flex items-center justify-between shrink-0">
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
 
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50">
+                  <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+
                     <FileText
                       size={20}
                       className="text-green-600"
                     />
+
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
 
-                    <h2 className="text-base font-bold text-slate-900 sm:text-lg">
+                    <h2 className="text-lg font-bold text-slate-900">
                       Complete Job
                     </h2>
 
@@ -3122,7 +3147,7 @@ function TechnicianDashboard() {
                 <button
                   onClick={closeCompleteModal}
                   disabled={otpLoading}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 disabled:opacity-50"
+                  className="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 transition shrink-0"
                 >
                   <X size={20} />
                 </button>
@@ -3131,58 +3156,34 @@ function TechnicianDashboard() {
 
               {/* BODY */}
 
-              <div className="p-5 sm:p-6">
+              <div className="p-5 sm:p-6 overflow-y-auto">
 
                 {/* JOB SUMMARY */}
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5">
 
-                  <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-2 gap-4">
 
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
-                      <UserRound
-                        size={19}
-                        className="text-slate-500"
-                      />
-                    </div>
-
-                    <div className="min-w-0">
+                    <div>
 
                       <p className="text-xs text-slate-500">
                         Customer
                       </p>
 
-                      <p className="truncate font-bold text-slate-900">
+                      <p className="font-semibold text-slate-800 mt-1 truncate">
                         {selectedJob.full_name}
                       </p>
 
                     </div>
 
-                  </div>
+                    <div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-
-                    <div className="rounded-xl bg-white p-3">
-
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                      <p className="text-xs text-slate-500">
                         Service
                       </p>
 
-                      <p className="mt-1 text-sm font-semibold text-slate-800">
-                        {selectedJob.service_type ||
-                          "-"}
-                      </p>
-
-                    </div>
-
-                    <div className="rounded-xl bg-white p-3">
-
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                        Booking
-                      </p>
-
-                      <p className="mt-1 text-sm font-semibold text-blue-700">
-                        #{selectedJob.booking_id}
+                      <p className="font-semibold text-slate-800 mt-1 truncate">
+                        {selectedJob.service_type}
                       </p>
 
                     </div>
@@ -3193,90 +3194,73 @@ function TechnicianDashboard() {
 
                 {/* REPORT */}
 
-                <div className="mt-5">
+                <label className="block text-sm font-semibold text-slate-800 mb-2">
 
-                  <label className="mb-2 block text-sm font-bold text-slate-800">
+                  Work Completion Report
 
-                    Work Completion Report
+                  <span className="text-red-500 ml-1">
+                    *
+                  </span>
 
-                    <span className="ml-1 text-red-500">
-                      *
-                    </span>
+                </label>
 
-                  </label>
-
-                  <textarea
-                    value={workReport}
-                    onChange={(e) =>
-                      setWorkReport(e.target.value)
-                    }
-                    rows={7}
-                    disabled={otpLoading}
-                    placeholder={`Example:
+                <textarea
+                  value={workReport}
+                  onChange={(e) =>
+                    setWorkReport(e.target.value)
+                  }
+                  rows={7}
+                  disabled={otpLoading}
+                  placeholder={`Example:
 
 • Equipment inspected
 • Fault identified
 • Required repair completed
 • Parts replaced
 • Testing completed successfully`}
-                    className="
-                      w-full
-                      resize-none
-                      rounded-xl
-                      border
-                      border-slate-200
-                      p-4
-                      text-sm
-                      text-slate-700
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-blue-500
-                      focus:ring-2
-                      focus:ring-blue-500/20
-                    "
-                  />
+                  className="
+                    w-full
+                    border
+                    border-slate-200
+                    rounded-xl
+                    p-4
+                    text-sm
+                    text-slate-700
+                    outline-none
+                    resize-none
+                    focus:border-blue-500
+                    focus:ring-2
+                    focus:ring-blue-500/20
+                    transition
+                  "
+                />
 
-                  <div className="mt-2 flex items-start gap-2 text-xs text-slate-400">
-
-                    <FileText
-                      size={14}
-                      className="mt-0.5 shrink-0"
-                    />
-
-                    <span>
-                      Please provide a clear summary
-                      of the work performed.
-                    </span>
-
-                  </div>
-
-                </div>
+                <p className="text-xs text-slate-400 mt-2">
+                  Please provide a clear summary of the work
+                  performed.
+                </p>
 
               </div>
 
               {/* FOOTER */}
 
-              <div className="flex flex-col-reverse gap-2 border-t border-slate-200 bg-slate-50 p-4 sm:flex-row sm:justify-end sm:px-6 sm:py-4">
+              <div className="px-5 sm:px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-3 shrink-0">
 
                 <button
                   disabled={otpLoading}
                   onClick={closeCompleteModal}
                   className="
-                    w-full
+                    px-5
+                    py-2.5
                     rounded-xl
                     border
                     border-slate-200
                     bg-white
-                    px-5
-                    py-3
+                    text-slate-700
                     text-sm
                     font-semibold
-                    text-slate-700
-                    transition
                     hover:bg-slate-100
-                    disabled:opacity-50
-                    sm:w-auto
+                    transition
                   "
                 >
                   Cancel
@@ -3290,38 +3274,42 @@ function TechnicianDashboard() {
                   onClick={requestCompletionOTP}
                   className="
                     inline-flex
-                    w-full
                     items-center
                     justify-center
                     gap-2
+                    px-5
+                    py-2.5
                     rounded-xl
                     bg-green-600
-                    px-5
-                    py-3
+                    text-white
                     text-sm
                     font-semibold
-                    text-white
-                    transition
                     hover:bg-green-700
-                    disabled:cursor-not-allowed
                     disabled:opacity-50
-                    sm:w-auto
+                    disabled:cursor-not-allowed
+                    transition
                   "
                 >
 
                   {otpLoading ? (
+
                     <>
                       <Loader2
                         size={17}
                         className="animate-spin"
                       />
+
                       Sending OTP...
                     </>
+
                   ) : (
+
                     <>
                       <ShieldCheck size={17} />
+
                       Request Customer OTP
                     </>
+
                   )}
 
                 </button>
@@ -3334,47 +3322,45 @@ function TechnicianDashboard() {
 
         )}
 
-        {/* ==========================================
+        {/* =====================================================
             CUSTOMER OTP MODAL
-        ========================================== */}
+        ===================================================== */}
 
         {showOTPModal && selectedJob && (
 
-          <div className="fixed inset-0 z-[60] flex items-end justify-center p-0 sm:items-center sm:p-4">
-
-            {/* BACKDROP */}
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4">
 
             <div
               className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
               onClick={closeOTPModal}
             />
 
-            {/* MODAL */}
-
-            <div className="relative max-h-[95vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:max-w-md sm:rounded-2xl">
+            <div className="relative w-full max-w-md max-h-[92vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
               {/* HEADER */}
 
-              <div className="border-b border-slate-200 px-5 py-5 sm:px-6">
+              <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
 
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center justify-between">
 
                   <div className="flex items-center gap-3">
 
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+                    <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+
                       <ShieldCheck
                         size={22}
                         className="text-blue-600"
                       />
+
                     </div>
 
                     <div>
 
-                      <h2 className="text-base font-bold text-slate-900 sm:text-lg">
+                      <h2 className="text-lg font-bold text-slate-900">
                         Customer Verification
                       </h2>
 
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 mt-1">
                         Booking #
                         {selectedJob.booking_id}
                       </p>
@@ -3386,7 +3372,7 @@ function TechnicianDashboard() {
                   <button
                     onClick={closeOTPModal}
                     disabled={otpLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 disabled:opacity-50"
+                    className="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 transition"
                   >
                     <X size={20} />
                   </button>
@@ -3397,54 +3383,44 @@ function TechnicianDashboard() {
 
               {/* BODY */}
 
-              <div className="p-5 sm:p-6">
+              <div className="p-5 sm:p-6 overflow-y-auto">
 
-                {/* INFO */}
+                {/* INFORMATION */}
 
-                <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-5">
 
-                  <div className="flex items-start gap-3">
+                  <p className="text-sm text-blue-800 leading-relaxed">
 
-                    <ShieldCheck
-                      size={19}
-                      className="mt-0.5 shrink-0 text-blue-600"
-                    />
+                    Ask the customer for the{" "}
 
-                    <p className="text-sm leading-relaxed text-blue-800">
+                    <strong>6-digit OTP</strong>{" "}
 
-                      Ask the customer for the{" "}
+                    sent to their registered contact.
 
-                      <strong>
-                        6-digit OTP
-                      </strong>{" "}
-
-                      sent to their registered
-                      contact.
-
-                    </p>
-
-                  </div>
+                  </p>
 
                 </div>
 
                 {/* CUSTOMER */}
 
-                <div className="mt-5 flex items-center gap-3">
+                <div className="flex items-center gap-3 mb-5">
 
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+
                     <UserRound
                       size={18}
                       className="text-slate-500"
                     />
+
                   </div>
 
-                  <div className="min-w-0">
+                  <div>
 
                     <p className="text-xs text-slate-500">
                       Customer
                     </p>
 
-                    <p className="truncate font-bold text-slate-900">
+                    <p className="font-semibold text-slate-900">
                       {selectedJob.full_name}
                     </p>
 
@@ -3454,95 +3430,58 @@ function TechnicianDashboard() {
 
                 {/* OTP */}
 
-                <div className="mt-6">
+                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                  Customer OTP
+                </label>
 
-                  <label className="mb-2 block text-sm font-bold text-slate-800">
-                    Customer OTP
-                  </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={otp}
+                  disabled={otpLoading}
+                  autoFocus
+                  onChange={(e) => {
 
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    maxLength={6}
-                    value={otp}
-                    disabled={otpLoading}
-                    autoFocus
-                    onChange={(e) => {
-                      const value =
-                        e.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, 6);
+                    const value =
+                      e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 6);
 
-                      setOtp(value);
-                      setOtpError("");
-                    }}
-                    placeholder="000000"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border
-                      border-slate-200
-                      px-4
-                      py-4
-                      text-center
-                      text-3xl
-                      font-bold
-                      tracking-[0.45em]
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-300
-                      focus:border-blue-500
-                      focus:ring-4
-                      focus:ring-blue-500/10
-                    "
-                  />
+                    setOtp(value);
+                    setOtpError("");
 
-                  {/* TIMER */}
-
-                  <div className="mt-3 flex items-center justify-center gap-2">
-
-                    <Timer
-                      size={15}
-                      className={
-                        otpTimer > 0
-                          ? "text-blue-600"
-                          : "text-red-500"
-                      }
-                    />
-
-                    <span
-                      className={`
-                        text-xs font-semibold
-                        ${
-                          otpTimer > 0
-                            ? "text-slate-500"
-                            : "text-red-600"
-                        }
-                      `}
-                    >
-                      {otpTimer > 0
-                        ? `OTP expires in ${formattedOtpTimer}`
-                        : "OTP has expired"}
-                    </span>
-
-                  </div>
-
-                </div>
+                  }}
+                  placeholder="Enter 6-digit OTP"
+                  className="
+                    w-full
+                    border
+                    border-slate-200
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-center
+                    text-2xl
+                    font-bold
+                    tracking-[0.5em]
+                    outline-none
+                    focus:border-blue-500
+                    focus:ring-2
+                    focus:ring-blue-500/20
+                    transition
+                  "
+                />
 
                 {/* ERROR */}
 
                 {otpError && (
 
-                  <div className="mt-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700">
+                  <div className="flex items-center gap-2 mt-3 text-red-600">
 
-                    <AlertCircle
-                      size={17}
-                      className="mt-0.5 shrink-0"
-                    />
+                    <AlertCircle size={16} />
 
-                    <p className="text-sm font-medium">
+                    <p className="text-sm">
                       {otpError}
                     </p>
 
@@ -3550,78 +3489,32 @@ function TechnicianDashboard() {
 
                 )}
 
-                {/* RESEND */}
-
-                <div className="mt-5 text-center">
-
-                  <p className="text-xs text-slate-400">
-                    Customer didn't receive the OTP?
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={resendCompletionOTP}
-                    disabled={
-                      resendLoading ||
-                      otpTimer > 0
-                    }
-                    className="
-                      mt-2
-                      inline-flex
-                      items-center
-                      gap-2
-                      text-sm
-                      font-bold
-                      text-blue-600
-                      transition
-                      hover:text-blue-800
-                      disabled:cursor-not-allowed
-                      disabled:text-slate-400
-                    "
-                  >
-
-                    {resendLoading ? (
-                      <>
-                        <Loader2
-                          size={15}
-                          className="animate-spin"
-                        />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw size={15} />
-                        Resend OTP
-                      </>
-                    )}
-
-                  </button>
-
-                </div>
+                <p className="text-xs text-slate-400 mt-3 text-center">
+                  OTP is valid for 5 minutes.
+                </p>
 
               </div>
 
               {/* FOOTER */}
 
-              <div className="flex gap-2 border-t border-slate-200 bg-slate-50 p-4 sm:px-6">
+              <div className="px-5 sm:px-6 py-4 bg-slate-50 border-t border-slate-200 flex gap-3 shrink-0">
 
                 <button
                   disabled={otpLoading}
                   onClick={closeOTPModal}
                   className="
                     flex-1
+                    px-4
+                    py-2.5
                     rounded-xl
                     border
                     border-slate-200
                     bg-white
-                    px-4
-                    py-3
+                    text-slate-700
                     text-sm
                     font-semibold
-                    text-slate-700
-                    transition
                     hover:bg-slate-100
-                    disabled:opacity-50
+                    transition
                   "
                 >
                   Cancel
@@ -3639,33 +3532,39 @@ function TechnicianDashboard() {
                     items-center
                     justify-center
                     gap-2
+                    px-4
+                    py-2.5
                     rounded-xl
                     bg-green-600
-                    px-4
-                    py-3
+                    text-white
                     text-sm
                     font-semibold
-                    text-white
-                    transition
                     hover:bg-green-700
-                    disabled:cursor-not-allowed
                     disabled:opacity-50
+                    disabled:cursor-not-allowed
+                    transition
                   "
                 >
 
                   {otpLoading ? (
+
                     <>
                       <Loader2
                         size={17}
                         className="animate-spin"
                       />
+
                       Verifying...
                     </>
+
                   ) : (
+
                     <>
                       <Check size={17} />
+
                       Verify & Complete
                     </>
+
                   )}
 
                 </button>
