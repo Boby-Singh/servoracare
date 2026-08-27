@@ -116,6 +116,16 @@ function Navbar() {
     return location.pathname.startsWith(path);
   };
 
+
+const isAdminPage = location.pathname.startsWith("/admin");
+
+const handleMobileMenuClick = () => {
+  if (isAdminPage) {
+    window.dispatchEvent(new Event("toggle-admin-sidebar"));
+  } else {
+    setMenuOpen((prev) => !prev);
+  }
+};
   // ==========================================
   // USER INITIAL
   // ==========================================
@@ -386,16 +396,16 @@ function Navbar() {
 
           <button
             className="lg:hidden w-11 h-11 rounded-xl bg-blue-800 hover:bg-blue-700 flex items-center justify-center transition"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle navigation menu"
+            onClick={handleMobileMenuClick}
+            aria-label={isAdminPage ? "Toggle admin menu" : "Toggle navigation menu"}
           >
-
-            {menuOpen ? (
+            {isAdminPage ? (
+              <Menu size={27} />
+            ) : menuOpen ? (
               <X size={27} />
             ) : (
               <Menu size={27} />
             )}
-
           </button>
 
         </div>
@@ -405,7 +415,7 @@ function Navbar() {
             MOBILE MENU
         ================================================= */}
 
-        {menuOpen && (
+        {menuOpen && !isAdminPage && (
 
           <div className="lg:hidden pb-5">
 

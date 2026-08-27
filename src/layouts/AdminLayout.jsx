@@ -22,8 +22,7 @@
 
 // export default AdminLayout;
 
-import { useCallback, useState } from "react";
-import { Menu } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import AdminSidebar from "../components/AdminSidebar";
 
 function AdminLayout({ children }) {
@@ -33,12 +32,31 @@ function AdminLayout({ children }) {
         setSidebarOpen(false);
     }, []);
 
-    const toggleSidebar = () => {
+    const toggleSidebar = useCallback(() => {
         setSidebarOpen((prev) => !prev);
-    };
+    }, []);
+
+    useEffect(() => {
+        const handleToggleSidebar = () => {
+            toggleSidebar();
+        };
+
+        window.addEventListener(
+            "toggle-admin-sidebar",
+            handleToggleSidebar
+        );
+
+        return () => {
+            window.removeEventListener(
+                "toggle-admin-sidebar",
+                handleToggleSidebar
+            );
+        };
+    }, [toggleSidebar]);
 
     return (
         <div className="min-h-screen bg-slate-50">
+
             {/* ==========================================
                 ADMIN SIDEBAR
             ========================================== */}
@@ -46,22 +64,25 @@ function AdminLayout({ children }) {
                 isOpen={sidebarOpen}
                 onClose={closeSidebar}
             />
+
             {/* ==========================================
                 ADMIN CONTENT
             ========================================== */}
             <div className="ml-0 lg:ml-72 min-h-screen">
+
                 <main
                     className="
                         px-4
                         sm:px-6
                         lg:px-8
-                        pt-20
+                        pt-6
                         lg:pt-6
                         pb-6
                     "
                 >
                     {children}
                 </main>
+
             </div>
         </div>
     );
