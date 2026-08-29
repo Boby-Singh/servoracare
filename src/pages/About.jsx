@@ -201,76 +201,69 @@ function About() {
         </section>
 
 
-        {/* =========================================================
+{/* =========================================================
             TRUST STRIP
         ========================================================= */}
 
-        <section className="relative -mt-10 z-20 px-5">
+<section className="relative -mt-10 z-20 px-5">
+  <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-gray-100">
 
-          <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100">
+      <div className="p-5 sm:p-8 text-center">
+        <ShieldCheck
+          className="mx-auto text-orange-500 mb-3"
+          size={28}
+        />
+        <h3 className="text-lg sm:text-xl font-bold text-blue-900">
+          Trusted Service
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Reliable home service solutions
+        </p>
+      </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
+      <div className="p-5 sm:p-8 text-center">
+        <Users
+          className="mx-auto text-orange-500 mb-3"
+          size={28}
+        />
+        <h3 className="text-lg sm:text-xl font-bold text-blue-900">
+          Skilled Professionals
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Connecting you with service experts
+        </p>
+      </div>
 
-              <div className="p-6 sm:p-8 text-center">
-                <Users className="mx-auto text-orange-500 mb-3" size={28} />
+      <div className="p-5 sm:p-8 text-center">
+        <Award
+          className="mx-auto text-orange-500 mb-3"
+          size={28}
+        />
+        <h3 className="text-lg sm:text-xl font-bold text-blue-900">
+          Quality Focused
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Service with care and commitment
+        </p>
+      </div>
 
-                <h3 className="text-2xl sm:text-3xl font-bold text-blue-900">
-                  500+
-                </h3>
+      <div className="p-5 sm:p-8 text-center">
+        <HeartHandshake
+          className="mx-auto text-orange-500 mb-3"
+          size={28}
+        />
+        <h3 className="text-lg sm:text-xl font-bold text-blue-900">
+          Customer First
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Your satisfaction matters to us
+        </p>
+      </div>
 
-                <p className="text-sm text-gray-500 mt-1">
-                  Customers Served
-                </p>
-              </div>
-
-              <div className="p-6 sm:p-8 text-center">
-                <ShieldCheck
-                  className="mx-auto text-orange-500 mb-3"
-                  size={28}
-                />
-
-                <h3 className="text-2xl sm:text-3xl font-bold text-blue-900">
-                  50+
-                </h3>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  Skilled Professionals
-                </p>
-              </div>
-
-              <div className="p-6 sm:p-8 text-center">
-                <Award
-                  className="mx-auto text-orange-500 mb-3"
-                  size={28}
-                />
-
-                <h3 className="text-2xl sm:text-3xl font-bold text-blue-900">
-                  100%
-                </h3>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  Service Commitment
-                </p>
-              </div>
-
-              <div className="p-6 sm:p-8 text-center">
-                <HeartHandshake
-                  className="mx-auto text-orange-500 mb-3"
-                  size={28}
-                />
-
-                <h3 className="text-2xl sm:text-3xl font-bold text-blue-900">
-                  24×7
-                </h3>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  Customer Support
-                </p>
-              </div>
-
-            </div>
-          </div>
-        </section>
+    </div>
+  </div>
+</section>
 
 
         {/* =========================================================
