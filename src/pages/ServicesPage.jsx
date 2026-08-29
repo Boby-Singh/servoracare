@@ -550,85 +550,70 @@ function ServicesPage() {
         </section>
 
 
-        {/* =====================================================
-            STATS
+{/* =====================================================
+            SERVORACARE AT A GLANCE
         ===================================================== */}
 
-        <section className="bg-white border-y border-slate-200">
+<section className="bg-white border-y border-slate-200">
+  <div className="max-w-7xl mx-auto px-6 py-20">
 
-          <div className="max-w-7xl mx-auto px-6 py-20">
+    <div className="text-center mb-12">
+      <span className="text-sm font-bold uppercase tracking-wider text-orange-500">
+        ServoraCare At A Glance
+      </span>
 
-            <div className="text-center mb-12">
+      <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-950 mt-3">
+        Home Services Made Simple
+      </h2>
 
-              <span className="text-sm font-bold uppercase tracking-wider text-orange-500">
-                ServoraCare At A Glance
-              </span>
+      <p className="max-w-2xl mx-auto mt-4 text-slate-500">
+        From everyday repairs to essential home maintenance, ServoraCare
+        connects customers with professionals for a convenient service
+        experience.
+      </p>
+    </div>
 
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-950 mt-3">
-                Trusted by Customers
-              </h2>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
 
-            </div>
+      <div className="text-center">
+        <p className="text-2xl sm:text-3xl font-extrabold text-blue-900">
+          Multiple
+        </p>
+        <p className="mt-2 text-slate-500 font-medium">
+          Home Services
+        </p>
+      </div>
 
+      <div className="text-center">
+        <p className="text-2xl sm:text-3xl font-extrabold text-orange-500">
+          Professional
+        </p>
+        <p className="mt-2 text-slate-500 font-medium">
+          Service Partners
+        </p>
+      </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="text-center">
+        <p className="text-2xl sm:text-3xl font-extrabold text-blue-900">
+          Easy
+        </p>
+        <p className="mt-2 text-slate-500 font-medium">
+          Booking Experience
+        </p>
+      </div>
 
-              <div className="text-center">
+      <div className="text-center">
+        <p className="text-2xl sm:text-3xl font-extrabold text-orange-500">
+          Customer
+        </p>
+        <p className="mt-2 text-slate-500 font-medium">
+          Focused Support
+        </p>
+      </div>
 
-                <p className="text-4xl sm:text-5xl font-extrabold text-blue-900">
-                  500+
-                </p>
-
-                <p className="mt-2 text-slate-500 font-medium">
-                  Happy Customers
-                </p>
-
-              </div>
-
-
-              <div className="text-center">
-
-                <p className="text-4xl sm:text-5xl font-extrabold text-orange-500">
-                  50+
-                </p>
-
-                <p className="mt-2 text-slate-500 font-medium">
-                  Skilled Technicians
-                </p>
-
-              </div>
-
-
-              <div className="text-center">
-
-                <p className="text-4xl sm:text-5xl font-extrabold text-blue-900">
-                  24×7
-                </p>
-
-                <p className="mt-2 text-slate-500 font-medium">
-                  Customer Support
-                </p>
-
-              </div>
-
-
-              <div className="text-center">
-
-                <p className="text-4xl sm:text-5xl font-extrabold text-orange-500">
-                  100%
-                </p>
-
-                <p className="mt-2 text-slate-500 font-medium">
-                  Service Commitment
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
+    </div>
+  </div>
+</section>
 
 
         {/* =====================================================
