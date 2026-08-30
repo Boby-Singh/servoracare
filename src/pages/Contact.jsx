@@ -269,7 +269,7 @@ ${formData.message}`;
                   {/* EMAIL */}
 
                   <a
-                    href="mailto:bobysinghsaini236@gmail.com"
+                    href="mailto:support@servoracare.in"
                     className="group flex items-start gap-4"
                   >
 
