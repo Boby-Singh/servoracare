@@ -575,14 +575,14 @@ function About() {
         {/* =========================================================
             FOUNDER
         ========================================================= */}
-
+{/* 
         <section className="bg-slate-50 py-24 lg:py-32">
 
           <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
 
             <div className="grid lg:grid-cols-[420px_1fr] gap-12 lg:gap-20 items-center">
 
-              {/* Founder Card */}
+              // Founder Card *
               <div className="flex justify-center">
 
                 <div className="w-full max-w-[380px] bg-white rounded-3xl overflow-hidden shadow-2xl">
@@ -623,7 +623,7 @@ function About() {
               </div>
 
 
-              {/* Message */}
+              {* Message *
               <div>
 
                 <span className="text-orange-500 uppercase tracking-[0.2em] font-bold text-sm">
@@ -674,7 +674,7 @@ function About() {
           </div>
 
         </section>
-
+*/}
 
         {/* =========================================================
             CORE VALUES
