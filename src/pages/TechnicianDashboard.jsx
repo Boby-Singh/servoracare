@@ -2513,13 +2513,13 @@ function TechnicianDashboard() {
                 <div className="mt-4 space-y-3">
 
                   <a
-                    href="mailto:bobysinghsaini236@gmail.com"
+                    href="mailto:support@servoracare.in"
                     className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition"
                   >
 
                     <Mail size={15} />
 
-                    bobysinghsaini236@gmail.com
+                    support@servoracare.in
 
                   </a>
 
