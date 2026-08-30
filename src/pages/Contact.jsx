@@ -115,7 +115,7 @@ ${formData.message}`;
             name: "ServoraCare",
             url: "https://www.servoracare.in",
             telephone: "+91-7828908522",
-            email: "bobysinghsaini236@gmail.com",
+            email: "support@servoracare.in",
 
             address: {
               "@type": "PostalAddress",
@@ -286,7 +286,7 @@ ${formData.message}`;
                       </p>
 
                       <p className="font-semibold text-slate-900 mt-1 break-all">
-                        bobysinghsaini236@gmail.com
+                        support@servoracare.in
                       </p>
 
                     </div>
