@@ -114,7 +114,7 @@ function AdminSidebar({ isOpen, onClose }) {
                 className={`
                     fixed
                     left-0
-                    top-16
+                    top-20
                     z-50
                     w-72
                     h-[calc(100vh-4rem)]
