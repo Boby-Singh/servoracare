@@ -7,6 +7,7 @@ import {
     CalendarCheck,
     BriefcaseBusiness,
     UserPlus,
+    Mail,
     LogOut,
     ShieldCheck,
     ChevronRight,
@@ -34,6 +35,11 @@ function AdminSidebar({ isOpen, onClose }) {
             name: "Bookings",
             path: "/admin/all-bookings",
             icon: CalendarCheck,
+        },
+        {
+            name: "Support Inbox",
+            path: "/admin/support",
+            icon: Mail,
         },
         {
             name: "Recruitment",

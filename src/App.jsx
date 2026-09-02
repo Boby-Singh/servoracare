@@ -24,6 +24,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOTP from "./pages/VerifyOTP";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
+import SupportInbox from "./pages/admin/SupportInbox";
 function App() {
   return (
     <BrowserRouter>
@@ -118,6 +119,14 @@ function App() {
               <Admin />
             </AdminRoute>
           }
+        />
+        <Route
+            path="/admin/support"
+            element={
+            <AdminRoute>
+              <SupportInbox />
+            </AdminRoute>
+            }
         />
 
         <Route
