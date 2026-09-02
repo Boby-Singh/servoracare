@@ -27,6 +27,8 @@ import {
   Mail,
   Headphones,
   CircleHelp,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL;
@@ -44,6 +46,12 @@ function TechnicianDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
 
+  // ACCEPT / REJECT
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [responseLoading, setResponseLoading] = useState(false);
+  const [responseError, setResponseError] = useState("");
+
   const [selectedJob, setSelectedJob] = useState(null);
 
   const [workReport, setWorkReport] = useState("");
@@ -57,18 +65,12 @@ function TechnicianDashboard() {
   const [otpError, setOtpError] = useState("");
 
   // =========================================================
-  // CHECK TECHNICIAN
-  // =========================================================
-
-  if (user?.role !== "technician") {
-    return <Navigate to="/" replace />;
-  }
-
-  // =========================================================
   // FETCH JOBS
   // =========================================================
 
   const fetchJobs = async (showRefreshLoader = false) => {
+    if (!user?.id) return;
+
     try {
       if (showRefreshLoader) {
         setRefreshing(true);
@@ -103,21 +105,15 @@ function TechnicianDashboard() {
   // =========================================================
 
   useEffect(() => {
-    fetchJobs();
+    if (user?.role === "technician" && user?.id) {
+      fetchJobs();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   // =========================================================
   // GET JOB EARNING
-  // =========================================================
-  //
-  // Currently uses job.amount.
-  //
-  // If your backend later provides:
-  // technician_earning
-  // technician_amount
-  // earning
-  //
-  // you can modify this function.
   // =========================================================
 
   const getJobEarning = (job) => {
@@ -142,20 +138,28 @@ function TechnicianDashboard() {
   ).length;
 
   const activeJobs = jobs.filter(
-    (job) => job.status === "Accepted"
+    (job) =>
+      job.technician_response === "Accepted" &&
+      job.status === "Accepted"
   ).length;
 
   const pendingJobs = jobs.filter(
-    (job) => job.status === "Pending"
+    (job) =>
+      job.technician_response === "Pending"
   ).length;
 
   const rejectedJobs = jobs.filter(
-    (job) => job.status === "Rejected"
+    (job) =>
+      job.technician_response === "Rejected"
   ).length;
 
   const totalEarnings = jobs
     .filter((job) => job.status === "Completed")
-    .reduce((total, job) => total + getJobEarning(job), 0);
+    .reduce(
+      (total, job) =>
+        total + getJobEarning(job),
+      0
+    );
 
   const averageEarning =
     completedJobs > 0
@@ -239,7 +243,9 @@ function TechnicianDashboard() {
   const graphMax =
     earningsData.length > 0
       ? Math.max(
-          ...earningsData.map((item) => item.amount),
+          ...earningsData.map(
+            (item) => item.amount
+          ),
           100
         )
       : 100;
@@ -269,19 +275,61 @@ function TechnicianDashboard() {
       return "-";
     }
 
-    return parsedDate.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return parsedDate.toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
+  };
+
+  // =========================================================
+  // DISPLAY STATUS
+  // =========================================================
+
+  const getDisplayStatus = (job) => {
+    if (
+      job.technician_response === "Rejected"
+    ) {
+      return "Rejected";
+    }
+
+    if (
+      job.technician_response === "Pending" &&
+      job.status === "Pending"
+    ) {
+      return "Awaiting Response";
+    }
+
+    if (
+      job.technician_response === "Accepted" &&
+      job.status === "Accepted"
+    ) {
+      return "Accepted";
+    }
+
+    if (job.status === "Completed") {
+      return "Completed";
+    }
+
+    if (job.status === "Rejected") {
+      return "Rejected";
+    }
+
+    return job.status || "Pending";
   };
 
   // =========================================================
   // STATUS STYLE
   // =========================================================
 
-  const getStatusStyle = (status) => {
-    switch (status) {
+  const getStatusStyle = (job) => {
+    const displayStatus =
+      getDisplayStatus(job);
+
+    switch (displayStatus) {
       case "Accepted":
         return {
           wrapper:
@@ -296,7 +344,7 @@ function TechnicianDashboard() {
           dot: "bg-green-500",
         };
 
-      case "Pending":
+      case "Awaiting Response":
         return {
           wrapper:
             "bg-yellow-50 text-yellow-700 border-yellow-200",
@@ -310,6 +358,13 @@ function TechnicianDashboard() {
           dot: "bg-red-500",
         };
 
+      case "Pending":
+        return {
+          wrapper:
+            "bg-yellow-50 text-yellow-700 border-yellow-200",
+          dot: "bg-yellow-500",
+        };
+
       default:
         return {
           wrapper:
@@ -320,10 +375,178 @@ function TechnicianDashboard() {
   };
 
   // =========================================================
+  // CHECK IF TECHNICIAN CAN RESPOND
+  // =========================================================
+
+  const canRespondToJob = (job) => {
+    return (
+      job?.technician_response === "Pending" &&
+      job?.status === "Pending"
+    );
+  };
+
+  // =========================================================
+  // ACCEPT JOB
+  // =========================================================
+
+  const acceptJob = async (job) => {
+    if (!job) return;
+
+    if (!canRespondToJob(job)) {
+      return;
+    }
+
+    try {
+      setResponseLoading(true);
+      setResponseError("");
+
+      const response = await axios.put(
+        `${API}/api/technician-response/${job.booking_id}`,
+        {
+          technician_id: user.id,
+          response: "Accepted",
+        }
+      );
+
+      if (response.data?.success !== false) {
+        await fetchJobs();
+
+        alert(
+          "Job accepted successfully!"
+        );
+      }
+    } catch (err) {
+      console.error(
+        "Accept Job Error:",
+        err
+      );
+
+      setResponseError(
+        err.response?.data?.message ||
+          "Unable to accept this job."
+      );
+
+      alert(
+        err.response?.data?.message ||
+          "Unable to accept this job."
+      );
+    } finally {
+      setResponseLoading(false);
+    }
+  };
+
+  // =========================================================
+  // OPEN REJECT MODAL
+  // =========================================================
+
+  const openRejectModal = (job) => {
+    if (!job || !canRespondToJob(job)) {
+      return;
+    }
+
+    setSelectedJob(job);
+    setRejectionReason("");
+    setResponseError("");
+    setShowRejectModal(true);
+  };
+
+  // =========================================================
+  // CLOSE REJECT MODAL
+  // =========================================================
+
+  const closeRejectModal = () => {
+    if (responseLoading) return;
+
+    setShowRejectModal(false);
+    setRejectionReason("");
+    setResponseError("");
+    setSelectedJob(null);
+  };
+
+  // =========================================================
+  // REJECT JOB
+  // =========================================================
+
+  const rejectJob = async () => {
+    if (!selectedJob) return;
+
+    const reason =
+      rejectionReason.trim();
+
+    if (!reason) {
+      setResponseError(
+        "Please provide a reason for rejecting this job."
+      );
+      return;
+    }
+
+    if (reason.length < 5) {
+      setResponseError(
+        "Please provide a meaningful rejection reason."
+      );
+      return;
+    }
+
+    if (reason.length > 500) {
+      setResponseError(
+        "Rejection reason cannot exceed 500 characters."
+      );
+      return;
+    }
+
+    try {
+      setResponseLoading(true);
+      setResponseError("");
+
+      const response = await axios.put(
+        `${API}/api/technician-response/${selectedJob.booking_id}`,
+        {
+          technician_id: user.id,
+          response: "Rejected",
+          rejection_reason: reason,
+        }
+      );
+
+      if (response.data?.success !== false) {
+        setShowRejectModal(false);
+        setRejectionReason("");
+        setResponseError("");
+        setSelectedJob(null);
+
+        await fetchJobs();
+
+        alert(
+          "Job rejected successfully."
+        );
+      }
+    } catch (err) {
+      console.error(
+        "Reject Job Error:",
+        err
+      );
+
+      setResponseError(
+        err.response?.data?.message ||
+          "Unable to reject this job."
+      );
+    } finally {
+      setResponseLoading(false);
+    }
+  };
+
+  // =========================================================
   // OPEN COMPLETE MODAL
   // =========================================================
 
   const openCompleteModal = (job) => {
+    if (
+      job?.technician_response !==
+        "Accepted" ||
+      job?.status !== "Accepted"
+    ) {
+      return;
+    }
+
     setSelectedJob(job);
     setWorkReport("");
     setOtp("");
@@ -351,7 +574,9 @@ function TechnicianDashboard() {
     if (!selectedJob) return;
 
     if (!workReport.trim()) {
-      setOtpError("Please enter the work completion report.");
+      setOtpError(
+        "Please enter the work completion report."
+      );
       return;
     }
 
@@ -394,7 +619,9 @@ function TechnicianDashboard() {
     if (!selectedJob) return;
 
     if (otp.length !== 6) {
-      setOtpError("Please enter the 6-digit OTP.");
+      setOtpError(
+        "Please enter the 6-digit OTP."
+      );
       return;
     }
 
@@ -406,7 +633,8 @@ function TechnicianDashboard() {
         `${API}/api/bookings/${selectedJob._id}/verify-completion-otp`,
         {
           otp: otp,
-          technician_comment: workReport.trim(),
+          technician_comment:
+            workReport.trim(),
         }
       );
 
@@ -420,7 +648,9 @@ function TechnicianDashboard() {
 
         await fetchJobs();
 
-        alert("Service completed successfully!");
+        alert(
+          "Service completed successfully!"
+        );
       }
     } catch (err) {
       console.error(
@@ -448,6 +678,16 @@ function TechnicianDashboard() {
     setOtp("");
     setOtpError("");
   };
+
+  // =========================================================
+  // TECHNICIAN CHECK
+  // IMPORTANT:
+  // This is AFTER all hooks/functions.
+  // =========================================================
+
+  if (user?.role !== "technician") {
+    return <Navigate to="/" replace />;
+  }
 
   // =========================================================
   // DASHBOARD
@@ -497,6 +737,7 @@ function TechnicianDashboard() {
                 </div>
 
                 <div className="min-w-0">
+
                   <p className="text-xs sm:text-sm font-medium text-slate-500">
                     Welcome back, Partner
                   </p>
@@ -504,6 +745,7 @@ function TechnicianDashboard() {
                   <h1 className="mt-0.5 text-lg sm:text-2xl font-bold text-slate-900 truncate">
                     {user?.name || "Technician"}
                   </h1>
+
                 </div>
 
               </div>
@@ -513,7 +755,9 @@ function TechnicianDashboard() {
               <div className="flex items-center gap-2 sm:gap-4">
 
                 <button
-                  onClick={() => fetchJobs(true)}
+                  onClick={() =>
+                    fetchJobs(true)
+                  }
                   disabled={refreshing}
                   title="Refresh jobs"
                   className="
@@ -605,9 +849,10 @@ function TechnicianDashboard() {
                     </h2>
 
                     <p className="text-blue-100 text-sm sm:text-base mt-2 max-w-xl">
-                      Track assigned jobs, complete customer
-                      services and monitor your earnings from
-                      one professional dashboard.
+                      Review assigned jobs, accept or reject
+                      requests, complete customer services and
+                      monitor your earnings from one professional
+                      dashboard.
                     </p>
 
                   </div>
@@ -621,7 +866,9 @@ function TechnicianDashboard() {
                       </p>
 
                       <p className="text-xl sm:text-2xl font-bold text-white mt-1">
-                        {formatCurrency(totalEarnings)}
+                        {formatCurrency(
+                          totalEarnings
+                        )}
                       </p>
 
                     </div>
@@ -760,7 +1007,9 @@ function TechnicianDashboard() {
                   </p>
 
                   <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2 truncate">
-                    {formatCurrency(totalEarnings)}
+                    {formatCurrency(
+                      totalEarnings
+                    )}
                   </h2>
 
                 </div>
@@ -830,7 +1079,9 @@ function TechnicianDashboard() {
                     </p>
 
                     <p className="text-lg font-bold text-slate-900">
-                      {formatCurrency(averageEarning)}
+                      {formatCurrency(
+                        averageEarning
+                      )}
                     </p>
 
                   </div>
@@ -876,19 +1127,27 @@ function TechnicianDashboard() {
                       <div className="w-12 flex flex-col justify-between text-[10px] sm:text-xs text-slate-400 text-right py-1">
 
                         <span>
-                          {formatCurrency(graphMax)}
+                          {formatCurrency(
+                            graphMax
+                          )}
                         </span>
 
                         <span>
-                          {formatCurrency(graphMax * 0.75)}
+                          {formatCurrency(
+                            graphMax * 0.75
+                          )}
                         </span>
 
                         <span>
-                          {formatCurrency(graphMax * 0.5)}
+                          {formatCurrency(
+                            graphMax * 0.5
+                          )}
                         </span>
 
                         <span>
-                          {formatCurrency(graphMax * 0.25)}
+                          {formatCurrency(
+                            graphMax * 0.25
+                          )}
                         </span>
 
                         <span>
@@ -937,8 +1196,6 @@ function TechnicianDashboard() {
                                   className="h-full flex-1 flex flex-col items-center justify-end group relative"
                                 >
 
-                                  {/* VALUE */}
-
                                   <div
                                     className="
                                       absolute
@@ -959,8 +1216,6 @@ function TechnicianDashboard() {
                                     )}
                                   </div>
 
-                                  {/* BAR */}
-
                                   <div
                                     className="
                                       w-full
@@ -976,17 +1231,14 @@ function TechnicianDashboard() {
                                     }}
                                   />
 
-                                  {/* DATE */}
-
                                   <div className="mt-2 text-[9px] sm:text-xs text-slate-400 text-center truncate w-full">
 
                                     {formatDate(
                                       item.date
-                                    )
-                                      .replace(
-                                        /\s\d{4}$/,
-                                        ""
-                                      )}
+                                    ).replace(
+                                      /\s\d{4}$/,
+                                      ""
+                                    )}
 
                                   </div>
 
@@ -1127,7 +1379,7 @@ function TechnicianDashboard() {
                     <div>
 
                       <p className="text-xs text-slate-500">
-                        Pending jobs
+                        Awaiting response
                       </p>
 
                       <p className="font-bold text-slate-900">
@@ -1206,7 +1458,7 @@ function TechnicianDashboard() {
                   </h2>
 
                   <p className="text-sm text-slate-500 mt-1">
-                    Manage your assigned service requests
+                    Review and respond to your assigned service requests
                   </p>
 
                 </div>
@@ -1225,7 +1477,9 @@ function TechnicianDashboard() {
                     placeholder="Search booking, customer, service..."
                     value={search}
                     onChange={(e) =>
-                      setSearch(e.target.value)
+                      setSearch(
+                        e.target.value
+                      )
                     }
                     className="
                       w-full
@@ -1274,7 +1528,9 @@ function TechnicianDashboard() {
                   </div>
 
                   <button
-                    onClick={() => fetchJobs()}
+                    onClick={() =>
+                      fetchJobs()
+                    }
                     className="text-sm font-semibold text-red-700 hover:text-red-900"
                   >
                     Retry
@@ -1285,6 +1541,29 @@ function TechnicianDashboard() {
               </div>
 
             )}
+
+            {/* RESPONSE ERROR */}
+
+            {responseError &&
+              !showRejectModal && (
+
+                <div className="mx-5 sm:mx-6 mt-5 p-4 bg-red-50 border border-red-200 rounded-xl">
+
+                  <div className="flex items-start gap-2 text-red-700">
+
+                    <AlertCircle
+                      size={18}
+                      className="mt-0.5 shrink-0"
+                    />
+
+                    <span className="text-sm font-medium">
+                      {responseError}
+                    </span>
+
+                  </div>
+
+                </div>
+              )}
 
             {/* LOADING */}
 
@@ -1304,8 +1583,6 @@ function TechnicianDashboard() {
               </div>
 
             ) : filteredJobs.length === 0 ? (
-
-              /* EMPTY */
 
               <div className="text-center py-20 sm:py-24 px-6">
 
@@ -1335,13 +1612,14 @@ function TechnicianDashboard() {
             ) : (
 
               <>
+
                 {/* =================================================
                     DESKTOP TABLE
                 ================================================== */}
 
                 <div className="hidden lg:block overflow-x-auto">
 
-                  <table className="w-full min-w-[1150px]">
+                  <table className="w-full min-w-[1250px]">
 
                     <thead className="bg-slate-50 border-b border-slate-200">
 
@@ -1384,9 +1662,7 @@ function TechnicianDashboard() {
                       {filteredJobs.map((job) => {
 
                         const status =
-                          getStatusStyle(
-                            job.status
-                          );
+                          getStatusStyle(job);
 
                         return (
 
@@ -1542,66 +1818,207 @@ function TechnicianDashboard() {
                                   `}
                                 />
 
-                                {job.status}
+                                {getDisplayStatus(
+                                  job
+                                )}
 
                               </span>
+
+                              {job.technician_response ===
+                                "Rejected" &&
+                                job.technician_rejection_reason && (
+
+                                  <p className="text-[11px] text-red-500 mt-2 max-w-[180px] mx-auto line-clamp-2">
+                                    {job.technician_rejection_reason}
+                                  </p>
+                                )}
 
                             </td>
 
                             {/* ACTION */}
 
-                            <td className="px-5 py-5 text-center">
+                            <td className="px-5 py-5">
 
-                              {job.status ===
-                              "Accepted" ? (
+                              {/* ACCEPT / REJECT */}
 
-                                <button
-                                  onClick={() =>
-                                    openCompleteModal(
-                                      job
-                                    )
-                                  }
-                                  className="
-                                    inline-flex
-                                    items-center
-                                    gap-2
-                                    px-4
-                                    py-2.5
-                                    rounded-xl
-                                    bg-green-600
-                                    text-white
-                                    text-sm
-                                    font-semibold
-                                    hover:bg-green-700
-                                    active:scale-95
-                                    transition
-                                  "
-                                >
+                              {canRespondToJob(
+                                job
+                              ) ? (
 
-                                  <CheckCircle
-                                    size={16}
-                                  />
+                                <div className="flex items-center justify-center gap-2">
 
-                                  Complete
+                                  <button
+                                    onClick={() =>
+                                      acceptJob(
+                                        job
+                                      )
+                                    }
+                                    disabled={
+                                      responseLoading
+                                    }
+                                    className="
+                                      inline-flex
+                                      items-center
+                                      justify-center
+                                      gap-1.5
+                                      px-3.5
+                                      py-2.5
+                                      rounded-xl
+                                      bg-green-600
+                                      text-white
+                                      text-xs
+                                      font-semibold
+                                      hover:bg-green-700
+                                      active:scale-95
+                                      transition
+                                      disabled:opacity-50
+                                      disabled:cursor-not-allowed
+                                    "
+                                  >
 
-                                </button>
+                                    {responseLoading ? (
+                                      <Loader2
+                                        size={15}
+                                        className="animate-spin"
+                                      />
+                                    ) : (
+                                      <ThumbsUp
+                                        size={15}
+                                      />
+                                    )}
+
+                                    Accept
+
+                                  </button>
+
+                                  <button
+                                    onClick={() =>
+                                      openRejectModal(
+                                        job
+                                      )
+                                    }
+                                    disabled={
+                                      responseLoading
+                                    }
+                                    className="
+                                      inline-flex
+                                      items-center
+                                      justify-center
+                                      gap-1.5
+                                      px-3.5
+                                      py-2.5
+                                      rounded-xl
+                                      border
+                                      border-red-200
+                                      bg-red-50
+                                      text-red-700
+                                      text-xs
+                                      font-semibold
+                                      hover:bg-red-100
+                                      active:scale-95
+                                      transition
+                                      disabled:opacity-50
+                                      disabled:cursor-not-allowed
+                                    "
+                                  >
+
+                                    <ThumbsDown
+                                      size={15}
+                                    />
+
+                                    Reject
+
+                                  </button>
+
+                                </div>
+
+                              ) : job.status ===
+                                "Accepted" &&
+                                job.technician_response ===
+                                  "Accepted" ? (
+
+                                <div className="flex justify-center">
+
+                                  <button
+                                    onClick={() =>
+                                      openCompleteModal(
+                                        job
+                                      )
+                                    }
+                                    className="
+                                      inline-flex
+                                      items-center
+                                      gap-2
+                                      px-4
+                                      py-2.5
+                                      rounded-xl
+                                      bg-green-600
+                                      text-white
+                                      text-sm
+                                      font-semibold
+                                      hover:bg-green-700
+                                      active:scale-95
+                                      transition
+                                    "
+                                  >
+
+                                    <CheckCircle
+                                      size={16}
+                                    />
+
+                                    Complete
+
+                                  </button>
+
+                                </div>
 
                               ) : job.status ===
                                 "Completed" ? (
 
-                                <span className="inline-flex items-center gap-1.5 text-green-600 font-semibold text-sm">
+                                <div className="flex justify-center">
 
-                                  <Check size={17} />
+                                  <span className="inline-flex items-center gap-1.5 text-green-600 font-semibold text-sm">
 
-                                  Completed
+                                    <Check
+                                      size={17}
+                                    />
 
-                                </span>
+                                    Completed
+
+                                  </span>
+
+                                </div>
+
+                              ) : job.technician_response ===
+                                "Rejected" ? (
+
+                                <div className="text-center">
+
+                                  <span className="inline-flex items-center gap-1.5 text-red-600 font-semibold text-sm">
+
+                                    <X
+                                      size={16}
+                                    />
+
+                                    Rejected
+
+                                  </span>
+
+                                  <p className="text-[11px] text-slate-400 mt-1">
+                                    Waiting for reassignment
+                                  </p>
+
+                                </div>
 
                               ) : (
 
-                                <span className="text-slate-400 text-sm">
-                                  No action
-                                </span>
+                                <div className="text-center">
+
+                                  <span className="text-slate-400 text-sm">
+                                    No action
+                                  </span>
+
+                                </div>
 
                               )}
 
@@ -1627,7 +2044,7 @@ function TechnicianDashboard() {
                   {filteredJobs.map((job) => {
 
                     const status =
-                      getStatusStyle(job.status);
+                      getStatusStyle(job);
 
                     return (
 
@@ -1683,7 +2100,9 @@ function TechnicianDashboard() {
                                     `}
                                   />
 
-                                  {job.status}
+                                  {getDisplayStatus(
+                                    job
+                                  )}
 
                                 </span>
 
@@ -1807,9 +2226,42 @@ function TechnicianDashboard() {
 
                         </div>
 
+                        {/* REJECTION REASON */}
+
+                        {job.technician_response ===
+                          "Rejected" &&
+                          job.technician_rejection_reason && (
+
+                            <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-100">
+
+                              <div className="flex items-start gap-2">
+
+                                <AlertCircle
+                                  size={16}
+                                  className="text-red-600 mt-0.5 shrink-0"
+                                />
+
+                                <div>
+
+                                  <p className="text-[11px] text-red-500 uppercase font-bold tracking-wide">
+                                    Rejection Reason
+                                  </p>
+
+                                  <p className="text-sm text-red-700 mt-1 leading-relaxed">
+                                    {job.technician_rejection_reason}
+                                  </p>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+                          )}
+
                         {/* EARNING */}
 
-                        {job.status === "Completed" && (
+                        {job.status ===
+                          "Completed" && (
 
                           <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-green-50 border border-green-100">
 
@@ -1828,7 +2280,9 @@ function TechnicianDashboard() {
 
                             <span className="font-bold text-green-700">
                               {formatCurrency(
-                                getJobEarning(job)
+                                getJobEarning(
+                                  job
+                                )
                               )}
                             </span>
 
@@ -1836,9 +2290,109 @@ function TechnicianDashboard() {
 
                         )}
 
-                        {/* ACTION */}
+                        {/* =================================================
+                            MOBILE ACTIONS
+                        ================================================== */}
 
-                        {job.status === "Accepted" && (
+                        {canRespondToJob(
+                          job
+                        ) && (
+
+                          <div className="mt-4 grid grid-cols-2 gap-3">
+
+                            <button
+                              onClick={() =>
+                                acceptJob(
+                                  job
+                                )
+                              }
+                              disabled={
+                                responseLoading
+                              }
+                              className="
+                                w-full
+                                inline-flex
+                                items-center
+                                justify-center
+                                gap-2
+                                px-4
+                                py-3
+                                rounded-xl
+                                bg-green-600
+                                text-white
+                                text-sm
+                                font-semibold
+                                hover:bg-green-700
+                                active:scale-[0.99]
+                                transition
+                                disabled:opacity-50
+                                disabled:cursor-not-allowed
+                              "
+                            >
+
+                              {responseLoading ? (
+                                <Loader2
+                                  size={17}
+                                  className="animate-spin"
+                                />
+                              ) : (
+                                <ThumbsUp
+                                  size={17}
+                                />
+                              )}
+
+                              Accept
+
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                openRejectModal(
+                                  job
+                                )
+                              }
+                              disabled={
+                                responseLoading
+                              }
+                              className="
+                                w-full
+                                inline-flex
+                                items-center
+                                justify-center
+                                gap-2
+                                px-4
+                                py-3
+                                rounded-xl
+                                bg-red-50
+                                border
+                                border-red-200
+                                text-red-700
+                                text-sm
+                                font-semibold
+                                hover:bg-red-100
+                                active:scale-[0.99]
+                                transition
+                                disabled:opacity-50
+                                disabled:cursor-not-allowed
+                              "
+                            >
+
+                              <ThumbsDown
+                                size={17}
+                              />
+
+                              Reject
+
+                            </button>
+
+                          </div>
+
+                        )}
+
+                        {job.status ===
+                          "Accepted" &&
+                          job.technician_response ===
+                            "Accepted" && (
 
                           <button
                             onClick={() =>
@@ -1889,6 +2443,19 @@ function TechnicianDashboard() {
 
                         )}
 
+                        {job.technician_response ===
+                          "Rejected" && (
+
+                          <div className="mt-4 flex items-center justify-center gap-2 py-2 text-red-600 text-sm font-semibold">
+
+                            <X size={17} />
+
+                            Rejected — Waiting for reassignment
+
+                          </div>
+
+                        )}
+
                       </article>
 
                     );
@@ -1934,10 +2501,327 @@ function TechnicianDashboard() {
         </main>
 
         {/* =====================================================
+            REJECT JOB MODAL
+        ====================================================== */}
+
+        {showRejectModal &&
+          selectedJob && (
+
+          <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
+
+            <div
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+              onClick={closeRejectModal}
+            />
+
+            <div className="
+              relative
+              w-full
+              sm:max-w-lg
+              bg-white
+              rounded-t-3xl
+              sm:rounded-2xl
+              shadow-2xl
+              overflow-hidden
+              max-h-[92vh]
+              overflow-y-auto
+            ">
+
+              {/* HEADER */}
+
+              <div className="px-5 sm:px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+
+                    <ThumbsDown
+                      size={20}
+                      className="text-red-600"
+                    />
+
+                  </div>
+
+                  <div>
+
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Reject Job
+                    </h2>
+
+                    <p className="text-xs text-slate-500">
+                      Booking #{selectedJob.booking_id}
+                    </p>
+
+                  </div>
+
+                </div>
+
+                <button
+                  onClick={
+                    closeRejectModal
+                  }
+                  disabled={
+                    responseLoading
+                  }
+                  className="
+                    w-9
+                    h-9
+                    rounded-lg
+                    hover:bg-slate-100
+                    flex
+                    items-center
+                    justify-center
+                    text-slate-500
+                    transition
+                    disabled:opacity-50
+                  "
+                >
+
+                  <X size={20} />
+
+                </button>
+
+              </div>
+
+              {/* BODY */}
+
+              <div className="p-5 sm:p-6">
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-5">
+
+                  <div className="flex items-start gap-3">
+
+                    <AlertCircle
+                      size={18}
+                      className="text-yellow-600 mt-0.5 shrink-0"
+                    />
+
+                    <p className="text-sm text-yellow-800 leading-relaxed">
+
+                      Please provide a reason for rejecting
+                      this job. Your reason will be visible to
+                      the administrator.
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+                {/* JOB SUMMARY */}
+
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5">
+
+                  <div className="grid grid-cols-2 gap-4">
+
+                    <div>
+
+                      <p className="text-xs text-slate-500">
+                        Customer
+                      </p>
+
+                      <p className="font-semibold text-slate-800 mt-1 truncate">
+                        {selectedJob.full_name}
+                      </p>
+
+                    </div>
+
+                    <div>
+
+                      <p className="text-xs text-slate-500">
+                        Service
+                      </p>
+
+                      <p className="font-semibold text-slate-800 mt-1 truncate">
+                        {selectedJob.service_type}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* REASON */}
+
+                <label className="block text-sm font-semibold text-slate-800 mb-2">
+
+                  Reason for Rejection
+
+                  <span className="text-red-500 ml-1">
+                    *
+                  </span>
+
+                </label>
+
+                <textarea
+                  value={
+                    rejectionReason
+                  }
+                  onChange={(e) => {
+
+                    setRejectionReason(
+                      e.target.value.slice(
+                        0,
+                        500
+                      )
+                    );
+
+                    setResponseError("");
+
+                  }}
+                  rows={6}
+                  disabled={
+                    responseLoading
+                  }
+                  maxLength={500}
+                  placeholder="Example: I am unavailable on the scheduled date and cannot attend this service request."
+                  className="
+                    w-full
+                    border
+                    border-slate-200
+                    rounded-xl
+                    p-4
+                    text-sm
+                    text-slate-700
+                    outline-none
+                    resize-none
+                    focus:border-red-400
+                    focus:ring-2
+                    focus:ring-red-500/20
+                    transition
+                    disabled:bg-slate-50
+                  "
+                />
+
+                <div className="flex items-center justify-between mt-2">
+
+                  <p className="text-xs text-slate-400">
+                    Minimum 5 characters
+                  </p>
+
+                  <p className="text-xs text-slate-400">
+                    {rejectionReason.length}/500
+                  </p>
+
+                </div>
+
+                {/* ERROR */}
+
+                {responseError && (
+
+                  <div className="flex items-start gap-2 mt-3 text-red-600">
+
+                    <AlertCircle
+                      size={16}
+                      className="mt-0.5 shrink-0"
+                    />
+
+                    <p className="text-sm">
+                      {responseError}
+                    </p>
+
+                  </div>
+
+                )}
+
+              </div>
+
+              {/* FOOTER */}
+
+              <div className="px-5 sm:px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row gap-3">
+
+                <button
+                  disabled={
+                    responseLoading
+                  }
+                  onClick={
+                    closeRejectModal
+                  }
+                  className="
+                    flex-1
+                    px-5
+                    py-3
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-white
+                    text-slate-700
+                    text-sm
+                    font-semibold
+                    hover:bg-slate-100
+                    transition
+                    disabled:opacity-50
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button
+                  disabled={
+                    responseLoading ||
+                    !rejectionReason.trim()
+                  }
+                  onClick={rejectJob}
+                  className="
+                    flex-1
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    px-5
+                    py-3
+                    rounded-xl
+                    bg-red-600
+                    text-white
+                    text-sm
+                    font-semibold
+                    hover:bg-red-700
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                    transition
+                  "
+                >
+
+                  {responseLoading ? (
+
+                    <>
+                      <Loader2
+                        size={17}
+                        className="animate-spin"
+                      />
+
+                      Rejecting...
+                    </>
+
+                  ) : (
+
+                    <>
+                      <ThumbsDown
+                        size={17}
+                      />
+
+                      Confirm Rejection
+                    </>
+
+                  )}
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+        {/* =====================================================
             COMPLETE JOB MODAL
         ====================================================== */}
 
-        {showModal && selectedJob && (
+        {showModal &&
+          selectedJob && (
 
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
 
@@ -1989,7 +2873,9 @@ function TechnicianDashboard() {
                 </div>
 
                 <button
-                  onClick={closeCompleteModal}
+                  onClick={
+                    closeCompleteModal
+                  }
                   disabled={otpLoading}
                   className="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 transition"
                 >
@@ -2088,6 +2974,23 @@ function TechnicianDashboard() {
                   work performed.
                 </p>
 
+                {otpError && (
+
+                  <div className="flex items-start gap-2 mt-3 text-red-600">
+
+                    <AlertCircle
+                      size={16}
+                      className="mt-0.5 shrink-0"
+                    />
+
+                    <p className="text-sm">
+                      {otpError}
+                    </p>
+
+                  </div>
+
+                )}
+
               </div>
 
               {/* FOOTER */}
@@ -2096,7 +2999,9 @@ function TechnicianDashboard() {
 
                 <button
                   disabled={otpLoading}
-                  onClick={closeCompleteModal}
+                  onClick={
+                    closeCompleteModal
+                  }
                   className="
                     flex-1
                     px-5
@@ -2120,7 +3025,9 @@ function TechnicianDashboard() {
                     otpLoading ||
                     !workReport.trim()
                   }
-                  onClick={requestCompletionOTP}
+                  onClick={
+                    requestCompletionOTP
+                  }
                   className="
                     flex-1
                     inline-flex
@@ -2176,7 +3083,8 @@ function TechnicianDashboard() {
             CUSTOMER OTP MODAL
         ====================================================== */}
 
-        {showOTPModal && selectedJob && (
+        {showOTPModal &&
+          selectedJob && (
 
           <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
 
@@ -2230,7 +3138,9 @@ function TechnicianDashboard() {
                   </div>
 
                   <button
-                    onClick={closeOTPModal}
+                    onClick={
+                      closeOTPModal
+                    }
                     disabled={otpLoading}
                     className="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500"
                   >
@@ -2375,7 +3285,9 @@ function TechnicianDashboard() {
 
                 <button
                   disabled={otpLoading}
-                  onClick={closeOTPModal}
+                  onClick={
+                    closeOTPModal
+                  }
                   className="
                     flex-1
                     px-4
@@ -2399,7 +3311,9 @@ function TechnicianDashboard() {
                     otpLoading ||
                     otp.length !== 6
                   }
-                  onClick={verifyCompletionOTP}
+                  onClick={
+                    verifyCompletionOTP
+                  }
                   className="
                     flex-1
                     inline-flex
@@ -2609,3 +3523,4 @@ function TechnicianDashboard() {
 }
 
 export default TechnicianDashboard;
+
