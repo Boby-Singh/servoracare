@@ -805,7 +805,7 @@ function TechnicianDashboard() {
 
                 <p className="mt-1 font-bold text-lg">
                   {user?.employee_code ||
-                    user?._id ||
+                    user?.id ||
                     "—"}
                 </p>
 
