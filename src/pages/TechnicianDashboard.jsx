@@ -52,13 +52,8 @@ function TechnicianDashboard() {
   const [loading, setLoading] = useState(true);
   const [otpLoading, setOtpLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  // =========================================================
-  // TECHNICIAN LOCATION
-  // =========================================================
-  const [locationStatus, setLocationStatus] = useState("checking");
-  // checking | available | denied | unavailable | error
-  const [locationUpdating, setLocationUpdating] = useState(false);
-  const [locationMessage, setLocationMessage] = useState("");
+
+  const [error, setError] = useState("");
   const [otpError, setOtpError] = useState("");
 
   // =========================================================
@@ -103,151 +98,13 @@ function TechnicianDashboard() {
     }
   };
 
-
-    // =========================================================
-// UPDATE TECHNICIAN GPS LOCATION
-// =========================================================
-
-const updateTechnicianLocation = () => {
-  if (!user?.id) {
-    setLocationStatus("error");
-    setLocationMessage("Technician account not found.");
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    setLocationStatus("unavailable");
-    setLocationMessage(
-      "Your browser does not support location services."
-    );
-    return;
-  }
-
-  setLocationUpdating(true);
-  setLocationStatus("checking");
-  setLocationMessage("");
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      try {
-        const latitude = Number(
-          position.coords.latitude
-        );
-
-        const longitude = Number(
-          position.coords.longitude
-        );
-
-        if (
-          !Number.isFinite(latitude) ||
-          !Number.isFinite(longitude) ||
-          latitude < -90 ||
-          latitude > 90 ||
-          longitude < -180 ||
-          longitude > 180
-        ) {
-          throw new Error(
-            "Invalid GPS coordinates received."
-          );
-        }
-
-        await axios.put(
-          `${API}/api/technician-location/${user.id}`,
-          {
-            latitude,
-            longitude,
-          }
-        );
-
-        setLocationStatus("available");
-
-        setLocationMessage(
-          "Your location is available for nearby job assignments."
-        );
-
-      } catch (err) {
-        console.error(
-          "Update Technician Location Error:",
-          err
-        );
-
-        setLocationStatus("error");
-
-        setLocationMessage(
-          err.response?.data?.message ||
-            "Unable to update your location."
-        );
-      } finally {
-        setLocationUpdating(false);
-      }
-    },
-
-    (geoError) => {
-      console.error(
-        "Technician GPS Error:",
-        geoError
-      );
-
-      setLocationUpdating(false);
-
-      switch (geoError.code) {
-        case 1:
-          setLocationStatus("denied");
-          setLocationMessage(
-            "Location permission was denied. Please allow location access so nearby jobs can be assigned to you."
-          );
-          break;
-
-        case 2:
-          setLocationStatus("unavailable");
-          setLocationMessage(
-            "Your current location is unavailable. Please check your device location settings."
-          );
-          break;
-
-        case 3:
-          setLocationStatus("error");
-          setLocationMessage(
-            "Location request timed out. Please try again."
-          );
-          break;
-
-        default:
-          setLocationStatus("error");
-          setLocationMessage(
-            "Unable to access your current location."
-          );
-      }
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0,
-    }
-  );
-};
-
   // =========================================================
   // LOAD JOBS
   // =========================================================
 
-useEffect(() => {
-  fetchJobs();
-
-  // Get technician location immediately
-  updateTechnicianLocation();
-
-  // Refresh location every 5 minutes
-  const locationInterval = setInterval(() => {
-    updateTechnicianLocation();
-  }, 5 * 60 * 1000);
-
-  return () => {
-    clearInterval(locationInterval);
-  };
-}, []);
-
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   // =========================================================
   // GET JOB EARNING
@@ -687,68 +544,18 @@ useEffect(() => {
 
                 </button>
 
-                <div
-                  className={`
-                    hidden sm:flex
-                    items-center
-                    gap-2
-                    px-4
-                    py-2
-                    rounded-full
-                    border
-                    ${
-                      locationStatus === "available"
-                        ? "bg-green-50 border-green-200"
-                        : locationStatus === "checking"
-                        ? "bg-yellow-50 border-yellow-200"
-                        : "bg-red-50 border-red-200"
-                    }
-                  `}
-                >
+                <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full">
 
                   <span className="relative flex h-2.5 w-2.5">
 
-                    {locationStatus === "available" && (
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                    )}
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
 
-                    <span
-                      className={`
-                        relative
-                        inline-flex
-                        rounded-full
-                        h-2.5
-                        w-2.5
-                        ${
-                          locationStatus === "available"
-                            ? "bg-green-500"
-                            : locationStatus === "checking"
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
-                        }
-                      `}
-                    />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
 
                   </span>
 
-                  <span
-                    className={`
-                      text-sm
-                      font-semibold
-                      ${
-                        locationStatus === "available"
-                          ? "text-green-700"
-                          : locationStatus === "checking"
-                          ? "text-yellow-700"
-                          : "text-red-700"
-                      }
-                    `}
-                  >
-                    {locationStatus === "available"
-                      ? "Location Active"
-                      : locationStatus === "checking"
-                      ? "Getting Location..."
-                      : "Location Needed"}
+                  <span className="text-sm font-semibold text-green-700">
+                    Online
                   </span>
 
                 </div>
@@ -822,145 +629,6 @@ useEffect(() => {
                   </div>
 
                 </div>
-
-              </div>
-
-            </div>
-
-          </section>
-          {/* ===================================================
-    LOCATION STATUS
-==================================================== */}
-
-          <section className="mb-6 sm:mb-8">
-
-            <div
-              className={`
-                rounded-2xl
-                border
-                p-4
-                sm:p-5
-                ${
-                  locationStatus === "available"
-                    ? "bg-green-50 border-green-200"
-                    : locationStatus === "checking"
-                    ? "bg-yellow-50 border-yellow-200"
-                    : "bg-red-50 border-red-200"
-                }
-              `}
-            >
-
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-                <div className="flex items-start gap-3">
-
-                  <div
-                    className={`
-                      w-10
-                      h-10
-                      rounded-xl
-                      flex
-                      items-center
-                      justify-center
-                      shrink-0
-                      ${
-                        locationStatus === "available"
-                          ? "bg-green-100"
-                          : locationStatus === "checking"
-                          ? "bg-yellow-100"
-                          : "bg-red-100"
-                      }
-                    `}
-                  >
-
-                    <MapPin
-                      size={20}
-                      className={
-                        locationStatus === "available"
-                          ? "text-green-600"
-                          : locationStatus === "checking"
-                          ? "text-yellow-600"
-                          : "text-red-600"
-                      }
-                    />
-
-                  </div>
-
-                  <div className="min-w-0">
-
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
-
-                      {locationStatus === "available"
-                        ? "Location is active"
-                        : locationStatus === "checking"
-                        ? "Getting your location..."
-                        : "Location access required"}
-
-                    </h3>
-
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1">
-
-                      {locationMessage ||
-                        (locationStatus === "available"
-                          ? "You can receive service assignments within 20 km of your current location."
-                          : "Allow location access so ServoraCare can find nearby service jobs for you.")}
-
-                    </p>
-
-                  </div>
-
-                </div>
-
-                {locationStatus !== "available" && (
-
-                  <button
-                    type="button"
-                    onClick={updateTechnicianLocation}
-                    disabled={locationUpdating}
-                    className="
-                      inline-flex
-                      items-center
-                      justify-center
-                      gap-2
-                      px-4
-                      py-2.5
-                      rounded-xl
-                      bg-blue-700
-                      text-white
-                      text-sm
-                      font-semibold
-                      hover:bg-blue-800
-                      disabled:opacity-50
-                      disabled:cursor-not-allowed
-                      transition
-                      shrink-0
-                    "
-                  >
-
-                    {locationUpdating ? (
-
-                      <>
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                        />
-
-                        Updating...
-                      </>
-
-                    ) : (
-
-                      <>
-                        <RefreshCw size={16} />
-
-                        Update Location
-                      </>
-
-                    )}
-
-                  </button>
-
-                )}
 
               </div>
 
