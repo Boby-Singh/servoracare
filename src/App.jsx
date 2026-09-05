@@ -173,7 +173,11 @@ function App() {
 
         <Route
           path="/admin/jobs"
-          element={<AdminJobs />}
+          element={
+            <AdminRoute>
+              <AdminJobs />
+            </AdminRoute>
+            }
         />
 
         <Route
