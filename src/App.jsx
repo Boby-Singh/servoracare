@@ -105,12 +105,18 @@ function App() {
         <Route
           path="/technician"
           element={
+            <ProtectedRoute>
               <TechnicianDashboard />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/profile"
-          element={<Profile />}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+            }
         />
 
         <Route
@@ -160,7 +166,9 @@ function App() {
         <Route path="/admin/payments" 
         element={
           <AdminRoute>
-            <Payments />
+            <AdminLayout>
+              <Payments />
+            </AdminLayout>
           </AdminRoute>
           } 
         />
