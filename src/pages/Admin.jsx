@@ -268,9 +268,44 @@ function Admin() {
 
     // ==========================================
     // COMPLETE BOOKING
+    // CUSTOMER OTP VERIFICATION REQUIRED
     // ==========================================
 
     const completeBooking = async () => {
+        // ==========================================
+        // FIND CURRENT BOOKING
+        // ==========================================
+
+        const booking = bookings.find(
+            (item) =>
+                item._id === completeModal.bookingId
+        );
+
+        // ==========================================
+        // SAFETY CHECK #1
+        // ==========================================
+
+        if (!booking) {
+            alert("Booking not found. Please refresh the page.");
+            return;
+        }
+
+        // ==========================================
+        // SAFETY CHECK #2
+        // CUSTOMER OTP MUST BE VERIFIED
+        // ==========================================
+
+        if (!booking.completion_otp_verified) {
+            alert(
+                "Customer completion OTP has not been verified yet. The booking cannot be completed."
+            );
+            return;
+        }
+
+        // ==========================================
+        // COMPLETION COMMENT REQUIRED
+        // ==========================================
+
         if (!completionComment.trim()) {
             alert("Please enter a completion comment");
             return;
@@ -351,6 +386,21 @@ function Admin() {
         bookingId,
         bookingNumber
     ) => {
+        const booking = bookings.find(
+            (item) => item._id === bookingId
+        );
+
+        // ==========================================
+        // OTP CHECK BEFORE OPENING MODAL
+        // ==========================================
+
+        if (!booking?.completion_otp_verified) {
+            alert(
+                "Customer completion OTP has not been verified yet."
+            );
+            return;
+        }
+
         setCompleteModal({
             open: true,
             bookingId,
@@ -444,6 +494,116 @@ function Admin() {
     };
 
     // ==========================================
+    // OTP VERIFICATION STATUS
+    // ==========================================
+
+    const OTPVerificationStatus = ({
+        booking,
+        mobile = false,
+    }) => {
+        // Only relevant after technician assignment
+        if (
+            booking.status === "Pending" ||
+            booking.status === "Rejected"
+        ) {
+            return null;
+        }
+
+        const verified =
+            booking.completion_otp_verified === true;
+
+        return (
+            <div
+                className={`
+                    ${
+                        mobile
+                            ? "mt-3"
+                            : "mt-3"
+                    }
+                `}
+            >
+                <div
+                    className={`
+                        flex
+                        items-center
+                        gap-2
+                        px-3
+                        py-2.5
+                        rounded-xl
+                        border
+                        ${
+                            verified
+                                ? "bg-green-50 border-green-200"
+                                : "bg-amber-50 border-amber-200"
+                        }
+                    `}
+                >
+                    <span
+                        className={`
+                            w-2
+                            h-2
+                            shrink-0
+                            rounded-full
+                            ${
+                                verified
+                                    ? "bg-green-500"
+                                    : "bg-amber-500"
+                            }
+                        `}
+                    />
+
+                    <div className="min-w-0">
+                        <p
+                            className={`
+                                text-xs
+                                font-bold
+                                ${
+                                    verified
+                                        ? "text-green-700"
+                                        : "text-amber-700"
+                                }
+                            `}
+                        >
+                            {verified
+                                ? "Customer Verified"
+                                : "OTP Verification Pending"}
+                        </p>
+
+                        <p
+                            className={`
+                                text-[11px]
+                                mt-0.5
+                                ${
+                                    verified
+                                        ? "text-green-600"
+                                        : "text-amber-600"
+                                }
+                            `}
+                        >
+                            {verified
+                                ? "Completion OTP verified successfully"
+                                : "Customer must verify completion OTP"}
+                        </p>
+                    </div>
+                </div>
+
+                {verified &&
+                    booking.completion_otp_verified_at && (
+                        <p className="text-[11px] text-slate-400 mt-1.5">
+                            Verified:{" "}
+                            {formatDate(
+                                booking.completion_otp_verified_at
+                            )}{" "}
+                            {formatTime(
+                                booking.completion_otp_verified_at
+                            )}
+                        </p>
+                    )}
+            </div>
+        );
+    };
+
+    // ==========================================
     // TECHNICIAN FORM
     // ==========================================
 
@@ -487,6 +647,11 @@ function Admin() {
                                 : ""}
                         </p>
                     )}
+
+                    <OTPVerificationStatus
+                        booking={booking}
+                        mobile={mobile}
+                    />
                 </div>
             );
         }
@@ -642,6 +807,9 @@ function Admin() {
         const isAssigning =
             assigning[mongoBookingId];
 
+        const otpVerified =
+            booking.completion_otp_verified === true;
+
         if (booking.status === "Pending") {
             return (
                 <div
@@ -704,31 +872,74 @@ function Admin() {
             );
         }
 
+        // ==========================================
+        // ACCEPTED
+        // OTP VERIFICATION REQUIRED
+        // ==========================================
+
         if (booking.status === "Accepted") {
             return (
-                <button
-                    onClick={() =>
-                        openCompleteModal(
-                            mongoBookingId,
-                            booking.booking_id
-                        )
-                    }
-                    className="
-                        w-full
-                        bg-green-600
-                        hover:bg-green-700
-                        text-white
-                        px-4 py-2.5
-                        rounded-xl
-                        text-sm
-                        font-semibold
-                        transition
-                    "
-                >
-                    Mark Completed
-                </button>
+                <div className="space-y-2">
+                    {otpVerified ? (
+                        <button
+                            onClick={() =>
+                                openCompleteModal(
+                                    mongoBookingId,
+                                    booking.booking_id
+                                )
+                            }
+                            className="
+                                w-full
+                                bg-green-600
+                                hover:bg-green-700
+                                text-white
+                                px-4 py-2.5
+                                rounded-xl
+                                text-sm
+                                font-semibold
+                                transition
+                                active:scale-[0.98]
+                            "
+                        >
+                            ✓ Verify & Complete
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            disabled
+                            className="
+                                w-full
+                                bg-slate-200
+                                text-slate-500
+                                cursor-not-allowed
+                                px-4 py-2.5
+                                rounded-xl
+                                text-sm
+                                font-semibold
+                            "
+                        >
+                            🔒 Waiting for OTP
+                        </button>
+                    )}
+
+                    {!otpVerified && (
+                        <p className="
+                            text-[11px]
+                            text-center
+                            text-amber-600
+                            leading-relaxed
+                        ">
+                            Customer completion OTP must be
+                            verified before completion.
+                        </p>
+                    )}
+                </div>
             );
         }
+
+        // ==========================================
+        // COMPLETED / REJECTED
+        // ==========================================
 
         if (
             booking.status === "Completed" ||
@@ -933,21 +1144,12 @@ function Admin() {
 
                     {/* ACTION */}
 
-                    {booking.status !== "Pending" && (
-                        <div className="pt-1">
-                            <BookingActions
-                                booking={booking}
-                                mobile={true}
-                            />
-                        </div>
-                    )}
-
-                    {booking.status === "Pending" && (
+                    <div className="pt-1">
                         <BookingActions
                             booking={booking}
                             mobile={true}
                         />
-                    )}
+                    </div>
                 </div>
             </div>
         );
@@ -1393,9 +1595,7 @@ function Admin() {
                             </div>
                         </div>
 
-                        {/* ==========================================
-                            LOADING
-                        ========================================== */}
+                        {/* LOADING */}
 
                         {loading ? (
                             <div className="
@@ -1425,9 +1625,7 @@ function Admin() {
                             </div>
                         ) : bookings.length === 0 ? (
 
-                            /* ==========================================
-                                EMPTY
-                            ========================================== */
+                            /* EMPTY */
 
                             <div className="
                                 text-center
@@ -1469,9 +1667,7 @@ function Admin() {
                         ) : (
 
                             <>
-                                {/* ==========================================
-                                    MOBILE VIEW
-                                ========================================== */}
+                                {/* MOBILE VIEW */}
 
                                 <div className="
                                     block
@@ -1496,9 +1692,7 @@ function Admin() {
                                     )}
                                 </div>
 
-                                {/* ==========================================
-                                    DESKTOP TABLE
-                                ========================================== */}
+                                {/* DESKTOP TABLE */}
 
                                 <div className="
                                     hidden
@@ -1507,7 +1701,7 @@ function Admin() {
                                 ">
                                     <table className="
                                         w-full
-                                        min-w-[1200px]
+                                        min-w-[1250px]
                                     ">
                                         <thead className="
                                             bg-slate-50
@@ -2133,24 +2327,71 @@ function Admin() {
 
                             <div className="p-4 sm:p-6">
 
+                                {/* OTP VERIFICATION */}
+
                                 <div className="
                                     p-4
                                     rounded-xl
                                     bg-green-50
-                                    border border-green-100
+                                    border border-green-200
+                                    mb-5
+                                ">
+                                    <div className="flex items-start gap-3">
+                                        <div className="
+                                            w-9 h-9
+                                            shrink-0
+                                            rounded-full
+                                            bg-green-100
+                                            flex
+                                            items-center
+                                            justify-center
+                                        ">
+                                            <span className="text-green-600">
+                                                ✓
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <p className="
+                                                text-sm
+                                                font-bold
+                                                text-green-800
+                                            ">
+                                                Customer OTP Verified
+                                            </p>
+
+                                            <p className="
+                                                text-xs
+                                                text-green-700
+                                                mt-1
+                                            ">
+                                                The customer has successfully
+                                                verified the service completion.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* COMPLETION NOTE */}
+
+                                <div className="
+                                    p-4
+                                    rounded-xl
+                                    bg-slate-50
+                                    border border-slate-200
                                     mb-5
                                 ">
                                     <p className="
                                         text-sm
                                         font-semibold
-                                        text-green-800
+                                        text-slate-800
                                     ">
                                         Service completion note
                                     </p>
 
                                     <p className="
                                         text-xs
-                                        text-green-700
+                                        text-slate-500
                                         mt-1
                                     ">
                                         Add a brief comment about the completed service.
