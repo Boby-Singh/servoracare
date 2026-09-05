@@ -45,9 +45,7 @@ function Dashboard() {
 
       setBookings(response.data || []);
     } catch (error) {
-      console.error("Fetch Bookings Error:", error);
-
-      alert("Unable to load your bookings.");
+      alert("Unable to load your bookings.",error);
     } finally {
       setLoading(false);
     }
@@ -131,11 +129,6 @@ function Dashboard() {
         setShowQR(true);
       }
     } catch (error) {
-      console.error(
-        "Create Payment Error:",
-        error
-      );
-
       alert(
         error.response?.data?.message ||
           "Unable to start payment."
@@ -213,11 +206,6 @@ function Dashboard() {
 
       await fetchBookings();
     } catch (error) {
-      console.error(
-        "Submit Payment Error:",
-        error
-      );
-
       alert(
         error.response?.data?.message ||
           "Unable to submit payment."
@@ -1696,10 +1684,7 @@ function Dashboard() {
 
                 <label className="block text-sm font-bold text-slate-700 mb-2">
                   UTR / Transaction ID
-                  <span className="font-normal text-slate-400">
-                    {" "}
-                    (optional)
-                  </span>
+                  <span className="font-normal text-slate-400">*</span>
                 </label>
 
                 <input
@@ -1709,12 +1694,12 @@ function Dashboard() {
                     setUtr(e.target.value)
                   }
                   placeholder="Enter UTR / Transaction ID"
+                  required
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
 
                 <p className="text-xs text-slate-400 mt-2">
-                  You can find the UTR in your UPI
-                  payment history.
+                  Enter the UTR / Transaction ID from your UPI payment history.
                 </p>
 
               </div>
