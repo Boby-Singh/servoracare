@@ -15,6 +15,7 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import TechnicianDashboard from "./pages/TechnicianDashboard"
 import AdminRoute from "./components/AdminRoute"
+import AdminLayout from "./components/AdminLayout";
 import Layout from "./components/Layout";
 import Customers from "./pages/admin/Customers"
 import Technicians from "./pages/admin/Technicians"
