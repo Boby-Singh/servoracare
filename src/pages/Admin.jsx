@@ -616,7 +616,8 @@ function Admin() {
         const isAssigning =
             assigning[mongoBookingId];
 
-        if (booking.status !== "Pending") {
+        if (booking.status !== "Pending" &&
+            booking.status !== "Rejected") {
             return (
                 <div
                     className={
@@ -691,7 +692,9 @@ function Admin() {
                     "
                 >
                     <option value="">
-                        Select technician
+                        {booking.status === "Rejected"
+                        ? "Select new technician"
+                        : "Select technician"}
                     </option>
 
                     {technicians.map((tech) => (
@@ -786,7 +789,9 @@ function Admin() {
                         "
                     >
                         {isAssigning
-                            ? "Assigning..."
+                        ? "Assigning..."
+                        : booking.status === "Rejected"
+                            ? "Reassign & Accept"
                             : "Assign & Accept"}
                     </button>
                 )}
@@ -810,7 +815,8 @@ function Admin() {
         const otpVerified =
             booking.completion_otp_verified === true;
 
-        if (booking.status === "Pending") {
+        if (booking.status === "Pending"||
+            booking.status === "Rejected") {
             return (
                 <div
                     className={
