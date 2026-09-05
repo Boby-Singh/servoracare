@@ -154,11 +154,11 @@ const handleMobileMenuClick = () => {
             className="flex items-center gap-3 shrink-0"
           >
 
-            <img
-              src={logo}
-              alt="ServoraCare Logo"
-              className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-white p-1 shadow-md object-cover"
-            />
+         <img
+            src={logo}
+            alt="ServoraCare Logo"
+            className="h-14 w-14 sm:h-16 sm:w-16 rounded-full object-contain bg-white shadow-sm ring-1 ring-white/70"
+          />
 
             <div className="hidden sm:block">
 
