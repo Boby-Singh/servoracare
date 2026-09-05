@@ -162,11 +162,11 @@ const handleMobileMenuClick = () => {
 
             <div className="hidden sm:block">
 
-              <h1 className="text-2xl sm:text-3xl font-extrabold leading-none tracking-wide">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight leading-none">
                 ServoraCare
               </h1>
 
-              <p className="text-xs sm:text-sm text-orange-300 mt-1">
+              <p className="text-xs sm:text-sm text-orange-300 mt-1 font-medium tracking-wide">
                 Trusted Home Services
               </p>
 
