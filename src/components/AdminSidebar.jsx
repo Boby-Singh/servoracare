@@ -12,6 +12,7 @@ import {
     ShieldCheck,
     ChevronRight,
     X,
+    CreditCard,
 } from "lucide-react";
 
 function AdminSidebar({ isOpen, onClose }) {
@@ -35,6 +36,11 @@ function AdminSidebar({ isOpen, onClose }) {
             name: "Bookings",
             path: "/admin/all-bookings",
             icon: CalendarCheck,
+        },
+        {
+            name: "Payments",
+            path: "/admin/payments",
+            icon: CreditCard,
         },
         {
             name: "Support Inbox",

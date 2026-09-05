@@ -25,6 +25,7 @@ import VerifyOTP from "./pages/VerifyOTP";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import SupportInbox from "./pages/admin/SupportInbox";
+import Payments from "./pages/admin/Payments";
 function App() {
   return (
     <BrowserRouter>
@@ -154,6 +155,14 @@ function App() {
             <AllBookings/>
           </AdminRoute>
         }
+        />
+
+        <Route path="/admin/payments" 
+        element={
+          <AdminRoute>
+            <Payments />
+          </AdminRoute>
+          } 
         />
 
         <Route
