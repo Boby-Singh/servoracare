@@ -142,7 +142,7 @@ const handleMobileMenuClick = () => {
 
       <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div className="flex items-center gap-3">
+        <div className="h-20 flex items-center justify-between">
 
 
           {/* =================================================
@@ -155,18 +155,18 @@ const handleMobileMenuClick = () => {
           >
 
             <img
-              src={logo}
-              alt="ServoraCare Logo"
-              className="h-14 w-14 sm:h-16 sm:w-16 object-contain"
-            />
+            src={logo}
+            alt="ServoraCare Logo"
+            className="h-14 w-14 sm:h-16 sm:w-16 object-contain"
+          />
 
-            <div className="leading-tight">
+            <div className="hidden sm:block">
 
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              <h1 className="text-2xl sm:text-3xl font-extrabold leading-none tracking-wide">
                 ServoraCare
               </h1>
 
-              <p className="text-sm text-orange-400 font-medium">
+              <p className="text-xs sm:text-sm text-orange-300 mt-1">
                 Trusted Home Services
               </p>
 
