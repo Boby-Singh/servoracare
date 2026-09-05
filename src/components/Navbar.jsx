@@ -157,7 +157,7 @@ const handleMobileMenuClick = () => {
           <img
             src={logo}
             alt="ServoraCare Logo"
-            className="h-16 w-16 sm:h-18 sm:w-18 object-contain"
+            className="h-16 w-16 sm:h-18 sm:w-18 object-contain bg-white rounded-md p-1 shadow-sm"
           />
 
             <div className="hidden sm:block">
