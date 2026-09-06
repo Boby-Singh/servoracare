@@ -2040,13 +2040,13 @@ function TechnicianDashboard() {
                   </a>
 
                   <a
-                    href="tel:+917828908522"
+                    href="tel:+916265123521"
                     className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition"
                   >
 
                     <Phone size={15} />
 
-                    +91 78289 08522
+                    +91 62651 23521
 
                   </a>
 

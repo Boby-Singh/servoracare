@@ -31,7 +31,7 @@ function Contact() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const phone = "917828908522";
+    const phone = "916265123521";
 
     const message = `📩 New Contact Query
 
@@ -114,7 +114,7 @@ ${formData.message}`;
             "@type": "LocalBusiness",
             name: "ServoraCare",
             url: "https://www.servoracare.in",
-            telephone: "+91-7828908522",
+            telephone: "+91-6265123521",
             email: "support@servoracare.in",
 
             address: {
@@ -179,7 +179,7 @@ ${formData.message}`;
               <div className="flex flex-wrap gap-4 mt-8">
 
                 <a
-                  href="tel:+917828908522"
+                  href="tel:+916265123521"
                   className="inline-flex items-center gap-3 bg-white text-blue-900 px-6 py-3.5 rounded-xl font-semibold hover:bg-blue-50 transition shadow-lg"
                 >
                   <FaPhoneAlt />
@@ -187,7 +187,7 @@ ${formData.message}`;
                 </a>
 
                 <a
-                  href="https://wa.me/917828908522"
+                  href="https://wa.me/916265123521"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-3 bg-green-500 text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-green-600 transition shadow-lg"
@@ -242,7 +242,7 @@ ${formData.message}`;
                   {/* PHONE */}
 
                   <a
-                    href="tel:+917828908522"
+                    href="tel:+916265123521"
                     className="group flex items-start gap-4"
                   >
 
@@ -259,7 +259,7 @@ ${formData.message}`;
                       </p>
 
                       <p className="font-semibold text-slate-900 mt-1">
-                        +91 78289 08522
+                        +91 62651 23521
                       </p>
 
                     </div>
@@ -392,7 +392,7 @@ ${formData.message}`;
                     </a>
 
                     <a
-                      href="https://wa.me/917828908522"
+                      href="https://wa.me/916265123521"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="WhatsApp"
@@ -644,7 +644,7 @@ ${formData.message}`;
               <div className="flex flex-wrap gap-3">
 
                 <a
-                  href="tel:+917828908522"
+                  href="tel:+916265123521"
                   className="inline-flex items-center gap-2 bg-white text-blue-900 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
                 >
                   <FaPhoneAlt />
@@ -652,7 +652,7 @@ ${formData.message}`;
                 </a>
 
                 <a
-                  href="https://wa.me/917828908522"
+                  href="https://wa.me/916265123521"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition"
