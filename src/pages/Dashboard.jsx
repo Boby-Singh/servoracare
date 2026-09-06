@@ -1466,9 +1466,8 @@ function Dashboard() {
         ===================================================== */}
 
         {showQR && paymentBooking && (
-          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-
-            <div className="bg-white rounded-3xl shadow-2xl p-7 sm:p-8 w-full max-w-md">
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto">
 
               <div className="flex items-center justify-between">
 
@@ -1518,7 +1517,7 @@ function Dashboard() {
 
                   <QRCode
                     value={paymentUrl}
-                    size={220}
+                    size={190}
                   />
 
                 </div>
@@ -1606,9 +1605,9 @@ function Dashboard() {
         ===================================================== */}
 
         {showUTR && paymentBooking && (
-          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4">
 
-            <div className="bg-white rounded-3xl shadow-2xl p-7 sm:p-8 w-full max-w-md">
+             <div className="bg-white rounded-3xl shadow-2xl p-5 sm:p-7 w-full max-w-md max-h-[92vh] overflow-y-auto">
 
               <div className="text-center">
 
