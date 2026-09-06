@@ -59,85 +59,68 @@ function Dashboard() {
   // CREATE UPI PAYMENT
   // =====================================================
 
-  const makePayment = async (booking) => {
-    try {
-      if (!booking?.booking_id) {
-        alert("Invalid booking ID.");
-        return;
-      }
-
-      if (booking.status !== "Accepted") {
-        alert(
-          "Payment is available only after your booking is accepted."
-        );
-        return;
-      }
-
-      if (booking.payment_status === "Paid") {
-        alert("This booking has already been paid.");
-        return;
-      }
-
-      setLoading(true);
-
-      const { data } = await axios.post(
-        `${API}/api/create-payment`,
-        {
-          bookingId: booking.booking_id,
-          userId: user.id,
-        }
-      );
-
-      if (!data.success) {
-        alert(
-          data.message ||
-            "Unable to create payment."
-        );
-        return;
-      }
-
-      setPaymentBooking({
-        ...booking,
-        booking_id: data.bookingId,
-        amount: data.amount,
-        payment_reference:
-          data.paymentReference,
-      });
-
-      setPaymentUrl(data.paymentUrl);
-
-      const isMobile =
-        /Android|iPhone|iPad|iPod/i.test(
-          navigator.userAgent
-        );
-
-      // -------------------------------------------------
-      // MOBILE
-      // -------------------------------------------------
-
-      if (isMobile) {
-        window.location.href = data.paymentUrl;
-
-        // NOTE:
-        // UPI app opening DOES NOT mean payment is complete.
-        // User must return and click "I Have Paid".
-      } else {
-        // -------------------------------------------------
-        // DESKTOP
-        // -------------------------------------------------
-
-        setShowQR(true);
-      }
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Unable to start payment."
-      );
-    } finally {
-      setLoading(false);
+ const makePayment = async (booking) => {
+  try {
+    if (!booking?.booking_id) {
+      alert("Invalid booking ID.");
+      return;
     }
-  };
 
+    if (booking.status !== "Accepted") {
+      alert(
+        "Payment is available only after your booking is accepted."
+      );
+      return;
+    }
+
+    if (booking.payment_status === "Paid") {
+      alert("This booking has already been paid.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { data } = await axios.post(
+      `${API}/api/create-payment`,
+      {
+        bookingId: booking.booking_id,
+        userId: user.id,
+      }
+    );
+
+    if (!data.success) {
+      alert(
+        data.message ||
+          "Unable to create payment."
+      );
+      return;
+    }
+
+    setPaymentBooking({
+      ...booking,
+      booking_id: data.bookingId,
+      amount: data.amount,
+      payment_reference:
+        data.paymentReference,
+    });
+
+    setPaymentUrl(data.paymentUrl);
+
+    // =====================================================
+    // SHOW SAME PAYMENT SCREEN ON MOBILE + DESKTOP
+    // =====================================================
+
+    setShowQR(true);
+
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Unable to start payment."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   // =====================================================
   // OPEN UTR FORM
   // =====================================================
