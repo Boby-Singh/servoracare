@@ -594,7 +594,7 @@ ${formData.message}`;
                     </h2>
 
                     <p className="text-sm text-slate-500">
-                      Gwalior, Madhya Pradesh, India
+                      Aadiya Puram, Gwalior, Madhya Pradesh, India, 474005.
                     </p>
 
                   </div>

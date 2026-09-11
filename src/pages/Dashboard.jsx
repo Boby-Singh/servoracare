@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
-const UPI_ID = "7828908522@axl";
+const UPI_ID = "servoracarepay@axl";
 
 function Dashboard() {
   const [bookings, setBookings] = useState([]);
