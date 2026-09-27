@@ -27,6 +27,7 @@ import Profile from "./pages/Profile";
 import SupportInbox from "./pages/admin/SupportInbox";
 import Payments from "./pages/admin/Payments";
 import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 function App() {
   return (
     <BrowserRouter>
@@ -48,6 +49,7 @@ function App() {
         />
 
         <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogArticle />} />
 
         <Route 
         path="/careers" 
