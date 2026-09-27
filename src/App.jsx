@@ -53,9 +53,21 @@ function App() {
 
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogArticle />} />
-        <Route path="/admin/blog" element={<AdminBlog />} />
-        <Route path="/admin/blog/add" element={<AddArticle />} />
-        <Route path="/admin/blog/edit/:id" element={<EditArticle />} />
+        <Route path="/admin/blog" 
+        element={
+          <AdminRoute>
+            <AdminBlog />
+          </AdminRoute>} />
+        <Route path="/admin/blog/add" 
+        element={
+          <AdminRoute>
+          <AddArticle />
+          </AdminRoute>} />
+        <Route path="/admin/blog/edit/:id" 
+        element={
+          <AdminRoute>
+            <EditArticle />
+          </AdminRoute>} />
 
         <Route 
         path="/careers" 
