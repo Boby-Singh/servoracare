@@ -6,6 +6,7 @@ import {
   LogOut,
   ChevronDown,
   UserCircle,
+  FileText,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -343,6 +344,23 @@ const handleMobileMenuClick = () => {
 
                       </Link>
 
+                      {user?.role === "admin" && (
+                        <Link
+                          to="/admin/blog"
+                          onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition"
+                        >
+                          <FileText
+                            size={18}
+                            className="text-orange-500"
+                          />
+
+                          <span className="text-sm font-semibold">
+                            Blog Management
+                          </span>
+                        </Link>
+                      )}
+
 
                       {/* PROFILE */}
 
@@ -521,6 +539,18 @@ const handleMobileMenuClick = () => {
                       DASHBOARD
 
                     </Link>
+
+                    {/* BLOG MANAGEMENT - ADMIN ONLY */}
+                      {user?.role === "admin" && (
+                        <Link
+                          to="/admin/blog"
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center justify-center gap-2 w-full bg-orange-500 text-white px-5 py-3 rounded-xl font-bold hover:bg-orange-600 transition"
+                        >
+                          <FileText size={18} />
+                          BLOG MANAGEMENT
+                        </Link>
+                      )}
 
 
                     {/* PROFILE */}
