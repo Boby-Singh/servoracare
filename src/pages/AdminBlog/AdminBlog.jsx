@@ -14,6 +14,7 @@ import {
   MoreVertical,
   CalendarDays,
 } from "lucide-react";
+import AdvertisementManager from "./components/AdvertisementManager";
 
 const initialArticles = [
   {
@@ -165,6 +166,7 @@ export default function AdminBlog() {
   };
 
   return (
+    
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -190,6 +192,7 @@ export default function AdminBlog() {
           Add New Article
         </button>
       </div>
+      <AdvertisementManager />
 
       {/* Stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
