@@ -103,7 +103,7 @@ function Navbar() {
       path: "/contact",
     },
     {
-      name: "Blogs",
+      name: "BLOGS",
       path: "/blog"
     },
   ];
