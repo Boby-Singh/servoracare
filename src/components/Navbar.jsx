@@ -102,6 +102,10 @@ function Navbar() {
       name: "CONTACT US",
       path: "/contact",
     },
+    {
+      name: "Blogs",
+      path: "/blog"
+    },
   ];
 
   // ==========================================

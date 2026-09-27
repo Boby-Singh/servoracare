@@ -26,6 +26,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import SupportInbox from "./pages/admin/SupportInbox";
 import Payments from "./pages/admin/Payments";
+import Blog from "./pages/Blog";
 function App() {
   return (
     <BrowserRouter>
@@ -45,6 +46,8 @@ function App() {
           path="/contact"
           element={<Contact />}
         />
+
+        <Route path="/blog" element={<Blog />} />
 
         <Route 
         path="/careers" 
