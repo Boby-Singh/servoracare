@@ -258,6 +258,8 @@ export default function Blog() {
       <Helmet>
         <title>ServoraCare Blog | Home Service Tips & Advice</title>
 
+        <meta name="google-adsense-account" content="ca-pub-4296116100694649"></meta>
+
         <meta
           name="description"
           content="Helpful home maintenance tips, electrical advice, plumbing guides, AC care, cleaning tips and more from ServoraCare."
