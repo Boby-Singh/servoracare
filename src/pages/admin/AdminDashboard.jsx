@@ -45,14 +45,14 @@ function AdminDashboard({ bookings = [] }) {
     // 20% PLATFORM SHARE
     // ==========================================
 
-    const servoraCareEarnings = totalRevenue * 0.2;
+    const servoraCareEarnings = totalRevenue * 0.25;
 
     // ==========================================
     // TECHNICIAN EARNINGS
     // 80% TECHNICIAN SHARE
     // ==========================================
 
-    const technicianEarnings = totalRevenue * 0.8;
+    const technicianEarnings = totalRevenue * 0.75;
 
     // ==========================================
     // FORMAT CURRENCY
@@ -279,7 +279,7 @@ function AdminDashboard({ bookings = [] }) {
                             </p>
 
                             <p className="text-xs text-blue-500 mt-1">
-                                Platform share • 20%
+                                Platform share • 25%
                             </p>
                         </div>
 
@@ -316,7 +316,7 @@ function AdminDashboard({ bookings = [] }) {
                             </p>
 
                             <p className="text-xs text-green-600 mt-1">
-                                Technician share • 80%
+                                Technician share • 75%
                             </p>
                         </div>
 
@@ -561,7 +561,7 @@ function AdminDashboard({ bookings = [] }) {
                         </p>
 
                         <p className="text-xs text-slate-500 mt-1">
-                            20% of completed revenue
+                            25% of completed revenue
                         </p>
 
                     </div>
@@ -579,7 +579,7 @@ function AdminDashboard({ bookings = [] }) {
                         </p>
 
                         <p className="text-xs text-slate-500 mt-1">
-                            80% of completed revenue
+                            75% of completed revenue
                         </p>
 
                     </div>
