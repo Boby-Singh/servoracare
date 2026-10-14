@@ -54,7 +54,10 @@ function Technicians() {
         ?.toLowerCase()
         .includes(searchValue) ||
       tech.phone?.toString().includes(searchValue) ||
-      tech.user_id?.toString().includes(searchValue)
+      tech.user_id?.toString().includes(searchValue) ||
+      tech.specialization?.toLowerCase().includes(searchValue) ||
+      tech.city?.toLowerCase().includes(searchValue) ||
+      tech.address?.toLowerCase().includes(searchValue)
     );
   });
 
@@ -353,9 +356,9 @@ function Technicians() {
               /* ==========================================
                  TABLE
               ========================================== */
-              <div className="w-full overflow-hidden">
+              <div className="w-full overflow-x-auto">
 
-                <table className="w-full table-fixed">
+                <table className="w-full min-w-[1500px] table-auto">
 
                   <thead className="bg-slate-50 border-b border-slate-200">
                     <tr>
@@ -377,6 +380,18 @@ function Technicians() {
 
                       <th className="w-[16%] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                         Phone
+                      </th>
+                      
+                      <th className="min-w-[180px] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Specialization
+                      </th>
+
+                      <th className="min-w-[140px] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                        City
+                      </th>
+
+                      <th className="min-w-[240px] px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Address
                       </th>
 
                       <th className="w-[12%] px-4 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -537,8 +552,30 @@ function Technicians() {
 
                           )}
 
+                        </td>                        
+                        {/* SPECIALIZATION */}
+                        <td className="px-4 py-5">
+                          <span className="inline-flex rounded-lg bg-purple-50 px-3 py-1.5 text-sm font-semibold text-purple-700">
+                            {tech.specialization || "Not provided"}
+                          </span>
                         </td>
 
+                        {/* CITY */}
+                        <td className="px-4 py-5">
+                          <div className="text-sm font-medium text-slate-700">
+                            {tech.city || "Not provided"}
+                          </div>
+                        </td>
+
+                        {/* ADDRESS */}
+                        <td className="px-4 py-5">
+                          <div
+                            className="max-w-xs truncate text-sm text-slate-600"
+                            title={tech.address || ""}
+                          >
+                            {tech.address || "Not provided"}
+                          </div>
+                        </td>
                         {/* STATUS */}
                         <td className="px-6 py-5 text-center">
 
