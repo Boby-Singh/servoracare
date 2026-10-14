@@ -1234,7 +1234,7 @@ function AddTechnician() {
                         City {requiredMark}
                       </label>
                       <div className="relative">
-                        <MapPin
+                        <MapPin 
                           size={18}
                           className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                         />
