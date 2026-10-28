@@ -28,7 +28,7 @@ import SupportInbox from "./pages/admin/SupportInbox";
 import Payments from "./pages/admin/Payments";
 import Blog from "./pages/Blog";
 import BlogDetails from "./pages/BlogDetails";
-import AdminBlogs from "./pages/AdminBlog/AdminBlogs";
+import AdminBlogs from "./pages/admin/AdminBlogs";
 function App() {
   return (
     <BrowserRouter>
