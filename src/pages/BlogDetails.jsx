@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, CalendarDays, Clock3, BookOpen } from "lucide-react";
-import { getBlogBySlug } from "../services/blogService";
+
 const API_BASE = (
   import.meta.env.VITE_API_URL ||
   "https://servoracare-backend.onrender.com/api"

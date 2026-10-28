@@ -9,12 +9,7 @@ import {
   EyeOff,
   RefreshCw,
 } from "lucide-react";
-import {
-  getAdminBlogs,
-  createBlog,
-  updateBlog,
-  deleteBlog,
-} from "../../services/blogService";
+
 const API_BASE = (
   import.meta.env.VITE_API_URL ||
   "https://servoracare-backend.onrender.com/api"

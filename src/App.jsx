@@ -51,6 +51,14 @@ function App() {
 
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogDetails />} />
+        <Route
+          path="/admin/blogs"
+          element={
+            <AdminRoute>
+              <AdminBlogs />
+            </AdminRoute>
+          }
+        />
         <Route 
         path="/careers" 
         element={<Careers />} 
