@@ -28,7 +28,7 @@ import SupportInbox from "./pages/admin/SupportInbox";
 import Payments from "./pages/admin/Payments";
 import Blog from "./pages/Blog";
 import BlogDetails from "./pages/BlogDetails";
-import AdminBlogs from "./pages/admin/AdminBlogs";
+import AdminBlogs from "./pages/AdminBlog/AdminBlogs";
 function App() {
   return (
     <BrowserRouter>
@@ -52,7 +52,7 @@ function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogDetails />} />
         <Route
-          path="/admin/blogs"
+          path="/admin/blog"
           element={
             <AdminRoute>
               <AdminBlogs />

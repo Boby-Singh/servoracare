@@ -11,10 +11,7 @@ import {
   BookOpen,
   X,
 } from "lucide-react";
-import {
-  getBlogs,
-  getBlogCategories,
-} from "../services/blogService";
+
 const SITE_URL = "https://www.servoracare.in";
 
 const API_BASE = (
