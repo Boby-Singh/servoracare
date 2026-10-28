@@ -27,10 +27,8 @@ import Profile from "./pages/Profile";
 import SupportInbox from "./pages/admin/SupportInbox";
 import Payments from "./pages/admin/Payments";
 import Blog from "./pages/Blog";
-import BlogArticle from "./pages/BlogArticle";
-import AdminBlog from "./pages/AdminBlog/AdminBlog";
-import AddArticle from "./pages/AdminBlog/AddArticle";
-import EditArticle from "./pages/AdminBlog/EditArticle";
+import BlogDetails from "./pages/BlogDetails";
+import AdminBlogs from "./pages/admin/AdminBlogs";
 function App() {
   return (
     <BrowserRouter>
@@ -52,23 +50,7 @@ function App() {
         />
 
         <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<BlogArticle />} />
-        <Route path="/admin/blog" 
-        element={
-          <AdminRoute>
-            <AdminBlog />
-          </AdminRoute>} />
-        <Route path="/admin/blog/add" 
-        element={
-          <AdminRoute>
-          <AddArticle />
-          </AdminRoute>} />
-        <Route path="/admin/blog/edit/:id" 
-        element={
-          <AdminRoute>
-            <EditArticle />
-          </AdminRoute>} />
-
+        <Route path="/blog/:slug" element={<BlogDetails />} />
         <Route 
         path="/careers" 
         element={<Careers />} 

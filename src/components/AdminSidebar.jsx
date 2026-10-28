@@ -13,6 +13,7 @@ import {
     ChevronRight,
     X,
     CreditCard,
+    BookOpen, 
 } from "lucide-react";
 
 function AdminSidebar({ isOpen, onClose }) {
@@ -57,6 +58,10 @@ function AdminSidebar({ isOpen, onClose }) {
             path: "/admin/add-technician",
             icon: UserPlus,
         },
+        { name: "Blogs",
+          path: "/admin/blogs",
+          icon: <BookOpen size={20} />, 
+        }
     ];
 
     // Close sidebar when pressing Escape
