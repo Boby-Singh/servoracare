@@ -58,9 +58,10 @@ function AdminSidebar({ isOpen, onClose }) {
             path: "/admin/add-technician",
             icon: UserPlus,
         },
-        { name: "Blogs",
-          path: "/admin/blogs",
-          icon: <BookOpen size={20} />, 
+        {
+        name: "Blogs",
+        path: "/admin/blog",
+        icon: BookOpen,
         }
     ];
 
