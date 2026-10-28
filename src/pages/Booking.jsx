@@ -12,10 +12,10 @@ function Booking() {
   const visitingCharges = {
     "Electrician": 149,
     "Plumber": 149, 
-    "AC Repair": 299,
-    "CCTV Installation": 299,
-    "Painting": 399,
-    "Room Cleaning": 199,
+    "AC Repair": 499,
+    "CCTV Installation": 1500,
+    "Painting": 149,
+    "Room Cleaning": 149,
   };
 
   // =====================================================
