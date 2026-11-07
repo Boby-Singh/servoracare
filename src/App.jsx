@@ -42,6 +42,7 @@ const AddTechnician = lazy(() => import("./pages/admin/AddTechnician"));
 const SupportInbox = lazy(() => import("./pages/admin/SupportInbox"));
 const Payments = lazy(() => import("./pages/admin/Payments"));
 const AdminBlogs = lazy(() => import("./pages/admin/AdminBlogs"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 // Loading screen
 function PageLoader() {
@@ -74,6 +75,7 @@ function App() {
             {/* BLOG */}
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogDetails />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />}/>
 
             {/* CAREERS */}
             <Route path="/careers" element={<Careers />} />

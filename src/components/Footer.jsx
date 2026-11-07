@@ -13,6 +13,12 @@ function Footer() {
       <p>
         © 2026 ServoraCare. All Rights Reserved.
       </p>
+      <Link
+        to="/privacy-policy"
+        className="text-sm text-gray-500 hover:text-orange-500"
+      >
+        Privacy Policy
+      </Link>
 
     </footer>
   )

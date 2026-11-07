@@ -1014,6 +1014,13 @@ function Dashboard() {
                 Contact Support
               </Link>
 
+              <Link
+                to="/privacy-policy"
+                className="text-sm text-gray-500 hover:text-orange-500"
+              >
+                Privacy Policy
+              </Link>
+
             </div>
 
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
